@@ -13,8 +13,19 @@ def svd(A, full_matrices = True, driver = None, out = None):
 	A = A.tg
 	ATA = A.T @ A
 	
-def qr(*args, **kwargs):
-	raise NotImplemented
+def qr(A):
+	A = A.tg
+	n, m = A.shape
+	Q = tinygrad.Tensor.zeros((n, m), dtype=A.dtype, device = A.device)
+	R = tinygrad.Tensor.zeros((m, m), dtype=A.dtype, device = A.device)
+	for j in range(m):
+		v = A[:, j]
+		for i in range(j):
+			R[i, j] = Q[:, i] @ A[:, j]
+			v = v - R[i, j] * Q[:, i]
+		R[j, j] = norm( convert_to_tg(v) ).tg
+		Q[:, j] = v / R[j, j]
+	return convert_to_torch(Q, R)
 	
 def eig(A, max_iter = 100, tol = 1e-6, out = None):
 	# gotta see if jit is being used
@@ -24,7 +35,7 @@ def eig(A, max_iter = 100, tol = 1e-6, out = None):
 	n = A.shape[0]
 	V = tinygrad.Tensor.eye(n, dtype = A.dtype, device = A.device)
 	for _ in range(max_iter):
-		Q, R = qr(A)
+		Q, R = convert_to_tg( qr(convert_to_torch(A) ) )
 		A = R @ Q
 		V = V @ Q
 		off_diag = (A - diag(diag(A)) ).abs()
