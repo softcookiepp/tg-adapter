@@ -121,6 +121,9 @@ def test_normal_():
 			return tg_adapter.mean(old_t), tg_adapter.var(old_t), tg_adapter.mean(t), tg_adapter.var(t)
 	test_function([a], {}, test_normal__impl, test_normal__impl, error_threshold = 1.0e-2)
 		
+def test_diag():
+	for i in range(2):
+		
 
 def test_all_operators():
 	test_rsub()

@@ -49,3 +49,41 @@ def stack(tensors, dim = 0, out = None):
 	trest = convert_to_tg( tuple(tensors[1:]) )
 	assert_same_device(tbase.device, trest)
 	return convert_to_torch(tbase.stack(*trest, dim = dim) )
+	
+def svd_lowrank(A, q = 6, niter = 2, M = None):
+	raise NotImplementedError
+	
+	
+def check_2d(t):
+	if len(t.shape) != 2:
+		raise RuntimeError(f"2D tensor expected, got {len(t.shape)}D tensor instead")
+
+def _slice_to_square(t, offset = 0):
+	if len(t.shape) == 1:
+		return t
+	n = min(t.shape)
+	if offset >= 0:
+		return t[offset:n, offset:n]
+	else:
+		return t[0:offset, 0: offset]
+	
+	
+def diag(t, **kwargs):
+	offset = 0
+	if "diagonal" in kwargs.keys():
+		offset = kwargs["diagonal"]
+	t = t.tg
+	t = _slice_to_square(t, offset)
+	e = tinygrad.Tensor.eye(t.shape[0], dtype = t.dtype, device = t.device)
+	if len(t.shape) == 1:
+		# make diagonal matrix from 1-D tensor
+		out = t.expand( (t.shape[0], t.shape[0]) ) * e
+		if offset != 0:
+			# TODO: implement padding
+			raise NotImplementedError
+		return T(out)
+	elif len(t.shape) == 2:
+		# make 1-D array from 2-D tensor
+		return T( (t*e).sum(0) )
+	else:
+		raise RuntimeError(f"Expected 2D or 1D tensor, but got {len(t.shape) }D instead.")
