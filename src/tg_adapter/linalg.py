@@ -22,5 +22,5 @@ def eig(A, max_iter = 100, tol = 1e-6, out = None):
 		Q, R = qr(A)
 		A = R @ Q
 		V = V @ Q
-		off_diag = (A - ).abs()
+		#off_diag = (A - ).abs()
 	

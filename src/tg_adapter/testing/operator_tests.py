@@ -124,12 +124,13 @@ def test_normal_():
 def test_diag():
 	for i in range(2):
 		shape = []
-		for i2 in range(i):
-			shape.append(4)
+		for i2 in range(i + 1):
+			shape.append(int(4) )
 		shape = tuple(shape)
-		
-		a = make_test_data(*shape)
-		test_function([a, 0], torch.diag, tg_adapter.diag)
+		a = np.arange(np.prod(shape) ).reshape(shape).astype(np.float32)
+		for diagonal in range(3*2):
+			diagonal = diagonal - 3
+			test_function([a, diagonal], {}, torch.diag, tg_adapter.diag)
 		
 def test_all_operators():
 	test_rsub()

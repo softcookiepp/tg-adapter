@@ -170,7 +170,7 @@ def mse(predicted, actual):
 	return (np.sum( (predicted - actual)**2 ))/predicted.size
 	
 def make_test_data(*shape):
-	return np.random.randn(np.prod(shape) ).reshape(shape).astype(np.float32)
+	return np.random.randn(int(np.prod(shape)) ).reshape(shape).astype(np.float32)
 	
 def test_function(inp_args, inp_kwargs, torch_function, tinygrad_function, error_threshold = 1.0e-7):
 	test_hf_reimplementation( inp_args, inp_kwargs, torch_function, "__call__", tinygrad_function, "__call__", error_threshold = error_threshold)

@@ -1,6 +1,7 @@
 from .tensor import AdapterTensor as T
 from .tensor import convert_to_tg, convert_to_torch
 from .tensor import assert_same_device
+import tinygrad
 
 exp = lambda x: T( x.tg.exp() )
 
@@ -32,10 +33,10 @@ def var(inp, dim = None, keepdim = False, dtype = None, out = None):
 		out = out.to(dtype)
 	return out
 
-def min(x, dim = None, keepdim = False):
+def _min(x, dim = None, keepdim = False):
 	return x.min(dim, keepdim)
 	
-def max(x, dim = None, keepdim = False):
+def _max(x, dim = None, keepdim = False):
 	return x.max(dim, keepdim)
 
 from .F import sigmoid
@@ -63,9 +64,9 @@ def _slice_to_square(t, offset = 0):
 		return t
 	n = min(t.shape)
 	if offset >= 0:
-		return t[offset:n, offset:n]
+		return t[0:n - offset, offset:]
 	else:
-		return t[0:offset, 0: offset]
+		return t[0 - offset:, 0: offset]
 	
 	
 def diag(t, *args, **kwargs):
@@ -75,17 +76,22 @@ def diag(t, *args, **kwargs):
 	elif len(args) > 0:
 		offset = args[0]
 	t = t.tg
+	t_original = t
 	t = _slice_to_square(t, offset)
 	e = tinygrad.Tensor.eye(t.shape[0], dtype = t.dtype, device = t.device)
 	if len(t.shape) == 1:
 		# make diagonal matrix from 1-D tensor
 		out = t.expand( (t.shape[0], t.shape[0]) ) * e
-		if offset != 0:
-			# TODO: implement padding
-			raise NotImplementedError
+		if offset < 0:
+			out = out.pad( (0, abs(offset), abs(offset), 0) )
+		elif offset > 0:
+			# pad
+			out = out.pad( (offset, 0, 0, offset) )
 		return T(out)
 	elif len(t.shape) == 2:
 		# make 1-D array from 2-D tensor
-		return T( (t*e).sum(0) )
+		out = (t*e)
+		out = out.sum(0)
+		return T(out)
 	else:
 		raise RuntimeError(f"Expected 2D or 1D tensor, but got {len(t.shape) }D instead.")
