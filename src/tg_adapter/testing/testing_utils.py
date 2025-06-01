@@ -6,7 +6,7 @@ import tinygrad
 import numpy as np
 
 # TODO: handle recursive imports
-from .. import _adapter as tg_adapter
+import tg_adapter
 tga = tg_adapter
 
 _has_pil = False

@@ -16,7 +16,7 @@ Once you have pytorch installed, simply run the tests by executing:
 
 ## Usage
 ### API
-The API aims to be a drop-in replacement for pytorch.
+The API is not yet complete, but it aims to be a drop-in replacement for pytorch.
 Simply replace every `import torch` with `import tg_adapter as torch` in your code, and it should likely run with minimal changes required.
 
 ### Environment variables
