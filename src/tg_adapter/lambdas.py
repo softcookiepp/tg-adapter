@@ -68,10 +68,12 @@ def _slice_to_square(t, offset = 0):
 		return t[0:offset, 0: offset]
 	
 	
-def diag(t, **kwargs):
+def diag(t, *args, **kwargs):
 	offset = 0
 	if "diagonal" in kwargs.keys():
 		offset = kwargs["diagonal"]
+	elif len(args) > 0:
+		offset = args[0]
 	t = t.tg
 	t = _slice_to_square(t, offset)
 	e = tinygrad.Tensor.eye(t.shape[0], dtype = t.dtype, device = t.device)

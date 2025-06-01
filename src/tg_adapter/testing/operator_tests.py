@@ -123,8 +123,14 @@ def test_normal_():
 		
 def test_diag():
 	for i in range(2):
+		shape = []
+		for i2 in range(i):
+			shape.append(4)
+		shape = tuple(shape)
 		
-
+		a = make_test_data(*shape)
+		test_function([a, 0], torch.diag, tg_adapter.diag)
+		
 def test_all_operators():
 	test_rsub()
 	test_chunk()
@@ -149,6 +155,8 @@ def test_all_operators():
 	test_var()
 	
 	test_normal_()
+	
+	test_diag()
 	# just return true for now i guess
 	return True
 	
