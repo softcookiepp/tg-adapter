@@ -110,6 +110,21 @@ class AdapterTensor:
 	
 	def zero_(self):
 		self.fill_(0)
+	
+	def normal_(self, mean = 0.0, std = 1.0, generator = None):
+		tensor = convert_to_tg(self)
+		if not generator is None:
+			raise NotImplementedError
+		norm = tinygrad.Tensor.normal(*tensor.shape,
+			mean = mean,
+			std = std,
+			requires_grad = tensor.requires_grad,
+			dtype = tensor.dtype,
+			device = tensor.device)
+		self.tg.replace(norm)
+	
+	def flip(self, dims):
+		return self._tg_override(dims)
 		
 	@property
 	def tdtype(self):

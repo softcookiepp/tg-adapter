@@ -92,6 +92,9 @@ def test_rsub():
 	def _rsub_test(a, b):
 		return a - b
 	test_function([1, a], {}, _rsub_test, _rsub_test)
+	
+def test_normal_():
+	raise NotImplementedError
 
 def test_all_operators():
 	test_rsub()
@@ -111,6 +114,8 @@ def test_all_operators():
 	test_magic_pow()
 	test_max()
 	test_min()
+	
+	test_normal_()
 	# just return true for now i guess
 	return True
 	
