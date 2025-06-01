@@ -6,11 +6,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 include = [
-  "src/tiny_hf/*.so",
-  "src/tiny_hf/*.dylib",
-  "src/tiny_hf/*.dll",
-  "src/tiny_hf/**/*.py",
-  "src/tiny_hf"
+  "src/tg_adapter/*.so",
+  "src/tg_adapter/*.dylib",
+  "src/tg_adapter/*.dll",
+  "src/tg_adapter/**/*.py",
+  "src/tg_adapter"
 ]
 
 [tool.hatch.build.targets.wheel.sources]
@@ -20,18 +20,14 @@ include = [
 allow-direct-references = true
 
 [project]
-name = "tiny_hf"
+name = "tg_adapter"
 requires-python = ">=3.9"
 dependencies = [
 	"tinygrad",
 	"platformdirs",
 	"numpy",
-	"inspect",
-	"itertools",
 	"typing",
-	"pickle",
 	"argparse",
-	"subprocess",
 	"safetensors"
 ]
 description = "Library for porting pytorch code to tinygrad"

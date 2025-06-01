@@ -378,9 +378,6 @@ class AdapterTensor:
 		return self._tg_override(other)
 		
 	def __pow__(self, other):
-		if other == 0.5:
-			# use sqrt for better accuracy
-			return AdapterTensor(self._tg.sqrt() )
 		return self._tg_override(other)
 		
 	def pad(self, *args, **kwargs):

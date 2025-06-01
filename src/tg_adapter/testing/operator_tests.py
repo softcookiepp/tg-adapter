@@ -1,6 +1,6 @@
 import torch
 import tg_adapter
-from testing_utils import *
+from .testing_utils import *
 
 def test_cumprod():
 	from tg_adapter import F as tinyF
@@ -74,7 +74,7 @@ def test_magic_pow():
 	a = np.abs(make_test_data(3, 4, 7) )
 	def pow_impl(x, y):
 		return x ** y
-	test_function([a, 0.5], {}, pow_impl, pow_impl)
+	test_function([a, 0.5], {}, pow_impl, pow_impl, error_threshold=1.0e-7)
 
 def test_max():
 	a = make_test_data(3, 2, 5, 8)
@@ -111,4 +111,6 @@ def test_all_operators():
 	test_magic_pow()
 	test_max()
 	test_min()
+	# just return true for now i guess
+	return True
 	

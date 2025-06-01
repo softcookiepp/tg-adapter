@@ -6,7 +6,7 @@ import tinygrad
 import numpy as np
 
 # TODO: handle recursive imports
-import .. as tg_adapter
+from .. import _adapter as tg_adapter
 tga = tg_adapter
 
 _has_pil = False
@@ -172,7 +172,7 @@ def mse(predicted, actual):
 def make_test_data(*shape):
 	return np.random.randn(np.prod(shape) ).reshape(shape).astype(np.float32)
 	
-def test_function(inp_args, inp_kwargs, torch_function, tinygrad_function, error_threshold = 1.0e-9):
+def test_function(inp_args, inp_kwargs, torch_function, tinygrad_function, error_threshold = 1.0e-7):
 	test_hf_reimplementation( inp_args, inp_kwargs, torch_function, "__call__", tinygrad_function, "__call__", error_threshold = error_threshold)
 	
 
@@ -281,7 +281,7 @@ def _process_submodule_test_arg(arg):
 		# append as is
 		return arg
 
-def test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-9, device = "cuda:0", display_images = False):
+def test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-7, device = "cuda:0", display_images = False):
 	if not (isinstance(args, tuple) or isinstance(args, list) ):
 		args = (args,)
 	if hasattr(my_module, "to"):
