@@ -45,4 +45,6 @@ def eig(A, max_iter = 100, tol = 1e-6, out = None):
 	
 	eigenvalues = diag(A)
 	return convert_to_torch(eigenvalues, V)
+	
+
 
