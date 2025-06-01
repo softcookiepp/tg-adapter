@@ -31,7 +31,8 @@ dependencies = [
 	"typing",
 	"pickle",
 	"argparse",
-	"subprocess"
+	"subprocess",
+	"safetensors"
 ]
 description = "Library for porting pytorch code to tinygrad"
 version = "0.0.1"
