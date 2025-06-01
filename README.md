@@ -6,7 +6,13 @@ Since there is no pypi package, it must (for now) be installed by running:
 `pip install -U git+https://github.com/softcookiepp/tg-adapter.git`
 
 ## Testing
-Tests are still being migrated from tiny-hf, they cannot be run yet
+The tests requires the installation of pytorch, since it is used as a reference.
+To install pytorch on your preferred backend of choice, see [here](https://pytorch.org/get-started/locally/)
+If you are unsure which one is best, just install the CPU version to be safe:
+`pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu`
+
+Once you have pytorch installed, simply run the tests by executing:
+`python -m tg_adapter --test`
 
 ## Usage
 ### API
