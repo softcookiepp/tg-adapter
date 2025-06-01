@@ -16,6 +16,22 @@ sin = lambda x: T( x.tg.sin() )
 cos = lambda x: T( convert_to_tg(x).cos() )
 tan = lambda x: T( convert_to_tg(x).tan() )
 
+def mean(inp, dim = None, keepdim = False, dtype = None, out = None):
+	inp = inp.tg
+	out = inp.mean(axis = dim, keepdim = keepdim)
+	out = T(out)
+	if not dtype is None:
+		out = out.to(dtype)
+	return out
+	
+def var(inp, dim = None, keepdim = False, dtype = None, out = None):
+	inp = inp.tg
+	out = inp.var(axis = dim, keepdim = keepdim)
+	out = T(out)
+	if not dtype is None:
+		out = out.to(dtype)
+	return out
+
 def min(x, dim = None, keepdim = False):
 	return x.min(dim, keepdim)
 	

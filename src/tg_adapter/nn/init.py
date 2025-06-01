@@ -25,7 +25,7 @@ def normal_(tensor, mean = 0.0, std = 1.0, generator = None):
 		requires_grad = tensor.requires_grad,
 		dtype = tensor.dtype,
 		device = tensor.device)
-	return AT(tensor.assign(norm) )
+	return AT(tensor.assign(norm.cast(tensor.dtype)) )
 
 normal = normal_
 

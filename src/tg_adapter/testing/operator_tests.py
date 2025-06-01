@@ -92,9 +92,35 @@ def test_rsub():
 	def _rsub_test(a, b):
 		return a - b
 	test_function([1, a], {}, _rsub_test, _rsub_test)
-	
+
+def test_mean():
+	a = np.arange(7*8).reshape(7, 8).astype(np.float32)
+	for i in range(2):
+		test_function([a], {"dim": i, "keepdim": False}, torch.mean, tg_adapter.mean)
+		test_function([a], {"dim": i, "keepdim": True}, torch.mean, tg_adapter.mean)
+	test_function([a], {}, torch.mean, tg_adapter.mean)
+
+def test_var():
+	a = np.arange(7*8).reshape(7, 8).astype(np.float32)
+	for i in range(2):
+		test_function([a], {"dim": i, "keepdim": False}, torch.var, tg_adapter.var)
+		test_function([a], {"dim": i, "keepdim": True}, torch.var, tg_adapter.var)
+	test_function([a], {}, torch.mean, tg_adapter.mean)
+
 def test_normal_():
-	raise NotImplementedError
+	a = np.arange(16384).astype(np.float32)
+	def test_normal__impl(t):
+		old_t = t
+		if isinstance(t, torch.Tensor):
+			# torch
+			t = torch.nn.init.normal_(t)
+			return torch.mean(old_t), torch.var(old_t), torch.mean(t), torch.var(t)
+		else:
+			# adapter tensor
+			t = tg_adapter.nn.init.normal_(t)
+			return tg_adapter.mean(old_t), tg_adapter.var(old_t), tg_adapter.mean(t), tg_adapter.var(t)
+	test_function([a], {}, test_normal__impl, test_normal__impl, error_threshold = 1.0e-2)
+		
 
 def test_all_operators():
 	test_rsub()
@@ -114,6 +140,10 @@ def test_all_operators():
 	test_magic_pow()
 	test_max()
 	test_min()
+	
+	
+	test_mean()
+	test_var()
 	
 	test_normal_()
 	# just return true for now i guess
