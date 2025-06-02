@@ -68,14 +68,13 @@ def _slice_to_square(t, offset = 0):
 	else:
 		return t[0 - offset:, 0: offset]
 	
-	
-def diag(t, *args, **kwargs):
+
+def _diag(t, *args, **kwargs):
 	offset = 0
 	if "diagonal" in kwargs.keys():
 		offset = kwargs["diagonal"]
 	elif len(args) > 0:
 		offset = args[0]
-	t = t.tg
 	t_original = t
 	t = _slice_to_square(t, offset)
 	e = tinygrad.Tensor.eye(t.shape[0], dtype = t.dtype, device = t.device)
@@ -87,11 +86,26 @@ def diag(t, *args, **kwargs):
 		elif offset > 0:
 			# pad
 			out = out.pad( (offset, 0, 0, offset) )
-		return T(out)
+		return out
 	elif len(t.shape) == 2:
 		# make 1-D array from 2-D tensor
-		out = (t*e)
-		out = out.sum(0)
-		return T(out)
+		out = (t*e).sum(0, keepdim = False).squeeze()
+		if len(out.shape) == 0:
+			out = out.unsqueeze(-1)
+		return out
 	else:
 		raise RuntimeError(f"Expected 2D or 1D tensor, but got {len(t.shape) }D instead.")
+
+def diag(t, *args, **kwargs):
+	d = T(_diag(t.tg, *args, **kwargs) )
+	return d
+
+
+def _outer(u, v):
+	assert len(u.shape) == len(v.shape) == 1, "Both supplied tensors must be 1D"
+	u_expanded = u.reshape(-1, 1).expand(-1, v.shape[0])
+	v_expanded = v.reshape(1, -1).expand(u.shape[0], -1)
+	return u_expanded * v_expanded
+
+def outer(inp, vec2):
+	return T( _outer( *convert_to_tg(inp, vec2) ) )

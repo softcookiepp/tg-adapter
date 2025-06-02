@@ -131,7 +131,58 @@ def test_diag():
 		for diagonal in range(3*2):
 			diagonal = diagonal - 3
 			test_function([a, diagonal], {}, torch.diag, tg_adapter.diag)
-		
+			
+def test_norm():
+	for dim in range(2):
+		shape = []
+		for i2 in range(dim + 1):
+			shape.append(int(4) )
+		shape = tuple(shape)
+		a = np.arange(np.prod(shape) ).reshape(shape).astype(np.float32)
+		for keepdim in [True, False]:
+			test_function([a], {"dim": dim, "keepdim": keepdim}, torch.linalg.norm, tg_adapter.linalg.norm)
+
+def test_outer():
+	u = make_test_data(5)
+	v = make_test_data(8)
+	test_function([u, v], {}, torch.outer, tg_adapter.outer)
+			
+def test_qr():
+	A = np.arange(4*4).reshape(4, 4).astype(np.float32)
+	
+	# actual underlying q value seems to differ, but does that matter?
+	def _qr_test(a):
+		if isinstance(a, torch.Tensor):
+			q, r = torch.linalg.qr(a)
+		else:
+			q, r = tg_adapter.linalg.qr(a)
+		return q@r
+	test_function([A], {}, _qr_test, _qr_test)
+
+def test_eig():
+	A = np.arange(4*4).reshape(4, 4).astype(np.float32)
+	def _eig_test(a):
+		if isinstance(a, torch.Tensor):
+			vals, vecs = torch.linalg.eig(a)
+			vals = vals.real
+			vecs = vecs.real
+		else:
+			vals, vecs = tg_adapter.linalg.eig(a)
+		n = vecs.shape[0]
+		comparisons = []
+		for i in range(n):
+			val = vals[i]
+			vec = vecs[:, i]
+			q = a @ vec
+			b = val * vec
+			comparisons.append((q, b))
+		return comparisons
+			
+	#test_function([A], {}, torch.linalg.eig, tg_adapter.linalg.eig)
+	test_function([A], {}, _eig_test, _eig_test)
+
+
+
 def test_all_operators():
 	test_rsub()
 	test_chunk()
@@ -158,6 +209,10 @@ def test_all_operators():
 	test_normal_()
 	
 	test_diag()
+	test_norm()
+	test_outer()
+	test_qr()
+	test_eig()
 	# just return true for now i guess
 	return True
 	

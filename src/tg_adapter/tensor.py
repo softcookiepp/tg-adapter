@@ -394,6 +394,9 @@ class AdapterTensor:
 		
 	def __pow__(self, other):
 		return self._tg_override(other)
+	
+	def __matmul__(self, other):
+		return self._tg_override(other)
 		
 	def pad(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)

@@ -24,7 +24,7 @@ def normal_(tensor, mean = 0.0, std = 1.0, generator = None):
 		std = std,
 		requires_grad = tensor.requires_grad,
 		dtype = tensor.dtype,
-		device = tensor.device)
+		device = tensor.device).to(tensor.device)
 	return AT(tensor.assign(norm.cast(tensor.dtype)) )
 
 normal = normal_
@@ -38,7 +38,7 @@ def trunc_normal_(tensor, mean = 0.0, std = 1.0, a = -2.0, b = 2.0, generator = 
 		std = std,
 		requires_grad = tensor.requires_grad,
 		dtype = tensor.dtype,
-		device = tensor.device)
+		device = tensor.device).to(tensor.device)
 	norm = norm.clamp(a, b)
 	return AT(tensor.assign(norm) )
 
