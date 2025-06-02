@@ -7,6 +7,21 @@ from .tensor import convert_to_torch, convert_to_tg
 
 def norm(A, ord = None, dim = None, keepdim = False, out = None, dtype = None):
 	raise NotImplementedError
+	
+	if (not ord is None) and ord != 2:
+		raise NotImplementedError
+	
+	 # Default: L2 norm if vector, Frobenius if matrix
+	if dim is None:
+		# Flatten and compute L2 norm
+		out = (x**2).sum().sqrt()
+	elif isinstance(dim, int):
+		# Vector norm along dim
+		return torch.sqrt(torch.sum(x**2, dim=dim, keepdim=keepdim))
+	elif isinstance(dim, tuple):
+		# Matrix norm (not fully general, but Frobenius-like)
+		return torch.sqrt(torch.sum(x**2, dim=dim, keepdim=keepdim))
+	return convert_to_torch(out)
 
 def svd(A, full_matrices = True, driver = None, out = None):
 	raise NotImplementedError
