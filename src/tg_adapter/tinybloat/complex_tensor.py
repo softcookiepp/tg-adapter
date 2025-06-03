@@ -5,9 +5,14 @@ import numpy as np
 class ComplexTensor:
 	def __init__(self,
 				real: Union[tinygrad.Tensor, np.ndarray],
-				imag: Optional[Union[tinygrad.Tensor, np.ndarray]] = None):
+				imag: Optional[Union[tinygrad.Tensor, np.ndarray]] = None, device = None):
 		if isinstance(real, np.ndarray):
-			raise NotImplementedError
+			if np.iscomplexobj(real):
+				real, imag = real.real, real.imag
+				imag = tinygrad.Tensor(imag, device = device)
+			real = tinygrad.Tensor(real, device = device)
+			if isinstance(imag, np.ndarray):
+				imag = tinygrad.Tensor(imag, device = device)
 		
 		if imag is None:
 			imag = real.zeros_like()

@@ -158,6 +158,12 @@ def test_qr():
 			q, r = tg_adapter.linalg.qr(a)
 		return q@r
 	test_function([A], {}, _qr_test, _qr_test)
+	
+def test_complex_add():
+	a = make_test_data(16) + 1.0j*make_test_data(16)
+	b = make_test_data(16) + 1.0j*make_test_data(16)
+	add_test = lambda x, y: x + y
+	test_function([a, b], {}, add_test, add_test)
 
 def test_eig():
 	A = np.random.randn(4*4).reshape(4, 4).astype(np.float32)
@@ -185,6 +191,7 @@ def test_eig():
 
 
 def test_all_operators():
+	test_complex_add()
 	test_rsub()
 	test_chunk()
 	test_cumprod()
