@@ -148,7 +148,7 @@ def test_outer():
 	test_function([u, v], {}, torch.outer, tg_adapter.outer)
 			
 def test_qr():
-	A = np.arange(4*4).reshape(4, 4).astype(np.float32)
+	A = np.random.randn(4*4).reshape(4, 4).astype(np.float32)
 	
 	# actual underlying q value seems to differ, but does that matter?
 	def _qr_test(a):
@@ -160,10 +160,11 @@ def test_qr():
 	test_function([A], {}, _qr_test, _qr_test)
 
 def test_eig():
-	A = np.arange(4*4).reshape(4, 4).astype(np.float32)
+	A = np.random.randn(4*4).reshape(4, 4).astype(np.float32)
 	def _eig_test(a):
 		if isinstance(a, torch.Tensor):
-			vals, vecs = torch.linalg.eig(a)
+			result = torch.linalg.eig(a)
+			vals, vecs = result
 			vals = vals.real
 			vecs = vecs.real
 		else:
@@ -173,7 +174,7 @@ def test_eig():
 		for i in range(n):
 			val = vals[i]
 			vec = vecs[:, i]
-			q = a @ vec
+			q = a @ vec.reshape(-1, 1)
 			b = val * vec
 			comparisons.append((q, b))
 		return comparisons

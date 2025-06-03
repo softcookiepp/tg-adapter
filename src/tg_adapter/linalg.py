@@ -3,6 +3,7 @@ from .utils import is_jitted
 import numpy as np
 from .lambdas import diag, _diag, check_2d, _outer
 from .tensor import convert_to_torch, convert_to_tg
+from .return_types import linalg_eig
 
 
 def _norm(A, ord = None, dim = None, keepdim = False, out = None, dtype = None):
@@ -75,11 +76,10 @@ def _qr(A, mode = "reduced"):
 		Q = H @ Q
 	return Q[:n].T, R[:n].triu()
 	
-def householder_qr(A):
+def householder_qr(A, mode):
 	"""Compute the QR decomposition of matrix A using Householder reflections."""
-	A = A.copy()
 	m, n = A.shape
-	Q = tinygrad.eye(m, dtype = A.dtype, device = A.device).contiguous()
+	Q = tinygrad.Tensor.eye(m, dtype = A.dtype, device = A.device).contiguous()
 	
 	for k in range(n):
 		# Extract the vector to reflect
@@ -92,8 +92,8 @@ def householder_qr(A):
 		v = u / _norm_out if _norm_out.numpy() != 0 else u
 		
 		# Householder reflection matrix
-		Hk = tinygrad.eye(m, dtype = A.dtype, device = A.device).contiguous()
-		Hk_sub = np.eye(len(x)) - 2.0 * np.outer(v, v)
+		Hk = tinygrad.Tensor.eye(m, dtype = A.dtype, device = A.device).contiguous()
+		Hk_sub = tinygrad.Tensor.eye(len(x), dtype = A.dtype, device = A.device) - 2.0 * _outer(v, v)
 		Hk[k:, k:] = Hk_sub
 		
 		# Apply reflection to A and accumulate Q
@@ -104,27 +104,43 @@ def householder_qr(A):
 	return Q, R
 
 def qr(A, mode = "reduced"):
-	A = A.tg
-	return convert_to_torch(_qr(A, mode) )
+	if True:
+		# ITS BANDAID TIME
+		assert not is_jitted()
+		A_device = A.tg.device
+		A = A.tg.numpy()
+		QR = np.linalg.qr(A)
+		Q = tinygrad.Tensor(QR.Q.astype(A.dtype), device = A_device)
+		R = tinygrad.Tensor(QR.R.astype(A.dtype), device = A_device)
+		return convert_to_torch(Q, R)
+	else:
+		return convert_to_torch(householder_qr(A.tg, mode) )
 	
 def eig(A, max_iter = 100, tol = 1e-6, out = None):
-	# gotta see if jit is being used
-	using_jit = is_jitted()
-	
-	A = A.tg
-	n = A.shape[0]
-	V = tinygrad.Tensor.eye(n, dtype = A.dtype, device = A.device)
-	for _ in range(max_iter):
-		Q, R = _qr(A)
-		A = R @ Q
-		V = V @ Q
-		off_diag = (A - _diag(_diag(A)) ).abs()
-		if (not using_jit) and off_diag.max().numpy() < tol:
-			# can't check booleans when jit is being used
-			break
-	
-	eigenvalues = _diag(A)
-	return convert_to_torch(eigenvalues, V)
-	
+	if False:
+		# gotta see if jit is being used
+		using_jit = is_jitted()
+		
+		A = A.tg
+		n = A.shape[0]
+		V = tinygrad.Tensor.eye(n, dtype = A.dtype, device = A.device)
+		for _ in range(max_iter):
+			Q, R = _qr(A)
+			A = R @ Q
+			V = V @ Q
+			off_diag = (A - _diag(_diag(A)) ).abs()
+			if (not using_jit) and off_diag.max().numpy() < tol:
+				# can't check booleans when jit is being used
+				break
+		
+		eigenvalues = _diag(A)
+		return linalg_eig(*convert_to_torch(eigenvalues, V) )
+	else:
+		assert not is_jitted()
+		Anp = A.tg.numpy()
+		result = np.linalg.eig(Anp)
+		eigenvalues = tinygrad.Tensor(result.eigenvalues.astype(Anp.dtype), device = A.tg.device)
+		eigenvectors = tinygrad.Tensor(result.eigenvectors.astype(Anp.dtype), device = A.tg.device)
+		return linalg_eig(*convert_to_torch(eigenvalues, eigenvectors) )
 
 

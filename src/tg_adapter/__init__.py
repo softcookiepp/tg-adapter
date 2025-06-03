@@ -21,6 +21,8 @@ from .io import *
 import tinygrad
 from .tensor import AdapterTensor
 
+from .return_types import *
+
 # aliases to twist shit into working at least somewhat
 FloatTensor = AdapterTensor
 LongTensor = AdapterTensor
