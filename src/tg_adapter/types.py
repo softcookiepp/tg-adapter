@@ -105,13 +105,25 @@ def get_tg_type_from_np(npt):
 	raise KeyError
 
 def convert_np_type_correctly(array, backend):
-	tgt = get_tg_type_from_np(array.dtype)
+	array_dtype = array.dtype
+	# tinygrad has no complex dtypes
+	if np.iscomplexobj(array):
+		array_dtype = array.real.dtype
+	tgt = get_tg_type_from_np(array_dtype)
 	dt = get_type_from_tg(tgt, backend)
 	tgt = dt.tgt(backend)
 	npt = get_np_type_from_tg(tgt)
+	
+	# why did we do this? probably because webgpu was whining about it
+	"""
 	if npt == np.dtype("int64"):
 		return array.astype(np.int32)
-	return array.astype(npt)
+	"""
+	
+	if np.iscomplexobj(array):
+		return array.real.astype(npt), array.imag.astype(npt)
+	else:
+		return array.astype(npt), None
 
 _type_aliases = {
 	"float": "float32",

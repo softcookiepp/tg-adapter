@@ -10,6 +10,7 @@ from .backend_environment_config import *
 from .debugging import maybe_realize
 from .utils import is_jitted
 
+from .tinybloat import ComplexTensor
 
 
 def _parse_to_arguments(*args, **kwargs):
@@ -38,6 +39,7 @@ class AdapterTensor:
 			requires_grad = False, pin_memory = False):
 		# pin memory is unused, but kept for compatibility
 		# convert device, duh
+		self._is_complex = False
 		tg_device = None
 		if device is None:
 			# default to CPU, just like torch does
@@ -51,9 +53,16 @@ class AdapterTensor:
 		tgt = get_tgt(dtype, tg_device)
 		if isinstance(data, tinygrad.Tensor):
 			self._tg = data
+		elif isinstance(data, ComplexTensor):
+			self._tg = data
+			self._is_complex = True
 		elif isinstance(data, np.ndarray):
-			data = convert_np_type_correctly(data, tg_device)
-			self._tg = tinygrad.Tensor(data, device = tg_device)
+			real, imag = convert_np_type_correctly(data, tg_device)
+			if not imag is None:
+				self._tg = ComplexTensor(real, imag, device = tg_device)
+				self._is_complex = True
+			else:
+				self._tg = tinygrad.Tensor(real, device = tg_device)
 		else:
 			data = convert_np_type_correctly(np.array(data), tg_device )
 			self._tg = tinygrad.Tensor(data, device = tg_device, dtype = tgt)
@@ -61,6 +70,8 @@ class AdapterTensor:
 		self._dtype = dtype
 		assert not self._tg is None
 		self._rebuild_dtype()
+		if self._is_complex:
+			input(self._dtype)
 		assert is_dtype_supported(self._tg.dtype, self._tg.device)
 		maybe_realize(self._tg)
 	

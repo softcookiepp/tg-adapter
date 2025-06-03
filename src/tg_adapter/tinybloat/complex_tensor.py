@@ -17,6 +17,9 @@ class ComplexTensor:
 		if imag is None:
 			imag = real.zeros_like()
 		assert isinstance(real, tinygrad.Tensor)
+		if not device is None:
+			real = real.to(device)
+			imag = imag.to(device)
 		self._real = real
 		self._imag = imag
 	
