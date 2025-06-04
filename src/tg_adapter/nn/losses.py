@@ -7,3 +7,7 @@ class CrossEntropyLoss(Module):
 	
 	def forward(self, a, b):
 		raise NotImplementedError
+
+class BCEWithLogitsLoss(Module):
+	def __init__(self, *args, **kwargs):
+		raise NotImplementedError
