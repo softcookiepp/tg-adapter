@@ -44,6 +44,10 @@ class AdapterTensor:
 		if device is None:
 			# default to CPU, just like torch does
 			device = "cpu"
+		
+		if isinstance(data, float) or isinstance(data, int):
+			input("peepeepoopoo")
+			data = np.array(data)
 			
 		if isinstance(device, Device):
 			tg_device = device.tg
