@@ -38,6 +38,10 @@ class ComplexTensor:
 		return self._real.device
 		
 	@property
+	def ndim(self):
+		return self._real.ndim
+		
+	@property
 	def T(self):
 		return ComplexTensor(self._real.T, self._imag.T)
 		
@@ -108,6 +112,9 @@ class ComplexTensor:
 	
 	def reshape(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
+		
+	#def transpose(self, *args, **kwargs):
+	#	return self._tg_override(*args, **kwargs)
 	
 	def numpy(self):
 		return self.real.numpy() + (1j* self.imag.numpy() )
@@ -183,7 +190,10 @@ class ComplexTensor:
 		# looks like it!
 		return ComplexTensor(real, imag)
 		
-	def __getitem__(*args, **kwargs):
+	def __rmatmul__(self, other):
+		raise NotImplementedError
+		
+	def __getitem__(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
 	

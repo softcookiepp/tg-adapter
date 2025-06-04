@@ -103,6 +103,18 @@ class AdapterTensor:
 		if not isinstance(inp, AdapterTensor):
 			inp = AdapterTensor(inp, device = self.device)
 		return maybe_realize(inp)
+	
+	@property
+	def real(self):
+		if self._is_complex:
+			return AdapterTensor(self._tg.real)
+		return self
+	
+	@property
+	def imag(self):
+		if self._is_complex:
+			return AdapterTensor(self._tg.imag)
+		raise RuntimeError("Real tensors have no imaginary component")
 		
 	@property
 	def ndim(self):
@@ -408,7 +420,16 @@ class AdapterTensor:
 		return self._tg_override(other)
 	
 	def __matmul__(self, other):
-		return self._tg_override(other)
+		if self._is_complex or (isinstance(other, AdapterTensor) and other._is_complex):
+			cself = self._tg
+			cother = other._tg
+			if not isinstance(cother, ComplexTensor):
+				cother = ComplexTensor(cother)
+			elif not isinstance(cself, ComplexTensor):
+				cself = ComplexTensor(cself)
+			return convert_to_torch(cself @ cother)
+		else:
+			return self._tg_override(other)
 		
 	def pad(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)

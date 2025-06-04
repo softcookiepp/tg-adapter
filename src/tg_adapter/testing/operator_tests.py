@@ -164,6 +164,12 @@ def test_complex_add():
 	b = make_test_data(16) + 1.0j*make_test_data(16)
 	add_test = lambda x, y: x + y
 	test_function([a, b], {}, add_test, add_test)
+	
+def _zeros_like(inp):
+	if isinstance(inp, torch.Tensor):
+		return torch.zeros_like(inp)
+	else:
+		return tg_adapter.zeros_like(inp)
 
 def test_eig():
 	A = np.random.randn(4*4).reshape(4, 4).astype(np.float32)
@@ -175,6 +181,7 @@ def test_eig():
 			vecs = vecs.real
 		else:
 			vals, vecs = tg_adapter.linalg.eig(a)
+		#return vals, vecs
 		n = vecs.shape[0]
 		comparisons = []
 		for i in range(n):
@@ -182,7 +189,20 @@ def test_eig():
 			vec = vecs[:, i]
 			q = a @ vec.reshape(-1, 1)
 			b = val * vec
-			comparisons.append((q, b))
+			
+			# MSE doesn't handle complex numbers well :c
+			try:
+				q_imag = q.imag
+			except RuntimeError:
+				# just do 0
+				q_imag = _zeros_like(q.real)
+				
+			try:
+				b_imag = b.imag
+			except RuntimeError:
+				# just do 0
+				b_imag = _zeros_like(b.real)
+			comparisons.append((q.real, q_imag, b.real, b_imag))
 		return comparisons
 			
 	#test_function([A], {}, torch.linalg.eig, tg_adapter.linalg.eig)
