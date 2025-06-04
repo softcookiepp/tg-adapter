@@ -70,14 +70,15 @@ class AdapterTensor:
 		self._dtype = dtype
 		assert not self._tg is None
 		self._rebuild_dtype()
-		if self._is_complex:
-			input(self._dtype)
 		assert is_dtype_supported(self._tg.dtype, self._tg.device)
 		maybe_realize(self._tg)
 	
 	def _rebuild_dtype(self):
 		#from_tg = _get_type(self._tg.dtype)
-		self._dtype = get_type_from_tg(self._tg.dtype, self._tg.device.split(":")[0], self._dtype)
+		if self._is_complex:
+			self._dtype = get_type_from_tg(self._tg.real.dtype, self._tg.device.split(":")[0], self._dtype, True)
+		else:
+			self._dtype = get_type_from_tg(self._tg.dtype, self._tg.device.split(":")[0], self._dtype)
 	
 	@property
 	def tg(self):
@@ -479,7 +480,7 @@ def convert_to_torch(*inp):
 	if isinstance(inp, AdapterTensor):
 		maybe_realize(inp.tg)
 		return inp
-	if isinstance(inp, tinygrad.Tensor):
+	if isinstance(inp, tinygrad.Tensor) or isinstance(inp, ComplexTensor):
 		return AdapterTensor(inp)
 	elif isinstance(inp, list) or isinstance(inp, tuple):
 		new = []

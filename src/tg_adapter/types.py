@@ -143,7 +143,7 @@ def parse_alias(attr):
 		attr = _type_aliases[attr]
 	return attr
 
-def get_type_from_tg(tg_type, backend, other_type = None):
+def get_type_from_tg(tg_type, backend, other_type = None, is_complex = False):
 	type_key = None
 	otk = ""
 	if not other_type is None:
@@ -155,16 +155,23 @@ def get_type_from_tg(tg_type, backend, other_type = None):
 	# actually try default first!
 	for k, v in TG_BACKEND_TYPE_MAP["DEFAULT"].items():
 		if v == tg_type:
-			type_key = k
-			if otk == k or otk == "" or otk is None:
+			if is_complex:
+				if "complex" in k:
+					type_key = k
+					break
+			elif otk == k or otk == "" or otk is None:
+				type_key = k
 				break
-	
 	# then try overrides
 	if type_key is None and backend in TG_BACKEND_TYPE_MAP.keys():
 		for k, v in TG_BACKEND_TYPE_MAP[backend].items():
 			if v == tg_type:
-				type_key = k
-				if otk == k:
+				if is_complex:
+					if "complex" in k:
+						type_key = k
+						break
+				elif otk == k or otk == "" or otk is None:
+					type_key = k
 					break
 	elif type_key is None:
 		# no override, me made mistake :c

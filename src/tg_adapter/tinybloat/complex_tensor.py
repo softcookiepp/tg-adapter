@@ -1,6 +1,7 @@
 import tinygrad
 from typing import Union, Optional
 import numpy as np
+import inspect
 
 class ComplexTensor:
 	def __init__(self,
@@ -16,12 +17,13 @@ class ComplexTensor:
 		
 		if imag is None:
 			imag = real.zeros_like()
-		assert isinstance(real, tinygrad.Tensor)
+		assert isinstance(real, tinygrad.Tensor), f"Expected tinygrad.Tensor, got {type(real)} instead"
 		if not device is None:
 			real = real.to(device)
 			imag = imag.to(device)
 		self._real = real
 		self._imag = imag
+		assert self._real.device == self._imag.device
 	
 	@property
 	def real(self):
@@ -30,6 +32,10 @@ class ComplexTensor:
 	@property
 	def imag(self):
 		return self._imag
+	
+	@property
+	def device(self):
+		return self._real.device
 		
 	@property
 	def T(self):
@@ -38,6 +44,32 @@ class ComplexTensor:
 	@property
 	def shape(self):
 		return self._real.shape
+	
+	@property
+	def dtype(self):
+		# tinygrad has no complex dtypes
+		return self._real.dtype
+		
+	def to(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
+	def to_(self, device):
+		self._real.to_(device)
+		self._imag.to_(device)
+		return self
+	
+	def cast(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
+	def numel(self):
+		return self._real.numel()
+	
+	def replace(self, new):
+		# lets be picky about it for now
+		assert isinstance(new, ComplexTensor)
+		self._real.replace(new.real)
+		self._imag.replace(new.imag)
+		return self
 
 	def _tg_override(self, *args, **kwargs):
 		# Method for automatically wrapping stuff coded in tinygrad so
@@ -55,9 +87,10 @@ class ComplexTensor:
 		imag_args = convert_to_imag(args)
 		imag_kwargs = convert_to_imag(kwargs)
 		
-		assert_same_device(self.tg.device, tg_args, tg_kwargs)
+		# lets just disable this for now...
+		#assert_same_device(self.tg.device, tg_args, tg_kwargs)
 		
-		if len(tg_kwargs) == 0:
+		if len(real_kwargs) == 0:
 			# fix for methods that don't support **kwargs
 			out_real= self.real.__getattribute__(tg_attr)(*real_args)
 			out_imag = self.imag.__getattribute__(tg_attr)(*imag_args)
@@ -65,6 +98,7 @@ class ComplexTensor:
 			out_real = self.real.__getattribute__(tg_attr)(*real_args, **real_kwargs)
 			out_imag = self.imag.__getattribute__(tg_attr)(*imag_args, **imag_kwargs)
 		return ComplexTensor(out_real, out_imag)
+	
 	
 	def contiguous(self):
 		return self._tg_override()
@@ -75,7 +109,7 @@ class ComplexTensor:
 	def reshape(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
-	def numpy():
+	def numpy(self):
 		return self.real.numpy() + (1j* self.imag.numpy() )
 	
 	def __add__(self, other):

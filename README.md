@@ -5,6 +5,9 @@ Adapter library for porting pytorch code to tinygrad
 Since there is no pypi package, it must (for now) be installed by running:
 `pip install -U git+https://github.com/softcookiepp/tg-adapter.git`
 
+If you are reinstalling it, you may want to remove the package first just in case:
+`pip uninstall tg_adapter -y`
+
 ## Testing
 The tests requires the installation of pytorch, since it is used as a reference.
 To install pytorch on your preferred backend of choice, see [here](https://pytorch.org/get-started/locally/)
