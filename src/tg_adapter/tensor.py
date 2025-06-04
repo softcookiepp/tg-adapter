@@ -46,7 +46,6 @@ class AdapterTensor:
 			device = "cpu"
 		
 		if isinstance(data, float) or isinstance(data, int):
-			input("peepeepoopoo")
 			data = np.array(data)
 			
 		if isinstance(device, Device):
