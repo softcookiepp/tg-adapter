@@ -11,3 +11,9 @@ class CrossEntropyLoss(Module):
 class BCEWithLogitsLoss(Module):
 	def __init__(self, *args, **kwargs):
 		raise NotImplementedError
+
+class MSELoss(Module):
+	def __init__(self, *args, **kwargs):
+		raise NotImplementedError
+	
+
