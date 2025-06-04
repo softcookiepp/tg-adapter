@@ -70,5 +70,5 @@ def kaiming_normal_(tensor, *args, **kwargs):
 
 kaiming_normal = kaiming_normal_
 
-def _calculate_correct_fan(*args, **kwargs):'
+def _calculate_correct_fan(*args, **kwargs):
 	raise NotImplementedError
