@@ -49,6 +49,11 @@ class Module:
 			yield v
 	
 	def get_paramteter(self, name: str):
+		input(name)
+		raise NotImplementedError
+	
+	def get_buffer(self, name: str):
+		input(name)
 		raise NotImplementedError
 	
 	def parameters(self, recurse = True):
