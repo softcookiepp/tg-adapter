@@ -12,7 +12,6 @@ from ..debugging import KEEP_INPUT_TENSORS
 class Module:
 	def __init__(self, *args, **kwargs):
 		self._train = True
-		self._buffers = {}
 		self._input_spec = None
 	
 	def add_module(self, name: str, module = None):
