@@ -281,6 +281,7 @@ def finfo(t):
 	return FINFO_MAP[t]
 
 def is_floating_point(data):
+	input(type(data) )
 	return data.dtype.is_floating_point
 	
 
