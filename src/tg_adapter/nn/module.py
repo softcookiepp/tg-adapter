@@ -49,12 +49,17 @@ class Module:
 			yield v
 	
 	def get_paramteter(self, name: str):
-		input(name)
-		raise NotImplementedError
+		for k, v in self.named_parameters():
+			if v == name:
+				return v
+		input(f"Could not find parameter {name}")
+		
 	
 	def get_buffer(self, name: str):
-		input(name)
-		raise NotImplementedError
+		for k, v in self.named_parameters():
+			if v == name:
+				return v
+		input(f"Could not find buffer {name}")
 	
 	def parameters(self, recurse = True):
 		if not recurse:
