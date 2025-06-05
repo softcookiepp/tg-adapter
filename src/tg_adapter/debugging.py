@@ -1,5 +1,9 @@
-REALIZE_ASAP = True
+import os
+REALIZE_ASAP = False
 KEEP_INPUT_TENSORS = False
+
+if "TGA_REALIZE_ASAP" in os.environ.keys():
+	REALIZE_ASAP = bool(int(os.environ["TGA_REALIZE_ASAP"]))
 
 def maybe_realize(t):
 	if REALIZE_ASAP:
