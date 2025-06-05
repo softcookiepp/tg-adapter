@@ -9,4 +9,5 @@ def load(f, map_location=None, pickle_module=pickle, *, weights_only=True,
 	# TODO: how do i load a torch model into tinygrad again?
 	# i forget
 	raise NotImplementedError
+	# So I believe we can do tinygrad.nn.state.torch_load...
 	

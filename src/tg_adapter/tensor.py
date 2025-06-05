@@ -1,5 +1,6 @@
 import tinygrad
 from tinygrad.device import is_dtype_supported
+from tinygrad.helpers import unwrap
 
 from .device import device as Device
 import inspect
@@ -94,6 +95,10 @@ class AdapterTensor:
 	@property
 	def shape(self):
 		return self.tg.shape
+		
+	@property
+	def is_contiguous(self):
+		return unwrap(self._tg.lazydata.st).contiguous
 	
 	def size(self, idx = None):
 		if idx is None:
