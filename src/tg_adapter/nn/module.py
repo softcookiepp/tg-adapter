@@ -50,6 +50,7 @@ class Module:
 	
 	def get_paramteter(self, name: str):
 		for k, v in self.named_parameters():
+			print(k)
 			if v == name:
 				return v
 		input(f"Could not find parameter {name}")
@@ -57,6 +58,7 @@ class Module:
 	
 	def get_buffer(self, name: str):
 		for k, v in self.named_parameters():
+			print(k)
 			if v == name:
 				return v
 		input(f"Could not find buffer {name}")
