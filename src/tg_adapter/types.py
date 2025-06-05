@@ -281,7 +281,8 @@ def finfo(t):
 	return FINFO_MAP[t]
 
 def is_floating_point(data):
-	input(type(data) )
+	if isinstance(data, tinygrad.Tensor):
+		return data.is_floating_point()
 	return data.dtype.is_floating_point
 	
 
