@@ -172,7 +172,7 @@ def _zeros_like(inp):
 		return tg_adapter.zeros_like(inp)
 
 def test_eig():
-	A = np.random.randn(4*4).reshape(4, 4).astype(np.float32)
+	A = np.array([ [1, 1], [0, 2] ]).reshape(2, 2).astype(np.float32)
 	def _eig_test(a):
 		if isinstance(a, torch.Tensor):
 			result = torch.linalg.eig(a)
@@ -181,7 +181,7 @@ def test_eig():
 			vecs = vecs.real
 		else:
 			vals, vecs = tg_adapter.linalg.eig(a)
-		#return vals, vecs
+		return vals, vecs
 		n = vecs.shape[0]
 		comparisons = []
 		for i in range(n):
@@ -240,7 +240,7 @@ def test_all_operators():
 	test_norm()
 	test_outer()
 	test_qr()
-	#test_eig()
+	test_eig()
 	# just return true for now i guess
 	return True
 	
