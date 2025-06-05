@@ -162,6 +162,18 @@ class Module:
 				modules[k] = v
 			# TODO: reimplement modulelist
 		return modules
+		
+	@property
+	def _parameters(self):
+		for k, v in self.named_parameters():
+			input(k)
+		raise NotImplementedError
+	
+	@property
+	def _buffers(self):
+		for k, v in self.named_parameters():
+			input(k)
+		raise NotImplementedError
 	
 	def _load_from_state_dict(self,
 			state_dict,
