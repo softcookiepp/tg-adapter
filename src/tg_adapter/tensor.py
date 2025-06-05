@@ -96,7 +96,6 @@ class AdapterTensor:
 	def shape(self):
 		return self.tg.shape
 		
-	@property
 	def is_contiguous(self):
 		return unwrap(self._tg.lazydata.st).contiguous
 	
