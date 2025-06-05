@@ -204,7 +204,7 @@ class Module:
 			new_key = prefix.strip(".")
 			if new_key in state_dict.keys():
 				tg_tensor = state_dict[new_key]
-				assert not isinstance(state_dict[new_key], AdapterTensor)
+				assert not isinstance(state_dict[new_key], AT)
 				v.tg.replace(state_dict[new_key].to(v.tg.device) ).realize()
 				#print(v.dtype, v.tg.dtype)
 				#input("looksie")
