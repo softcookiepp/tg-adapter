@@ -162,17 +162,24 @@ class Module:
 			# TODO: reimplement modulelist
 		return modules
 		
+		
+	def _get_p(self):
+		d = {}
+		for k, v in self.named_parameters():
+			if "." in k:
+				# member of submodule, don't use
+				continue
+			d[k] = v
+			
+		return d
+		
 	@property
 	def _parameters(self):
-		for k, v in self.named_parameters():
-			input(k)
-		raise NotImplementedError
+		return self._get_p()
 	
 	@property
 	def _buffers(self):
-		for k, v in self.named_parameters():
-			input(k)
-		raise NotImplementedError
+		return self._get_p()
 	
 	def _load_from_state_dict(self,
 			state_dict,
