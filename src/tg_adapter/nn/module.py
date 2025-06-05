@@ -47,7 +47,10 @@ class Module:
 		# Return an iterator over immediate children modules.
 		for _, v in self.named_children():
 			yield v
-	 
+	
+	def get_paramteter(self, name: str):
+		raise NotImplementedError
+	
 	def parameters(self, recurse = True):
 		if not recurse:
 			raise NotImplementedError
