@@ -44,7 +44,7 @@ def recursive_get_attribute(obj, key):
 	try:
 		kint = int(this_key)
 		val = obj[kint]
-	except ValueError
+	except ValueError:
 		val = obj.__getattribute__(this_key)
 	if len(key_terms[1:]) > 0:
 		remaining_keys = ".".join(key_terms[1:])
