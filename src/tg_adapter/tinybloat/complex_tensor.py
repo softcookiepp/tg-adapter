@@ -150,6 +150,9 @@ class ComplexTensor:
 		else:
 			# if complex component is 0, then regular division can be used
 			return ComplexTensor(self.real/other, self.imag/other)
+			
+	def __truediv__(self, other):
+		return self.__div__(other)
 	
 	def __rdiv__(self, other):
 		# complex division is a bit more silly
@@ -170,6 +173,9 @@ class ComplexTensor:
 			out_real = ( (a*c) + (b*d) ) / (c**2 + d**2)
 			out_imag = ( (b*c) - (a*d) ) / (c**2 + d**2)
 			return ComplexTensor(out_real, out_imag)
+	
+	def __rtruediv__(self, other):
+		return self.__rdiv__(other)
 		
 	def __matmul__(self, other):
 		# oh god this will be painful

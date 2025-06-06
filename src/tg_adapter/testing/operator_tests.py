@@ -165,6 +165,42 @@ def test_complex_add():
 	add_test = lambda x, y: x + y
 	test_function([a, b], {}, add_test, add_test)
 	
+def test_complex_sub():
+	a = make_test_data(16) + 1.0j*make_test_data(16)
+	b = make_test_data(16) + 1.0j*make_test_data(16)
+	sub_test = lambda x, y: x - y
+	test_function([a, b], {}, sub_test, sub_test)
+	
+def test_complex_mul():
+	a = make_test_data(16) + 1.0j*make_test_data(16)
+	b = make_test_data(16) + 1.0j*make_test_data(16)
+	mul_test = lambda x, y: x * y
+	test_function([a, b], {}, mul_test, mul_test)
+	
+def test_complex_div():
+	a = make_test_data(16) + 1.0j*make_test_data(16)
+	b = make_test_data(16) + 1.0j*make_test_data(16)
+	div_test = lambda x, y: x / y
+	test_function([a, b], {}, div_test, div_test)
+	
+def test_complex_rsub():
+	a = make_test_data(16) + 1.0j*make_test_data(16)
+	b = make_test_data(16) + 1.0j*make_test_data(16)
+	rsub_test = lambda x, y: 10 - y
+	test_function([a, b], {}, rsub_test, rsub_test)
+	
+def test_complex_rdiv():
+	a = make_test_data(16) + 1.0j*make_test_data(16)
+	b = make_test_data(16) + 1.0j*make_test_data(16)
+	rdiv_test = lambda x, y: 10 / y
+	test_function([a, b], {}, rdiv_test, rdiv_test)
+
+def test_complex_matmul():
+	a = make_test_data(16).reshape(4, 4) + 1.0j*make_test_data(16).reshape(4, 4)
+	b = make_test_data(16).reshape(4, 4) + 1.0j*make_test_data(16).reshape(4, 4)
+	matmul_test = lambda x, y: x @ y
+	test_function([a, b], {}, matmul_test, matmul_test)
+	
 def _zeros_like(inp):
 	if isinstance(inp, torch.Tensor):
 		return torch.zeros_like(inp)
@@ -212,6 +248,14 @@ def test_eig():
 
 def test_all_operators():
 	test_complex_add()
+	test_complex_sub()
+	test_complex_mul()
+	test_complex_div()
+	test_complex_rsub()
+	test_complex_rdiv()
+	test_complex_matmul()
+	
+	
 	test_rsub()
 	test_chunk()
 	test_cumprod()
