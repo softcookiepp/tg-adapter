@@ -39,4 +39,15 @@ def diag(t, *args, **kwargs):
 
 
 def recursive_get_attribute(obj, key):
-	raise NotImplementedError
+	key_terms = key.split(".")
+	this_key = key_terms[0]
+	try:
+		kint = int(this_key)
+		val = obj[kint]
+	except ValueError
+		val = obj.__getattribute__(this_key)
+	if len(key_terms[1:]) > 0:
+		remaining_keys = ".".join(key_terms[1:])
+		return recursive_get_attribute(val, remaining_keys)
+	return val
+	
