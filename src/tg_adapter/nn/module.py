@@ -300,7 +300,7 @@ class Module:
 						attr_value = recursive_get_attribute(self, subkey)
 						if isinstance(attr_value, Module) or isinstance(attr_value, list):
 							named_modules[subkey] = attr_value
-			input(named_modules.keys() )
+			#input(named_modules.keys() )
 			return list(named_modules.items() )
 						
 					
