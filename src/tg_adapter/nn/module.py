@@ -298,8 +298,9 @@ class Module:
 					subkey = ".".join(subkeys[0:ik+1])
 					if not subkey in named_modules.keys():
 						attr_value = recursive_get_attribute(self, subkey)
-						input(attr_value)
+						print(attr_value)
 						if isinstance(attr_value, Module) or isinstance(attr_value, list):
+							input(f"adding {subkey}")
 							named_modules[subkey] = attr_value
 			#input(named_modules.keys() )
 			return list(named_modules.items() )
