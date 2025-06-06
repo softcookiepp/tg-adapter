@@ -36,3 +36,7 @@ def diag(t, *args, **kwargs):
 		return out
 	else:
 		raise RuntimeError(f"Expected 2D or 1D tensor, but got {len(t.shape) }D instead.")
+
+
+def recursive_get_attribute(obj, key):
+	raise NotImplementedError

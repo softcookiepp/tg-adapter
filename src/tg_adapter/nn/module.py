@@ -7,6 +7,7 @@ from ..utils import recursive_realize
 from ..tensor import AdapterTensor as AT
 from ..tensor import convert_to_torch, _parse_to_arguments
 from ..debugging import KEEP_INPUT_TENSORS
+from ..tinybloat.common import recursive_get_attribute
 
 # adapter for https://pytorch.org/docs/stable/generated/torch.nn.Module.html
 class Module:
@@ -282,28 +283,49 @@ class Module:
 			yield name, param
 			
 	def named_modules(self, memo=None, prefix="", remove_duplicate=True):
-		#raise NotImplementedError
-		# prefix indicates this method is called recursively
-		def _get_named_modules_from_list(v: list, prefix):
-			for i, v2 in enumerate(v):
-				if isinstance(v2, Module):
-					for subk, subv in v2.named_modules(prefix = f"{prefix}.{i}."):
-						yield subk, subv
-				elif isinstance(v2, list):
-					for subk, subv in _get_named_modules_from_list(v2, f"{prefix}.{i}."):
-						yield subk, subv
-				
+		# So this is supposed to be recursive.
 		
-		for k, v in self.__dict__.items():
-			if isinstance(v, Module):
-				k = prefix + k
-				yield k, v
-				for subk, subv in v.named_modules(prefix = f"{k}."):
-					# use recursion c:
-					yield subk, subv
-			elif isinstance(v, list):
-				for subk, subv in _get_named_modules_from_list(v, f"{k}."):
-					yield subk, subv
+		
+		if True:
+			# We can probably extract a good deal of it from the state dict
+			# instead of doing the recursive crap
+			sd = self.state_dict()
+			named_modules = {}
+			for k, v in sd.items():
+				# iterate over each subkey and append it to the list of named modules
+				subkeys = k.split(".")
+				for ik in range(len(subkeys) ):
+					subkey = ".".join(subkeys[0:ik+1])
+					if not subkey in named_modules.keys():
+						attr_value = recursive_get_attribute(self, subkey)
+						if isinstance(attr_value, Module) or isinstance(attr_value, list):
+							named_modules[subkey] = attr_value
+			return list(named_modules.items() )
+						
+					
+		else:
+			#raise NotImplementedError
+			# prefix indicates this method is called recursively
+			def _get_named_modules_from_list(v: list, prefix):
+				for i, v2 in enumerate(v):
+					if isinstance(v2, Module):
+						for subk, subv in v2.named_modules(prefix = f"{prefix}.{i}."):
+							yield subk, subv
+					elif isinstance(v2, list):
+						for subk, subv in _get_named_modules_from_list(v2, f"{prefix}.{i}."):
+							yield subk, subv
+					
+			
+			for k, v in self.__dict__.items():
+				if isinstance(v, Module):
+					k = prefix + k
+					yield k, v
+					for subk, subv in v.named_modules(prefix = f"{k}."):
+						# use recursion c:
+						yield subk, subv
+				elif isinstance(v, list):
+					for subk, subv in _get_named_modules_from_list(v, f"{k}."):
+						yield subk, subv
 					
 	
 	def modules(self, remove_duplicate = True):
