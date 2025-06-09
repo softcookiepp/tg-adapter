@@ -4,19 +4,10 @@ import tinygrad
 
 # Just do this for now, since Tinygrad's state dict loader doesn't
 # seem to like it when we use subclasses of list
-ModuleList = list
+#ModuleList = list
 
-"""
-class ModuleList(list, Module):
-	def __init__(self, *args):
-		super().__init__(*args)
-		print("me stuff")
-		for item in self:
-			print(item)
-		print(self.parameters() )
-		input("oof")
-"""
-'''
+
+
 class ModuleList(Module):
 	r"""Holds submodules in a list.
 
@@ -166,4 +157,4 @@ class ModuleList(Module):
 		return self
 
 	# remove forward alltogether to fallback on Module's _forward_unimplemented
-'''
+
