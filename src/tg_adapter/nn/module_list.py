@@ -175,6 +175,9 @@ class ModuleDict(Module):
 
 	def __getitem__(self, key):
 		return self.__dict__[key]
+	
+	def __setitem__(self, key, value):
+		self.__dict__[key] = value
 
 # just in case there is even a difference between the two
 class ParameterDict(Module):
@@ -185,3 +188,6 @@ class ParameterDict(Module):
 
 	def __getitem__(self, key):
 		return self.__dict__[key]
+	
+	def __setitem__(self, key, value):
+		self.__dict__[key] = value
