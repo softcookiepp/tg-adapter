@@ -8,6 +8,8 @@ from .. import tensor_constructors as tc
 from . import init as internal_init
 from ..types import highest_precision_int
 from ..device import tg_device_supports_longlong
+from .parameter import Parameter
+from .. import tensor_constructors as tc
 
 class AvgPool2d(Module):
 	def __init__(self, kernel_size, stride=None, padding=0,
@@ -294,3 +296,128 @@ class GroupNorm(Module):
 		out = x * weight.reshape(1, -1, *[1] * (x.ndim-2)) + bias.reshape(1, -1, *[1] * (x.ndim-2))
 		return AT(out)
 
+class MultiheadAttention(Module):
+	def __init__(self,
+				embed_dim,
+				num_heads,
+				dropout=0.0,
+				bias=True,
+				add_bias_kv=False,
+				add_zero_attn=False,
+				kdim=None, vdim=None,
+				batch_first=False,
+				device=None,
+				dtype=None
+			):
+		
+		if embed_dim <= 0 or num_heads <= 0:
+			raise ValueError(
+				f"embed_dim and num_heads must be greater than 0,"
+				f" got embed_dim={embed_dim} and num_heads={num_heads} instead"
+			)
+		factory_kwargs = {"device": device, "dtype": dtype}
+		super().__init__()
+		self.embed_dim = embed_dim
+		self.kdim = kdim if kdim is not None else embed_dim
+		self.vdim = vdim if vdim is not None else embed_dim
+		self._qkv_same_embed_dim = self.kdim == embed_dim and self.vdim == embed_dim
+
+		self.num_heads = num_heads
+		self.dropout = dropout
+		self.batch_first = batch_first
+		self.head_dim = embed_dim // num_heads
+		assert (
+			self.head_dim * num_heads == self.embed_dim
+		), "embed_dim must be divisible by num_heads"
+
+		if not self._qkv_same_embed_dim:
+			self.q_proj_weight = Parameter(
+				tc.empty((embed_dim, embed_dim), **factory_kwargs)
+			)
+			self.k_proj_weight = Parameter(
+				tc.empty((embed_dim, self.kdim), **factory_kwargs)
+			)
+			self.v_proj_weight = Parameter(
+				tc.empty((embed_dim, self.vdim), **factory_kwargs)
+			)
+			#self.register_parameter("in_proj_weight", None)
+		else:
+			self.in_proj_weight = Parameter(
+				tc.empty((3 * embed_dim, embed_dim), **factory_kwargs)
+			)
+			#self.register_parameter("q_proj_weight", None)
+			#self.register_parameter("k_proj_weight", None)
+			#self.register_parameter("v_proj_weight", None)
+
+		if bias:
+			self.in_proj_bias = Parameter(tc.empty(3 * embed_dim, **factory_kwargs))
+		self.out_proj = Linear(
+			embed_dim, embed_dim, bias=bias, **factory_kwargs
+		)
+
+		if add_bias_kv:
+			self.bias_k = Parameter(tc.empty((1, 1, embed_dim), **factory_kwargs))
+			self.bias_v = Parameter(tc.empty((1, 1, embed_dim), **factory_kwargs))
+		else:
+			self.bias_k = self.bias_v = None
+
+		self.add_zero_attn = add_zero_attn
+
+		
+
+	def forward(self, query, key, value, **kwargs):
+		if self._qkv_same_embed_dim:
+			# still have to figure out how to split everything correctly
+			raise NotImplementedError
+		query, key, value = convert_to_tg(query, key, value)
+		for head in self.num_heads:
+			input(head)
+		raise NotImplementedError
+		scaled_dot_product_attention()
+		
+"""
+class MultiHeadAttention:
+	def __init__(self, n_state, n_head, kv_caching: Literal['cross', 'self']=None, max_self_attn_cache_len=None):
+		self.n_head = n_head
+		self.query = nn.Linear(n_state, n_state)
+		self.key = nn.Linear(n_state, n_state, bias=False)
+		self.value = nn.Linear(n_state, n_state)
+		self.out = nn.Linear(n_state, n_state)
+
+		self.kv_caching = kv_caching
+		self.max_self_attn_cache_len = max_self_attn_cache_len
+
+  def __call__(self, x:Tensor, xa:Optional[Tensor]=None, mask:Optional[Tensor]=None, len: Union[Variable,int]=None):
+    if self.kv_caching == 'cross':
+      if xa is not None:
+        k, v = self.key(xa), self.value(xa)
+        if not hasattr(self, 'cache_k'):
+          self.cache_k, self.cache_v = k, v
+        else:
+          self.cache_k.assign(k).realize()
+          self.cache_v.assign(v).realize()
+      else:
+        k, v = self.cache_k, self.cache_v
+    else:
+      k, v = self.key(x), self.value(x)
+      if self.kv_caching == 'self':
+        if not hasattr(self, 'cache_k'):
+          self.cache_k = Tensor.zeros(x.shape[0], self.max_self_attn_cache_len, x.shape[2])
+          self.cache_v = Tensor.zeros(x.shape[0], self.max_self_attn_cache_len, x.shape[2])
+        k = self.cache_k.shrink((None, (0, len), None)).cat(k, dim=1)
+        v = self.cache_v.shrink((None, (0, len), None)).cat(v, dim=1)
+        padding = self.max_self_attn_cache_len-len-x.shape[1]
+        self.cache_k.assign(k.pad((None, (0, padding), None)).contiguous()).realize()
+        self.cache_v.assign(v.pad((None, (0, padding), None)).contiguous()).realize()
+
+    q = self.query(x)
+    n_ctx = q.shape[1]
+    assert(q.shape[-1] == k.shape[-1] == v.shape[-1])
+    head_dim = q.shape[-1] // self.n_head
+    q = q.reshape(*q.shape[:2], self.n_head, head_dim).permute(0, 2, 1, 3)
+    k = k.reshape(*k.shape[:2], self.n_head, head_dim).permute(0, 2, 1, 3)
+    v = v.reshape(*v.shape[:2], self.n_head, head_dim).permute(0, 2, 1, 3)
+    attn = Tensor.scaled_dot_product_attention(q, k, v, mask[:n_ctx,:n_ctx] if mask is not None else None)
+    wv = attn.permute(0, 2, 1, 3).flatten(start_dim=2)
+    return self.out(wv)
+"""

@@ -3,6 +3,7 @@ from .layers import *
 from . import init
 from .losses import *
 from .module_list import ModuleList, ModuleDict, ParameterDict
+from .parameter import Parameter
 
 # lets see if this runs lmao
 #from tinygrad.nn import *
