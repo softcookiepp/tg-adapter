@@ -80,5 +80,9 @@ def kaiming_normal_(tensor, *args, **kwargs):
 
 kaiming_normal = kaiming_normal_
 
+def zeros_(tensor):
+	tensor = convert_to_tg(tensor)
+	return AT(tensor.assign(tensor.zeros_like() ) )
+
 def _calculate_correct_fan(*args, **kwargs):
 	raise NotImplementedError
