@@ -282,7 +282,13 @@ class Module:
 		#raise NotImplementedError
 		for name, param in self.state_dict().items():
 			yield name, param
-			
+	
+	def get_submodule(self, target: str):
+		for k, v in self.named_modules():
+			if k == target:
+				return v
+		raise AttributeError(f"Module {target} not found")
+	
 	def named_modules(self, memo=None, prefix="", remove_duplicate=True):
 		# So this is supposed to be recursive.
 		
