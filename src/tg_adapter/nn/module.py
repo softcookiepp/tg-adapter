@@ -347,6 +347,10 @@ class Module:
 	def register_buffer(self, name, tensor, persistent = True):
 		assert not name in self.__dict__.keys()
 		self.__dict__[name] = tensor
+	
+	def register_parameter(self, name, tensor, persistent = True):
+		assert not name in self.__dict__.keys()
+		self.__dict__[name] = tensor
 		
 	@property
 	def training(self):
