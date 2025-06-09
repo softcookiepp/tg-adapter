@@ -212,6 +212,10 @@ def _test_key_errors(hf_dict, tg_dict, error_threshold = 1.0e-9, print_values = 
 			_test_key_errors(hf_dict, tg_dict, error_threshold, display_images, error_function)
 		else:
 			# list of other sort, non-numerical
+			if len(hf_dict) != len(tg_dict):
+				print(hf_dict)
+				print(tg_dict)
+				raise ValueError("list length does not match")
 			for hf_item2, tg_item2 in zip(hf_dict, tg_dict):
 				_test_key_errors(hf_item2, tg_item2, error_threshold, display_images, error_function)
 	

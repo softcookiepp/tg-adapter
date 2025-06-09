@@ -89,7 +89,7 @@ class ModuleList(Module):
 		for i, module in enumerate(chain(self, other)):
 			combined.add_module(str(i), module)
 		return combined
-
+	'''
 	def __repr__(self):
 		"""Return a custom repr for ModuleList that compresses repeated module representations."""
 		list_of_reprs = [repr(item) for item in self]
@@ -121,6 +121,7 @@ class ModuleList(Module):
 		main_str += "\n  " + "\n  ".join(lines) + "\n"
 		main_str += ")"
 		return main_str
+	'''
 
 	def __dir__(self):
 		keys = super().__dir__()
