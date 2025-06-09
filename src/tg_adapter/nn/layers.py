@@ -367,14 +367,18 @@ class MultiheadAttention(Module):
 		
 
 	def forward(self, query, key, value, mask = None, **kwargs):
+		# not done just yet, see here...
+		# https://dev-discuss.pytorch.org/t/understanding-multi-head-attention-for-ml-framework-developers/1792
 		q, k, v = convert_to_tg(query, key , value)
 		if hasattr(self, "in_proj_weight"):
 			wq, wk, wv = convert_to_tg(self.in_proj_weight).chunk(3, dim = 0)
 		else:
 			wq, wk, wv = convert_to_tg(self.q_proj_weight, self.k_proj_weight, self.v_proj_weight)
-		q = q @ wk
-		k = k @ wk
-		v = v @ wv
+			
+		# YAY!!!!!!
+		q = q @ wq.T
+		k = k @ wk.T
+		v = v @ wv.T
 		
 		if hasattr(self, "in_proj_bias"):
 			inb = convert_to_tg(self.in_proj_bias)
@@ -386,7 +390,6 @@ class MultiheadAttention(Module):
 			bk, bv = convert_to_tg(bias_k, bias_v)
 			b += bk
 			v += bv
-		
 		qc = q.chunk(self.num_heads, dim = 1)
 		kc = k.chunk(self.num_heads, dim = 1)
 		vc = v.chunk(self.num_heads, dim = 1)
@@ -399,10 +402,10 @@ class MultiheadAttention(Module):
 			qi, ki, vi = qc[head], kc[head], vc[head]
 			hi = tinygrad.Tensor.scaled_dot_product_attention(qi, ki, vi)
 			att.append(hi)
-		out = convert_to_torch( tinygrad.Tensor.cat(*att, dim = 1) )
-		out = self.out_proj(out)
-		input(out.shape)
-		return out, None
+		weight = convert_to_torch( tinygrad.Tensor.cat(*att, dim = 1) )
+		out = self.out_proj(weight)
+		#input(out.shape)
+		return out, weight
 		
 		
 """
