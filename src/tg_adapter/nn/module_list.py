@@ -175,3 +175,13 @@ class ModuleDict(Module):
 
 	def __getitem__(self, key):
 		return self.__dict__[key]
+
+# just in case there is even a difference between the two
+class ParameterDict(Module):
+	def __init__(self, modules):
+		if not isinstance(modules, dict):
+			modules = dict(modules)
+		self.__dict__.update(modules)
+
+	def __getitem__(self, key):
+		return self.__dict__[key]
