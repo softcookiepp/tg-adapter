@@ -52,9 +52,13 @@ class ModuleList(Module):
 
 	def __getitem__(self, idx: Union[int, slice]) -> Union[Module, "ModuleList"]:
 		if isinstance(idx, slice):
+			raise NotImplementedError
+			# this is actually gonna be a be a big pain in the bummy,
+			# since dictionaries cannot be sliced
 			return self.__class__(self._modules[idx])
 		else:
-			return self._modules[idx]
+			# just convert idx to string
+			return self._modules[str(idx)]
 
 	def __setitem__(self, idx: int, module: Module) -> None:
 		idx = self._get_abs_string_index(idx)
