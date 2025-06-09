@@ -168,7 +168,7 @@ class ModuleList(Module):
 
 # this will actually be a lot easier lmao
 class ModuleDict(Module):
-	def __init__(self, modules):
+	def __init__(self, modules = {}):
 		if not isinstance(modules, dict):
 			modules = dict(modules)
 		self.__dict__.update(modules)
@@ -178,7 +178,7 @@ class ModuleDict(Module):
 
 # just in case there is even a difference between the two
 class ParameterDict(Module):
-	def __init__(self, modules):
+	def __init__(self, modules = {}):
 		if not isinstance(modules, dict):
 			modules = dict(modules)
 		self.__dict__.update(modules)
