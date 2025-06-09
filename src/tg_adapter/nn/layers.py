@@ -102,6 +102,9 @@ class ConvNd(Module):
 		self.stride, self.dilation, self.groups, self.padding = stride, dilation, groups, padding
 		scale = 1 / math.sqrt(in_channels * prod(self.kernel_size))
 		
+		self._in_channels = in_channels
+		self._out_channels = out_channels
+		
 		#self.weight = tinygrad.Tensor.uniform(out_channels, in_channels//groups, *self.kernel_size, low=-scale, high=scale)
 		self.weight = tc.empty(  (out_channels, in_channels//groups, *self.kernel_size)  )
 		internal_init.uniform_(self.weight, a = -scale, b = scale)
@@ -112,6 +115,14 @@ class ConvNd(Module):
 			self.bias = tc.empty(  (out_channels,)  )
 			internal_init.uniform_(self.bias, a = -scale, b = scale)
 			#self.bias = AT( tinygrad.Tensor.uniform(out_channels, low=-scale, high=scale) )
+	
+	@property
+	def in_channels(self):
+		return self._in_channels
+	
+	@property
+	def out_channels(self):
+		return self._out_channels
 	
 	def forward(self, x):
 		x, weight, bias = x.tg, self.weight.tg, self.bias.tg
