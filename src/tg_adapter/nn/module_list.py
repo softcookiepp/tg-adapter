@@ -166,3 +166,12 @@ class ModuleList(Module):
 
 	# remove forward alltogether to fallback on Module's _forward_unimplemented
 
+# this will actually be a lot easier lmao
+class ModuleDict(Module):
+	def __init__(self, modules):
+		if not isinstance(modules, dict):
+			modules = dict(modules)
+		self.__dict__.update(modules)
+
+	def __getitem__(self, key):
+		return self.__dict__[key]

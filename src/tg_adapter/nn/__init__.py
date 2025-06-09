@@ -2,7 +2,7 @@ from .module import Module
 from .layers import *
 from . import init
 from .losses import *
-from .module_list import ModuleList
+from .module_list import ModuleList, ModuleDict
 
 # lets see if this runs lmao
 #from tinygrad.nn import *
