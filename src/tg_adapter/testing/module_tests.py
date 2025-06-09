@@ -38,7 +38,20 @@ def test_module_list():
 	module_list_test = lambda x, _torch: x.state_dict()
 	test_hf_reimplementation([], {}, torch_module, module_list_test, tg_module, module_list_test)
 
+def test_multihead_attention():
+	embed_dim = 16
+	num_heads = 4
+	batch_size = 8
+	torch_module = torch.nn.MultiheadAttention(embed_dim, num_heads, bias = False)
+	tg_module = tg_adapter.nn.MultiheadAttention(embed_dim, num_heads, bias = False)
+	copy_state_dict(torch_module, tg_module)
+	q = make_test_data(batch_size, embed_dim)
+	k = make_test_data(batch_size, embed_dim)
+	v = make_test_data(batch_size, embed_dim)
+	test_hf_reimplementation((q, k, v), {}, torch_module, "__call__", tg_module, "__call__")
+
 def test_modules():
 	test_linear()
 	#test_avg_pool_2d()
 	test_module_list()
+	test_multihead_attention()

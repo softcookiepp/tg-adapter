@@ -7,6 +7,8 @@ from typing import Iterable
 from .device import parse_device
 
 def _convert_size(size):
+	if isinstance(size, int):
+		return (size,)
 	if len(size) == 0:
 		return size
 	if isinstance(size[0], tuple) or isinstance(size[0], list):

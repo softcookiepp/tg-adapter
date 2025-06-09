@@ -362,18 +362,48 @@ class MultiheadAttention(Module):
 			self.bias_k = self.bias_v = None
 
 		self.add_zero_attn = add_zero_attn
+		self.max_self_attn_cache_len = 512 # lets just try this lol
 
 		
 
-	def forward(self, query, key, value, **kwargs):
-		if self._qkv_same_embed_dim:
-			# still have to figure out how to split everything correctly
-			raise NotImplementedError
-		query, key, value = convert_to_tg(query, key, value)
-		for head in self.num_heads:
-			input(head)
-		raise NotImplementedError
-		scaled_dot_product_attention()
+	def forward(self, query, key, value, mask = None, **kwargs):
+		q, k, v = convert_to_tg(query, key , value)
+		if hasattr(self, "in_proj_weight"):
+			wq, wk, wv = convert_to_tg(self.in_proj_weight).chunk(3, dim = 0)
+		else:
+			wq, wk, wv = convert_to_tg(self.q_proj_weight, self.k_proj_weight, self.v_proj_weight)
+		q = q @ wk
+		k = k @ wk
+		v = v @ wv
+		
+		if hasattr(self, "in_proj_bias"):
+			inb = convert_to_tg(self.in_proj_bias)
+			q = q + inb[0:self.embed_dim]
+			k = k + inb[self.embed_dim:self.embed_dim*2]
+			v = v + inb[self.embed_dim*2:self.embed_dim*3]
+		
+		if not self.bias_k is None:
+			bk, bv = convert_to_tg(bias_k, bias_v)
+			b += bk
+			v += bv
+		
+		qc = q.chunk(self.num_heads, dim = 1)
+		kc = k.chunk(self.num_heads, dim = 1)
+		vc = v.chunk(self.num_heads, dim = 1)
+		
+		assert qc[0].shape[1] == vc[0].shape[1] == kc[0].shape[1] == self.head_dim
+		#input(self.out_proj.weight.shape)
+		
+		att = []
+		for head in range(self.num_heads):
+			qi, ki, vi = qc[head], kc[head], vc[head]
+			hi = tinygrad.Tensor.scaled_dot_product_attention(qi, ki, vi)
+			att.append(hi)
+		out = convert_to_torch( tinygrad.Tensor.cat(*att, dim = 1) )
+		out = self.out_proj(out)
+		input(out.shape)
+		return out, None
+		
 		
 """
 class MultiHeadAttention:
