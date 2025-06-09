@@ -298,15 +298,17 @@ class Module:
 					subkey = ".".join(subkeys[0:ik+1])
 					if not subkey in named_modules.keys():
 						attr_value = recursive_get_attribute(self, subkey)
-						print(subkey, attr_value)
+						#print(subkey, attr_value)
 						if isinstance(attr_value, Module) or isinstance(attr_value, list):
 							#input(f"adding {subkey}")
 							named_modules[subkey] = attr_value
-			input(named_modules.keys() )
+			#input(named_modules.keys() )
 			return list(named_modules.items() )
 						
 					
 		else:
+			pass
+			"""
 			#raise NotImplementedError
 			# prefix indicates this method is called recursively
 			def _get_named_modules_from_list(v: list, prefix):
@@ -329,7 +331,7 @@ class Module:
 				elif isinstance(v, list):
 					for subk, subv in _get_named_modules_from_list(v, f"{k}."):
 						yield subk, subv
-					
+			"""
 	
 	def modules(self, remove_duplicate = True):
 		for k, v in self.named_modules(remove_duplicate = remove_duplicate):
