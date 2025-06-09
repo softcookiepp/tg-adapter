@@ -62,8 +62,6 @@ xavier_normal = xavier_normal_
 
 def kaiming_uniform_(tensor, a = 0.0, *args, **kwargs):
 	tensor = convert_to_tg(tensor)
-	if not generator is None:
-		raise NotImplementedError
 	norm = tinygrad.Tensor.kaiming_uniform(*tensor.shape,
 		a = a, 
 		dtype = tensor.dtype,
@@ -74,8 +72,6 @@ kaiming_uniform = kaiming_uniform_
 
 def kaiming_normal_(tensor, *args, **kwargs):
 	tensor = convert_to_tg(tensor)
-	if not generator is None:
-		raise NotImplementedError
 	norm = tinygrad.Tensor.kaiming_normal(*tensor.shape,
 		a = a, 
 		dtype = tensor.dtype,
