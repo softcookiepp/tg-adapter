@@ -174,9 +174,13 @@ class ModuleDict(Module):
 		self.__dict__.update(modules)
 
 	def __getitem__(self, key):
+		if not isinstance(key, str):
+			key = str(key)
 		return self.__dict__[key]
 	
 	def __setitem__(self, key, value):
+		if not isinstance(key, str):
+			key = str(key)
 		self.__dict__[key] = value
 	
 	def keys(self):
@@ -196,9 +200,13 @@ class ParameterDict(Module):
 		self.__dict__.update(modules)
 
 	def __getitem__(self, key):
+		if not isinstance(key, str):
+			key = str(key)
 		return self.__dict__[key]
 	
 	def __setitem__(self, key, value):
+		if not isinstance(key, str):
+			key = str(key)
 		self.__dict__[key] = value
 	
 	def keys(self):
