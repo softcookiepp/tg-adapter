@@ -302,7 +302,7 @@ class Module:
 						if isinstance(attr_value, Module) or isinstance(attr_value, list):
 							#input(f"adding {subkey}")
 							named_modules[subkey] = attr_value
-			#input(named_modules.keys() )
+			input(named_modules.keys() )
 			return list(named_modules.items() )
 						
 					
