@@ -366,9 +366,12 @@ class MultiheadAttention(Module):
 
 		
 
-	def forward(self, query, key, value, mask = None, **kwargs):
-		# not done just yet, see here...
-		# https://dev-discuss.pytorch.org/t/understanding-multi-head-attention-for-ml-framework-developers/1792
+	def forward(self, query, key, value, key_padding_mask = None,
+			need_weights = True, attn_mask = None,
+			average_attn_weights = False, is_causal = False):
+		if True in (not key_padding_mask is None, average_attn_weights, is_causal):
+			# not going to bother with these for now
+			raise NotImplementedError
 		q, k, v = convert_to_tg(query, key , value)
 		if hasattr(self, "in_proj_weight"):
 			wq, wk, wv = convert_to_tg(self.in_proj_weight).chunk(3, dim = 0)
@@ -398,59 +401,18 @@ class MultiheadAttention(Module):
 		#input(self.out_proj.weight.shape)
 		
 		att = []
+		weights = []
 		for head in range(self.num_heads):
 			qi, ki, vi = qc[head], kc[head], vc[head]
-			hi = tinygrad.Tensor.scaled_dot_product_attention(qi, ki, vi)
+			hi = tinygrad.Tensor.scaled_dot_product_attention(qi, ki, vi, attn_mask = attn_mask)
+			if need_weights:
+				#weights.append()
+				pass
 			att.append(hi)
 		weight = convert_to_torch( tinygrad.Tensor.cat(*att, dim = 1) )
 		out = self.out_proj(weight)
 		#input(out.shape)
-		return out, weight
-		
-		
-"""
-class MultiHeadAttention:
-	def __init__(self, n_state, n_head, kv_caching: Literal['cross', 'self']=None, max_self_attn_cache_len=None):
-		self.n_head = n_head
-		self.query = nn.Linear(n_state, n_state)
-		self.key = nn.Linear(n_state, n_state, bias=False)
-		self.value = nn.Linear(n_state, n_state)
-		self.out = nn.Linear(n_state, n_state)
-
-		self.kv_caching = kv_caching
-		self.max_self_attn_cache_len = max_self_attn_cache_len
-
-  def __call__(self, x:Tensor, xa:Optional[Tensor]=None, mask:Optional[Tensor]=None, len: Union[Variable,int]=None):
-    if self.kv_caching == 'cross':
-      if xa is not None:
-        k, v = self.key(xa), self.value(xa)
-        if not hasattr(self, 'cache_k'):
-          self.cache_k, self.cache_v = k, v
-        else:
-          self.cache_k.assign(k).realize()
-          self.cache_v.assign(v).realize()
-      else:
-        k, v = self.cache_k, self.cache_v
-    else:
-      k, v = self.key(x), self.value(x)
-      if self.kv_caching == 'self':
-        if not hasattr(self, 'cache_k'):
-          self.cache_k = Tensor.zeros(x.shape[0], self.max_self_attn_cache_len, x.shape[2])
-          self.cache_v = Tensor.zeros(x.shape[0], self.max_self_attn_cache_len, x.shape[2])
-        k = self.cache_k.shrink((None, (0, len), None)).cat(k, dim=1)
-        v = self.cache_v.shrink((None, (0, len), None)).cat(v, dim=1)
-        padding = self.max_self_attn_cache_len-len-x.shape[1]
-        self.cache_k.assign(k.pad((None, (0, padding), None)).contiguous()).realize()
-        self.cache_v.assign(v.pad((None, (0, padding), None)).contiguous()).realize()
-
-    q = self.query(x)
-    n_ctx = q.shape[1]
-    assert(q.shape[-1] == k.shape[-1] == v.shape[-1])
-    head_dim = q.shape[-1] // self.n_head
-    q = q.reshape(*q.shape[:2], self.n_head, head_dim).permute(0, 2, 1, 3)
-    k = k.reshape(*k.shape[:2], self.n_head, head_dim).permute(0, 2, 1, 3)
-    v = v.reshape(*v.shape[:2], self.n_head, head_dim).permute(0, 2, 1, 3)
-    attn = Tensor.scaled_dot_product_attention(q, k, v, mask[:n_ctx,:n_ctx] if mask is not None else None)
-    wv = attn.permute(0, 2, 1, 3).flatten(start_dim=2)
-    return self.out(wv)
-"""
+		if need_weights:
+			# For now, weight just miight be inaccurate :c
+			return out, weight[0:out.shape[0], 0:out.shape[0]]
+		return (out,)

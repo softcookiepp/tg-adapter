@@ -48,7 +48,7 @@ def test_multihead_attention():
 	q = make_test_data(batch_size, embed_dim)
 	k = make_test_data(batch_size, embed_dim)
 	v = make_test_data(batch_size, embed_dim)
-	test_hf_reimplementation((q, k, v), {}, torch_module, "__call__", tg_module, "__call__")
+	test_hf_reimplementation((q, k, v), {"need_weights": False}, torch_module, "__call__", tg_module, "__call__")
 
 def test_modules():
 	test_linear()
