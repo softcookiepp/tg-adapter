@@ -11,7 +11,7 @@ from .backend_environment_config import *
 from .debugging import maybe_realize
 from .utils import is_jitted
 
-from .tinybloat import ComplexTensor
+from .tinybloat import ComplexTensor, safety_functions
 
 
 def _parse_to_arguments(*args, **kwargs):
@@ -46,7 +46,7 @@ class AdapterTensor:
 			# default to CPU, just like torch does
 			device = "cpu"
 		
-		if isinstance(data, float) or isinstance(data, int):
+		if isinstance(data, float) or isinstance(data, int) or isinstance(data, list):
 			data = np.array(data)
 			
 		if isinstance(device, Device):
@@ -355,7 +355,11 @@ class AdapterTensor:
 		return self._tg_override(axis = dim, keepdim = keepdim)
 
 	def argmax(self, *args, **kwargs):
-		return self._tg_override(*args, **kwargs)
+		#print(args, kwargs)
+		#input(self.shape)
+		#input(self.tg.chunk(11, dim = 1)[0].argmax(**kwargs).realize() )
+		#return convert_to_torch(self._tg.contiguous().argmax(*args, **kwargs) )
+		return convert_to_torch(safety_functions.argmax(self.tg, *args, **kwargs) )
 	
 	def view(self, *shape):
 		return self._tg_override(*shape)

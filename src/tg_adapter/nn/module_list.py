@@ -52,10 +52,20 @@ class ModuleList(Module):
 
 	def __getitem__(self, idx: Union[int, slice]) -> Union[Module, "ModuleList"]:
 		if isinstance(idx, slice):
-			raise NotImplementedError
-			# this is actually gonna be a be a big pain in the bummy,
-			# since dictionaries cannot be sliced
-			return self.__class__(self._modules[idx])
+			# ok, so here is what I will do.
+			# I will iterate over every key in the slice, append all the
+			# elements, then construct a new ModuleList
+			new_list = []
+			start, stop, step = idx.start, idx.stop, idx.step
+			if start is None:
+				start = 0
+			if stop is None:
+				stop = len(self)
+			if step is None:
+				step = 1
+			for i in range(start, stop, step):
+				new_list.append(self[i])
+			return self.__class__(new_list)
 		else:
 			# just convert idx to string
 			return self._modules[str(idx)]

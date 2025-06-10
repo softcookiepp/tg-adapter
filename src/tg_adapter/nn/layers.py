@@ -127,7 +127,7 @@ class ConvNd(Module):
 		return self._out_channels
 	
 	def forward(self, x):
-		x, weight, bias = x.tg, self.weight.tg, self.bias.tg
+		x, weight, bias = convert_to_tg(x, self.weight, self.bias)
 		x = x.conv2d(weight, bias, self.groups, self.stride, self.dilation, self.padding)
 		return AT(x)
 
