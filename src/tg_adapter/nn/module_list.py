@@ -174,8 +174,10 @@ class ModuleDict(Module):
 		self.__dict__.update(modules)
 
 	def __getitem__(self, key):
-		if not isinstance(key, str):
-			key = str(key)
+		if not key in self.__dict__.keys():
+			if not isinstance(key, str):
+				key = str(key)
+		print(self.__dict__.keys() )
 		return self.__dict__[key]
 	
 	def __setitem__(self, key, value):
