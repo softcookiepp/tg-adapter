@@ -3,7 +3,7 @@
 # Therefore, some will be reimplemented here.
 import tinygrad
 
-def argmax(inp, dim = None, axis = None, keepdim = False):
+def max(inp, dim = None, axis = None, keepdim = False):
 	if dim is None:
 		dim = axis
 	if dim is None:
@@ -23,8 +23,17 @@ def argmax(inp, dim = None, axis = None, keepdim = False):
 		chunk_count -= 1
 	if chunk_count == 0:
 		raise ValueError
+	chunk_size = inp.shape[dim] // chunk_count
 	chunks = inp.chunk(chunk_count, dim = dim)
-	for chunk in chunks:
-		print(chunk.contiguous().argmax(dim).realize().numpy() )
-	input("pls work lul")
-	raise NotImplementedError
+	argmax_chunks = []
+	for i, chunk in enumerate(chunks):
+		idx = chunk.contiguous().argmax(dim)
+
+def argmax(inp, dim = None, axis = None, keepdim = False):
+	if dim is None:
+		dim = axis
+	if dim is None:
+		# tensor needs to be flattened
+		inp = inp.reshape(-1)
+		dim = 0
+	return (inp == max(inp, dim, axis, keepdim) ).sum()
