@@ -2,6 +2,7 @@
 # that sometimes do not compile.
 # Therefore, some will be reimplemented here.
 import tinygrad
+import numpy as np
 
 def max(inp, dim = None, axis = None, keepdim = False):
 	if dim is None:
@@ -25,9 +26,29 @@ def max(inp, dim = None, axis = None, keepdim = False):
 		raise ValueError
 	chunk_size = inp.shape[dim] // chunk_count
 	chunks = inp.chunk(chunk_count, dim = dim)
-	argmax_chunks = []
+	max_chunks = []
 	for i, chunk in enumerate(chunks):
-		idx = chunk.contiguous().argmax(dim)
+		max_chunk = chunk.contiguous().max(dim, keepdim = True).realize()
+		if len(max_chunk.shape) == 0:
+			max_chunk = max_chunk.reshape(1)
+		max_chunks.append(max_chunk)
+	cat_dim = dim
+	catted = tinygrad.Tensor.cat(*max_chunks, dim = cat_dim)
+	out = catted.max(axis = dim, keepdim = keepdim)
+	if len(out.shape) == 0:
+		return out
+	
+	true_out = catted.max(axis = dim, keepdim = True)	
+	
+	# now we need the argmax...
+	mask = np.array(inp.shape) != np.array(true_out.shape)
+	a_shape = []
+	for item in mask.astype(int) * np.array(inp.shape) + (mask == False).astype(int):
+		a_shape.append(int(item))
+	
+	a = tinygrad.Tensor.arange(inp.shape[dim]).reshape(*a_shape)
+	arg_max = ((true_out == inp).cast(tinygrad.dtypes.int)*a).sum(dim, keepdim = keepdim)
+	return out, arg_max
 
 def argmax(inp, dim = None, axis = None, keepdim = False):
 	if dim is None:

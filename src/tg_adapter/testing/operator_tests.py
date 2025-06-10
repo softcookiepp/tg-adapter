@@ -243,10 +243,25 @@ def test_eig():
 			
 	#test_function([A], {}, torch.linalg.eig, tg_adapter.linalg.eig)
 	test_function([A], {}, _eig_test, _eig_test)
+	
+
+def test_max():
+	a = make_test_data(4, 8)
+	def _test_max(t, *args, **kwargs):
+		if isinstance(t, torch.Tensor):
+			out = torch.max(t, *args, **kwargs)
+		else:
+			out = tg_adapter.max(t, *args, **kwargs)
+		return out
+		
+	test_function([a], {}, _test_max, _test_max)
+	for dim in [0, 1]:
+		test_function([a], {"axis": dim}, _test_max, _test_max)
 
 
 
 def test_all_operators():
+	test_max()
 	test_complex_add()
 	test_complex_sub()
 	test_complex_mul()

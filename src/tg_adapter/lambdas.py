@@ -3,6 +3,7 @@ from .tensor import convert_to_tg, convert_to_torch
 from .tensor import assert_same_device
 import tinygrad
 from . import tinybloat
+from . import return_types
 
 exp = lambda x: T( x.tg.exp() )
 
@@ -37,8 +38,11 @@ def var(inp, dim = None, keepdim = False, dtype = None, out = None):
 def _min(x, dim = None, keepdim = False):
 	return x.min(dim, keepdim)
 	
-def _max(x, dim = None, keepdim = False):
-	return x.max(dim, keepdim)
+def _max(x, axis = None, dim = None, keepdim = False):
+	out = convert_to_torch(tinybloat.max(convert_to_tg(x), axis = axis, dim = dim, keepdim = keepdim) )
+	if isinstance(out, tuple):
+		return return_types.minmax(*out)
+	return out
 
 from .F import sigmoid
 
