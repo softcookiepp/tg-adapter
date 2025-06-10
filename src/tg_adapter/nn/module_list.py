@@ -174,19 +174,31 @@ class ModuleDict(Module):
 		self.__dict__.update(modules)
 
 	def __getitem__(self, key):
-		if not key in self.__dict__.keys():
-			if not isinstance(key, str):
-				key = str(key)
-		print(self.__dict__.keys() )
-		return self.__dict__[key]
+		if not isinstance(key, str):
+			key = str(key)
+		#print(self.__dict__.keys() )
+		try:
+			return self.__dict__[key]
+		except KeyError:
+			return None
 	
 	def __setitem__(self, key, value):
 		if not isinstance(key, str):
 			key = str(key)
 		self.__dict__[key] = value
 	
+	def __delitem__(self, key):
+		if not isinstance(key, str):
+			key = str(key)
+		del self.__dict__[key]
+	
 	def keys(self):
 		return self.__dict__.keys()
+	
+	def __len__(self):
+		return len(self.__dict__)
+	def __iter__(self):
+		return iter(self.__dict__)
 	
 	def items(self):
 		return self.__dict__.items()
@@ -204,7 +216,10 @@ class ParameterDict(Module):
 	def __getitem__(self, key):
 		if not isinstance(key, str):
 			key = str(key)
-		return self.__dict__[key]
+		try:
+			return self.__dict__[key]
+		except KeyError:
+			return None
 	
 	def __setitem__(self, key, value):
 		if not isinstance(key, str):
@@ -219,3 +234,12 @@ class ParameterDict(Module):
 	
 	def values(self):
 		return self.__dict__.values()
+	
+	def __len__(self):
+		return len(self.__dict__)
+	def __iter__(self):
+		return iter(self.__dict__)
+	def __delitem__(self, key):
+		if not isinstance(key, str):
+			key = str(key)
+		del self.__dict__[key]

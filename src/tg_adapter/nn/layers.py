@@ -266,11 +266,11 @@ class Embedding(Module):
 		arange, idx, vals = self.arange.expand(big_shp), idx.reshape(idx.shape+(1, 1)).expand(big_shp), weight.expand(big_shp)
 		
 		# (-1, 77, 49408, -1)
-		inter = (arange == idx).realize()
+		inter = (arange == idx)
 		
 		# (-1, 77, 49408, -1)
-		inter2 = inter.mul(vals).realize()
-		out = inter2.sum(-2).realize()
+		inter2 = inter.mul(vals)
+		out = inter2.sum(-2)
 		
 		out = out.to(original_device)
 		return AT(out)

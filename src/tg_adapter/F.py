@@ -5,6 +5,10 @@ from .debugging import maybe_realize
 from copy import deepcopy
 import math
 
+def conv2d(inp, weight, bias = None, stride = 1, padding = 0, dilation = 1, groups = 1):
+	inp, weight, bias = convert_to_tg(inp, weight, bias)
+	return convert_to_torch(inp.conv2d(weight, bias, groups = groups, stride = stride, dilation = dilation, padding = padding) )
+
 def interpolate(inp,
 		size=None,
 		scale_factor=None,

@@ -219,9 +219,9 @@ class AdapterTensor:
 				supported_type_new_device = dtype.tgt(device.tg)
 				# ok, so the problem is that it works one way, but not the other :c
 				
-				new_tensor = new_tensor.cast(supported_type_old_device).realize()
+				new_tensor = new_tensor.cast(supported_type_old_device)
 				# then move it to the new device
-				new_tensor = new_tensor.to(device.tg).cast(supported_type_new_device).realize()
+				new_tensor = new_tensor.to(device.tg).cast(supported_type_new_device)
 		return convert_to_torch(new_tensor)
 		
 		if dtype is None and (not device is None):

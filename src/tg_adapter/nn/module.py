@@ -3,7 +3,6 @@ from tinygrad.nn.state import safe_save, safe_load, get_state_dict, load_state_d
 from typing import Iterable
 import inspect
 from ..device import device
-from ..utils import recursive_realize
 from ..tensor import AdapterTensor as AT
 from ..tensor import convert_to_torch, _parse_to_arguments
 from ..debugging import KEEP_INPUT_TENSORS
@@ -62,6 +61,10 @@ class Module:
 				return v
 		input(f"Could not find buffer {name}")
 	
+	def requires_grad_(self, *args, **kwargs):
+		# tinygrad doesn't keep track of this lol
+		pass
+	
 	def parameters(self, recurse = True):
 		if not recurse:
 			raise NotImplementedError
@@ -71,9 +74,10 @@ class Module:
 			yield v
 		if isinstance(self, Iterable):
 			for i, elem in enumerate(self):
-				for k, mod in elem.named_parameters():
-					#params.append(mod)
-					yield mod
+				if hasattr(elem, "named_parameters"):
+					for k, mod in elem.named_parameters():
+						#params.append(mod)
+						yield mod
 		#return params
 		"""
 		params = []
