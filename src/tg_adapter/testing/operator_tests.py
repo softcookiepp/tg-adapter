@@ -259,12 +259,23 @@ def test_max():
 		test_function([a], {"axis": dim}, _test_max, _test_max)
 		
 def test_argmax():
-	raise NotImplementedError
+	a = make_test_data(4, 8)
+	def _test_argmax(t, *args, **kwargs):
+		if isinstance(t, torch.Tensor):
+			out = torch.argmax(t, *args, **kwargs)
+		else:
+			out = tg_adapter.argmax(t, *args, **kwargs)
+		return out
+		
+	test_function([a], {}, _test_argmax, _test_argmax)
+	for dim in [0, 1]:
+		test_function([a], {"axis": dim}, _test_argmax, _test_argmax)
 
 
 
 def test_all_operators():
 	test_max()
+	test_argmax()
 	test_complex_add()
 	test_complex_sub()
 	test_complex_mul()

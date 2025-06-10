@@ -45,7 +45,7 @@ def _max(x, axis = None, dim = None, keepdim = False):
 	return out
 	
 def argmax(x, axis = None, dim = None, keepdim = False):
-	convert_to_torch(tinybloat.argmax(convert_to_tg(x), axis = axis, dim = dim, keepdim = keepdim) )
+	return convert_to_torch(tinybloat.argmax(convert_to_tg(x), axis = axis, dim = dim, keepdim = keepdim) )
 
 from .F import sigmoid
 
