@@ -257,6 +257,9 @@ def test_max():
 	test_function([a], {}, _test_max, _test_max)
 	for dim in [0, 1]:
 		test_function([a], {"axis": dim}, _test_max, _test_max)
+		
+def test_argmax():
+	raise NotImplementedError
 
 
 

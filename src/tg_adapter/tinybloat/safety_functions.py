@@ -4,7 +4,7 @@
 import tinygrad
 import numpy as np
 
-def max(inp, dim = None, axis = None, keepdim = False):
+def max(inp, dim = None, axis = None, keepdim = False, always_return_argmax = False):
 	if dim is None:
 		dim = axis
 	if dim is None:
@@ -35,7 +35,7 @@ def max(inp, dim = None, axis = None, keepdim = False):
 	cat_dim = dim
 	catted = tinygrad.Tensor.cat(*max_chunks, dim = cat_dim)
 	out = catted.max(axis = dim, keepdim = keepdim)
-	if len(out.shape) == 0:
+	if len(out.shape) == 0 and (not always_return_argmax):
 		return out
 	
 	true_out = catted.max(axis = dim, keepdim = True)	
@@ -47,14 +47,11 @@ def max(inp, dim = None, axis = None, keepdim = False):
 		a_shape.append(int(item))
 	
 	a = tinygrad.Tensor.arange(inp.shape[dim]).reshape(*a_shape)
+	
+	# This will not take duplicate values into account. Might want to change this later :c
 	arg_max = ((true_out == inp).cast(tinygrad.dtypes.int)*a).sum(dim, keepdim = keepdim)
 	return out, arg_max
 
 def argmax(inp, dim = None, axis = None, keepdim = False):
-	if dim is None:
-		dim = axis
-	if dim is None:
-		# tensor needs to be flattened
-		inp = inp.reshape(-1)
-		dim = 0
-	return (inp == max(inp, dim, axis, keepdim) ).sum()
+	_max, _argmax = max(inp, dim, axis, keepdim, True)
+	return _argmax
