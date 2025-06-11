@@ -39,12 +39,14 @@ def _min(x, dim = None, keepdim = False):
 	return x.min(dim, keepdim)
 	
 def _max(x, axis = None, dim = None, keepdim = False):
+	print(x.tg.device)
 	out = convert_to_torch(tinybloat.max(convert_to_tg(x), axis = axis, dim = dim, keepdim = keepdim) )
 	if isinstance(out, tuple):
 		return return_types.minmax(*out)
 	return out
 	
 def argmax(x, axis = None, dim = None, keepdim = False):
+	print(x.tg.device)
 	return convert_to_torch(tinybloat.argmax(convert_to_tg(x), axis = axis, dim = dim, keepdim = keepdim) )
 
 from .F import sigmoid

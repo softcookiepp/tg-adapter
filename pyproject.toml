@@ -31,4 +31,4 @@ dependencies = [
 	"safetensors"
 ]
 description = "Library for porting pytorch code to tinygrad"
-version = "0.0.5"
+version = "0.0.6"

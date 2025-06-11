@@ -11,7 +11,6 @@ def max(inp, dim = None, axis = None, keepdim = False, always_return_argmax = Fa
 		# tensor needs to be flattened
 		inp = inp.reshape(-1)
 		dim = 0
-	
 	# The strategy will be to split inp into chunks,
 	# get the argmax of the given chunk, then
 	# do some goodie stuffs that i kinda forget
@@ -46,7 +45,7 @@ def max(inp, dim = None, axis = None, keepdim = False, always_return_argmax = Fa
 	for item in mask.astype(int) * np.array(inp.shape) + (mask == False).astype(int):
 		a_shape.append(int(item))
 	
-	a = tinygrad.Tensor.arange(inp.shape[dim]).reshape(*a_shape)
+	a = tinygrad.Tensor.arange(inp.shape[dim], device = inp.device).reshape(*a_shape)
 	
 	# This will not take duplicate values into account. Might want to change this later :c
 	arg_max = ((true_out == inp).cast(tinygrad.dtypes.int)*a).sum(dim, keepdim = keepdim)

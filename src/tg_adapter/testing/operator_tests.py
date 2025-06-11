@@ -66,12 +66,12 @@ def test_stack():
 		test_function( [tensors, i], {}, torch.stack, tg_adapter.stack )
 
 def test_pow():
-	x = np.abs(make_test_data(3, 4, 5) )
-	y = make_test_data(3, 4, 5)
+	x = (np.arange(4) ).astype(np.float32)
+	y = (np.arange(4) + 2).astype(np.float32)
 	test_function([x, y], {}, torch.pow, tg_adapter.pow)
 	
 def test_magic_pow():
-	a = np.abs(make_test_data(3, 4, 7) )
+	a = (np.arange(4) ).astype(np.float32)
 	def pow_impl(x, y):
 		return x ** y
 	test_function([a, 0.5], {}, pow_impl, pow_impl, error_threshold=1.0e-7)

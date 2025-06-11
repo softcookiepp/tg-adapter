@@ -120,7 +120,15 @@ class ComplexTensor:
 		return self.real.numpy() + (1j* self.imag.numpy() )
 	
 	def __add__(self, other):
-		return self._tg_override(other)
+		a, b = self.real, self.imag
+		if isinstance(other, tinygrad.Tensor):
+			c, d = other, other.zeros_like()
+		elif isinstance(other, ComplexTensor):
+			c, d = other.real, other.imag
+		else:
+			# assume it is constant lol
+			c, d = other, 0.0
+		return ComplexTensor(a + c, b + d)
 	
 	def __sub__(self, other):
 		return self._tg_override(other)
