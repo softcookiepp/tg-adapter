@@ -451,6 +451,9 @@ class AdapterTensor:
 	def float(self):
 		return self.to( _get_type("float32") )
 		
+	def flatten(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+		
 	def is_floating_point(self):
 		return is_floating_point(self)
 		
