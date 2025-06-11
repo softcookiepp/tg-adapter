@@ -453,6 +453,9 @@ class AdapterTensor:
 		
 	def flatten(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
+	
+	def unsqueeze(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
 		
 	def is_floating_point(self):
 		return is_floating_point(self)
