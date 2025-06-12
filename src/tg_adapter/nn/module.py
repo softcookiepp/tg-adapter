@@ -155,7 +155,10 @@ class Module:
 			out = self.forward(*args, **kwargs)
 		else:
 			# use jit if root module
-			out = self._jit_forward(*args, **kwargs)
+			#out = self._jit_forward(*args, **kwargs)
+			# actually disabling for now, it does funny stuff :c
+			out = self.forward(*args, **kwargs)
+			recursive_realize(out)
 		
 		# this is here for the submodule tester thingy
 		if KEEP_INPUT_TENSORS:
