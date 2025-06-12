@@ -393,19 +393,19 @@ class AdapterTensor:
 		elif isinstance(inp, list) or isinstance(inp, tuple):
 			new = []
 			for item in inp:
-				new.append(self._move_to_same_device(item) )
+				new.append(self._move_to_same_device(item, dev = dev) )
 			if isinstance(inp, tuple):
 				new = tuple(new)
 				
 			return new
 		elif isinstance(inp, dict):
 			for k, v in inp.items():
-				inp[k] = self._move_to_same_device(v)
+				inp[k] = self._move_to_same_device(v, dev = dev)
 			return inp
 		else:
 			if hasattr(inp, "__dict__"):
 				# treat as dictionary hehe
-				new_dict = self._move_to_same_device(inp.__dict__)
+				new_dict = self._move_to_same_device(inp.__dict__, dev = dev)
 				inp.__dict__.update(new_dict)
 				return inp
 			else:
