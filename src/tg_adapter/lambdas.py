@@ -94,3 +94,5 @@ def outer(inp, vec2):
 	
 def zeros_like(inp):
 	return T(inp.tg.zeros_like() )
+	
+

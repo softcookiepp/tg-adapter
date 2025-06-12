@@ -50,7 +50,7 @@ Size = tuple
 
 __version__ = "2.6.0"
 
-from .F import chunk, clamp, cat
+from .F import chunk, clamp, cat, concat
 
 from .utils import no_grad
 
