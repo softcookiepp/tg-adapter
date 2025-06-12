@@ -139,7 +139,7 @@ class Module:
 		# get parent function, check if it is not forward or __call__,
 		# then invoke realize() if that is the case
 		parent_function = inspect.stack()[1].function
-		self.is_submodule()
+		self._is_submodule()
 		
 		args, kwargs = convert_to_torch(args, kwargs)
 		
@@ -349,8 +349,8 @@ class Module:
 		for k, v in self.named_modules(remove_duplicate = remove_duplicate):
 			yield v
 	
-	def is_submodule(self):
-		for item in inspect.stack():
+	def _is_submodule(self):
+		for item in inspect.stack()[2:]:
 			print(item.filename, item.function)
 		input("looksie")
 	
