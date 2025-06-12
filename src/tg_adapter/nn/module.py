@@ -137,6 +137,13 @@ class Module:
 	def eval(self):
 		self.train(False)
 		
+	@tinygrad.TinyJit
+	def _jit_forward(self, *args, **kwargs):
+		# Only used when a module is a root module; makes it a lot faster
+		out = self.forward(*args, **kwargs)
+		recursive_realize(out)
+		return out
+		
 	def __call__(self, *args, **kwargs):
 		# get parent function, check if it is not forward or __call__,
 		# then invoke realize() if that is the case
@@ -144,19 +151,16 @@ class Module:
 		
 		args, kwargs = convert_to_torch(args, kwargs)
 		
-		# gotta do this first hehe
-		out = self.forward(*args, **kwargs)
-		"""
-		if False or ( (not parent_function in ["__call__", "forward"]) and isinstance(out, tinygrad.Tensor) ):
-			out = recursive_realize(out)
-		"""
+		if self._is_submodule():
+			out = self.forward(*args, **kwargs)
+		else:
+			# use jit if root module
+			out = self._jit_forward(*args, **kwargs)
 		
 		# this is here for the submodule tester thingy
 		if KEEP_INPUT_TENSORS:
 			self._input_spec = [args, kwargs]
 		
-		if not self._is_submodule():
-			recursive_realize(out)
 		return out
 		
 	def forward(self, *args, **kwargs):
