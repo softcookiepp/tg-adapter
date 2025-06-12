@@ -8,6 +8,7 @@ from ..tensor import convert_to_torch, _parse_to_arguments
 from ..debugging import KEEP_INPUT_TENSORS
 from ..tinybloat.common import recursive_get_attribute
 import itertools
+import os
 
 # adapter for https://pytorch.org/docs/stable/generated/torch.nn.Module.html
 class Module:
