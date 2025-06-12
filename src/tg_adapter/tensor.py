@@ -386,6 +386,7 @@ class AdapterTensor:
 				dev = _decide_device(self, inp)
 			# gotta do the inplace to
 			self.to_(dev)
+			print("moving to", dev)
 			return inp.to(dev)
 		if isinstance(inp, tinygrad.Tensor):
 			raise NotImplementedError
@@ -416,7 +417,7 @@ class AdapterTensor:
 		
 		self_device = self.device
 		d = None
-		if tg_device_supports_longlong(self._tg.device):
+		if not tg_device_supports_longlong(self._tg.device):
 			# Temporarily move tensors to CPU for indexing if absolutely required
 			d = "cpu"
 		args, kwargs = self._move_to_same_device(args, kwargs, dev = d)
