@@ -139,7 +139,6 @@ class Module:
 		# get parent function, check if it is not forward or __call__,
 		# then invoke realize() if that is the case
 		parent_function = inspect.stack()[1].function
-		self._is_submodule()
 		
 		args, kwargs = convert_to_torch(args, kwargs)
 		
@@ -154,6 +153,8 @@ class Module:
 		if KEEP_INPUT_TENSORS:
 			self._input_spec = [args, kwargs]
 		
+		if self._is_submodule():
+			print(self, "is submodule!")
 		return out
 		
 	def forward(self, *args, **kwargs):
@@ -350,9 +351,14 @@ class Module:
 			yield v
 	
 	def _is_submodule(self):
+		found_call = False
+		found_forward = False
 		for item in inspect.stack()[2:]:
-			print(item.filename, item.function)
-		input("looksie")
+			if item.function == "forward":
+				found_forward = True
+			elif item.function == "__call__" and os.path.basename(item.filename) == "module.py":
+				found_call = True
+		return found_call and found_forward
 	
 	def register_buffer(self, name, tensor, persistent = True):
 		assert not name in self.__dict__.keys()
