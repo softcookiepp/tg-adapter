@@ -420,10 +420,13 @@ class AdapterTensor:
 			# Temporarily move tensors to CPU for indexing if absolutely required
 			d = "cpu"
 		args, kwargs = self._move_to_same_device(args, kwargs, dev = d)
-		other = args[0][0]
-		if isinstance(other, AdapterTensor):
-			print(self.tg.device)
-			input(other.tg.device)
+		
+		try:
+			other = args[0][0]
+			if isinstance(other, AdapterTensor):
+				print(self.tg.device, other.tg.device)
+		except TypeError:
+			pass
 		out = self._tg_override(*args, **kwargs)
 		out = self._move_to_same_device( out, dev = self_device)
 		return out
