@@ -3,6 +3,7 @@ from tinygrad.device import is_dtype_supported
 from tinygrad.helpers import unwrap
 
 from .device import device as Device
+from .device import tg_device_supports_longlong
 import inspect
 import numpy as np
 from .types import get_type_from_tg, get_tgt, convert_np_type_correctly, _get_type, is_floating_point
