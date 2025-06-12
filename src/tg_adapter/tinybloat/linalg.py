@@ -6,7 +6,7 @@ from .complex_tensor import ComplexTensor
 
 def norm(A, ord = None, dim = None, keepdim = False, out = None, dtype = None):
 	if (not ord is None) and ord != 2:
-		raise NotImplementedError(f"Order not implemented for tg_adapter.linalg.norm: {ord}")
+		raise NotImplementedError(f"Order not implemented for linalg.norm: {ord}")
 	return ( (A**2).sum(axis = dim, keepdim = keepdim) )**0.5
 
 def qr(A, mode = "reduced"):

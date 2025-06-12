@@ -377,11 +377,12 @@ class AdapterTensor:
 	def expand(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
-	def _move_to_same_device(self, *inp):
+	def _move_to_same_device(self, *inp, dev = None):
 		if len(inp) == 1:
 			inp = inp[0]
 		if isinstance(inp, AdapterTensor):
-			dev = _decide_device(self, inp)
+			if dev is None:
+				dev = _decide_device(self, inp)
 			# gotta do the inplace to
 			self.to_(dev)
 			return inp.to(dev)
@@ -411,8 +412,16 @@ class AdapterTensor:
 				return inp
 	
 	def __getitem__(self, *args, **kwargs):
-		args, kwargs = self._move_to_same_device(args, kwargs)
-		return self._tg_override(*args, **kwargs)
+		
+		self_device = self.device
+		d = None
+		if tg_device_supports_longlong(self._tg.device):
+			# Temporarily move tensors to CPU for indexing if absolutely required
+			d = "cpu"
+		args, kwargs = self._move_to_same_device(args, kwargs, dev = d)
+		out = self._tg_override(*args, **kwargs)
+		out = self._move_to_same_device( out, dev = self_device)
+		return out
 
 	def __gt__(self, other):
 		# TODO: write tests for this crap
