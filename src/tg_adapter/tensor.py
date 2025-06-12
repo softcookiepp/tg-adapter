@@ -577,3 +577,19 @@ def convert_to_tg(*inp):
 			return inp
 	
 	
+def recursive_realize(*inp):
+	if len(inp) == 1:
+		inp = inp[0]
+	if isinstance(inp, AdapterTensor):
+		inp.tg.realize()
+	if isinstance(inp, tinygrad.Tensor):
+		inp.realize()
+	elif isinstance(inp, list) or isinstance(inp, tuple):
+		for item in inp:
+			recursive_realize(item)
+	elif isinstance(inp, dict):
+		for k, v in inp.items():
+			recursive_realize(v)
+	else:
+		if hasattr(inp, "__dict__"):
+			recursive_realize(inp.__dict__)

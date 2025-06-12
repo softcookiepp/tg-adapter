@@ -4,11 +4,12 @@ from typing import Iterable
 import inspect
 from ..device import device
 from ..tensor import AdapterTensor as AT
-from ..tensor import convert_to_torch, _parse_to_arguments
+from ..tensor import convert_to_torch, _parse_to_arguments, recursive_realize
 from ..debugging import KEEP_INPUT_TENSORS
 from ..tinybloat.common import recursive_get_attribute
 import itertools
 import os
+
 
 # adapter for https://pytorch.org/docs/stable/generated/torch.nn.Module.html
 class Module:
@@ -154,8 +155,8 @@ class Module:
 		if KEEP_INPUT_TENSORS:
 			self._input_spec = [args, kwargs]
 		
-		if self._is_submodule():
-			print(self, "is submodule!")
+		if not self._is_submodule():
+			recursive_realize(out)
 		return out
 		
 	def forward(self, *args, **kwargs):
