@@ -58,6 +58,9 @@ TG_BACKEND_TYPE_MAP = {
 		"int16": tinygrad.dtypes.int16,
 		"int32": tinygrad.dtypes.int32,
 		"int64": tinygrad.dtypes.int64,
+		
+		"long": tinygrad.dtypes.long,
+		
 		"uint16": tinygrad.dtypes.uint16,
 		"uint32": tinygrad.dtypes.uint32,
 		"uint64": tinygrad.dtypes.uint64,
