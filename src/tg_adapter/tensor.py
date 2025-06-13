@@ -291,6 +291,9 @@ class AdapterTensor:
 			output = tg_self.__getattribute__(tg_attr)(*tg_args, **tg_kwargs)
 		return convert_to_torch(output)
 		
+	def __array__(self):
+		return self.numpy()
+		
 	def __bool__(self):
 		if is_jitted():
 			# TinyJit doesn't behave well with python's flow control
