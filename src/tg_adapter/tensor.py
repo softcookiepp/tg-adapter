@@ -311,7 +311,7 @@ class AdapterTensor:
 		
 	def nonzero(self):
 		assert not is_jitted(), "Nonzero gives tensors with variable length, and thus must not be jitted"
-		return tinybloat.nonzero(self)
+		return convert_to_torch( tinybloat.nonzero(self.tg) )
 		
 	
 	def __add__(self, other):

@@ -270,10 +270,16 @@ def test_argmax():
 	test_function([a], {}, _test_argmax, _test_argmax)
 	for dim in [0, 1]:
 		test_function([a], {"axis": dim}, _test_argmax, _test_argmax)
+		
+def test_nonzero():
+	a = np.arange(16).reshape(4, 4).astype(np.float32) - 4
+	f = lambda x: x.nonzero()
+	test_function([a], {}, f, f)
 
 
 
 def test_all_operators():
+	test_nonzero()
 	test_max()
 	test_argmax()
 	test_complex_add()
