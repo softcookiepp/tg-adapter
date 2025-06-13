@@ -298,6 +298,7 @@ class AdapterTensor:
 		if is_jitted():
 			# TinyJit doesn't behave well with python's flow control
 			raise RuntimeError("Tensor cannot be evaluated as boolean when using TinyJit.\n Your code must be refactored to avoid using python's built-in flow control.")
+		print(self.numel() )
 		return self.item() > 0
 		
 	def item(self):
