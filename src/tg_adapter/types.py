@@ -178,7 +178,7 @@ def get_type_from_tg(tg_type, backend, other_type = None, is_complex = False):
 		raise ValueError
 	
 	if type_key is None:
-		raise ValueError
+		raise ValueError(f"Unable to find matching type for {tg_type}")
 	return _types_map[type_key]
 
 class dtype:
