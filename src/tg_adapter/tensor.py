@@ -299,7 +299,10 @@ class AdapterTensor:
 			# TinyJit doesn't behave well with python's flow control
 			raise RuntimeError("Tensor cannot be evaluated as boolean when using TinyJit.\n Your code must be refactored to avoid using python's built-in flow control.")
 		return self.item() > 0
-		
+	
+	def __eq__(self, other):
+		return self._tg_override(other)
+	
 	def item(self):
 		if self.numel() > 1:
 			raise RuntimeError("item() for multi-element tensor is ambiguous")
