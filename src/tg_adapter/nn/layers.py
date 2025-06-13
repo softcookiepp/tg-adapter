@@ -223,7 +223,14 @@ class Linear(Module):
 			internal_init.uniform_(self.bias, a = -bound, b = bound)
 		else:
 			self.bias = None
-		
+	
+	@property
+	def in_features(self):
+		return self.weight.shape[1]
+	
+	@property
+	def out_features(self):
+		return self.weight.shape[0]
 	
 	def forward(self, x):
 		# disinherit stuff
