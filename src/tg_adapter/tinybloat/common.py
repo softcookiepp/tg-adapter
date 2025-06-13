@@ -51,3 +51,14 @@ def recursive_get_attribute(obj, key):
 		return recursive_get_attribute(val, remaining_keys)
 	return val
 	
+def nonzero(inp, as_tuple = False):
+	# It is going to be very difficult to write this function
+	# in a manner that is JIT-compatible :c
+	# since the shapes can be variable-length :c
+	out = np.nonzero(inp.numpy() )
+	if as_tuple:
+		raise NotImplementedError
+	out_to_cat = []
+	for idx_a in out:
+		out_to_cat.append(idx_a.reshape(-1, 1) )
+	return tinygrad.Tensor(np.concatenate(out_to_cat, axis = 1), device = inp.device)

@@ -13,6 +13,7 @@ from .debugging import maybe_realize
 from .utils import is_jitted
 
 from .tinybloat import ComplexTensor, safety_functions
+from . import tinybloat
 
 
 def _parse_to_arguments(*args, **kwargs):
@@ -307,6 +308,11 @@ class AdapterTensor:
 		if self.numel() > 1:
 			raise RuntimeError("item() for multi-element tensor is ambiguous")
 		return self._tg_override()
+		
+	def nonzero(self):
+		assert not is_jitted(), "Nonzero gives tensors with variable length, and thus must not be jitted"
+		return tinybloat.nonzero(self)
+		
 	
 	def __add__(self, other):
 		other = self._move_to_same_device(other)
