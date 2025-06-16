@@ -101,7 +101,7 @@ NP_TG_TYPE_MAP = {
 def get_np_type_from_torch(tt, backend = "DEFAULT"):
 	if not isinstance(tt, str):
 		tt = tt.key
-	return NP_TG_TYPE_MAP[ TG_BACKEND_TYPE_MAP[tt] ]
+	return NP_TG_TYPE_MAP[ TG_BACKEND_TYPE_MAP[backend][tt] ]
 
 def get_np_type_from_tg(tgt):
 	return NP_TG_TYPE_MAP[tgt]
