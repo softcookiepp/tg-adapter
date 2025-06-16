@@ -86,7 +86,10 @@ def test_min():
 	_test_function([a], {}, torch.min, tg_adapter.min)
 	
 def test_radd():
-	raise NotImplementedError
+	a = np.abs(make_test_data(3, 4, 7) )
+	def _rsub_test(a, b):
+		return a + b
+	_test_function([1, a], {}, _rsub_test, _rsub_test)
 	
 def test_rsub():
 	a = np.abs(make_test_data(3, 4, 7) )
