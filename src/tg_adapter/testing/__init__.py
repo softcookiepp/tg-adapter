@@ -7,10 +7,3 @@ import pytest
 
 def run_tests():
 	pytest.main(["--pyargs", "tg_adapter.testing.operator_tests", "tg_adapter.testing.module_tests"])
-	result = True
-	#result = test_all_operators()
-	#test_modules()
-	if result:
-		print("All tests passing!")
-	else:
-		print("Some tests failed, please examine output")
