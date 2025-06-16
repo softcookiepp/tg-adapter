@@ -32,4 +32,4 @@ dependencies = [
 	"pytest>=8.4.0"
 ]
 description = "Library for porting pytorch code to tinygrad"
-version = "0.0.6"
+version = "0.0.7"

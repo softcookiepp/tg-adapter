@@ -1,6 +1,7 @@
 import torch
 import tg_adapter
 from .testing_utils import *
+from .testing_utils import _test_function, _test_hf_reimplementation
 	
 	
 def _test_linear(use_bias):
@@ -12,11 +13,11 @@ def _test_linear(use_bias):
 	copy_state_dict(hf_module, tg_module)
 	
 	a = make_test_data(2, 3, 4096)
-	test_hf_reimplementation([a], {}, hf_module, "__call__", tg_module, "__call__")
+	_test_hf_reimplementation([a], {}, hf_module, "__call__", tg_module, "__call__")
 	
 	a = a.reshape(-1, 4096)
 	
-	test_hf_reimplementation([a], {}, hf_module, "__call__", tg_module, "__call__")
+	_test_hf_reimplementation([a], {}, hf_module, "__call__", tg_module, "__call__")
 	
 	
 	
@@ -28,6 +29,7 @@ def test_linear():
 def test_avg_pool_2d():
 	from tg_adapter.nn import AvgPool2d as tg_class
 	from torch.nn import Linear as hf_class
+	use_bias = True
 	hf_module = hf_class(4096, 2048, use_bias)
 	tg_module = tg_class(4096, 2048, use_bias)
 	
@@ -36,7 +38,7 @@ def test_module_list():
 	tg_module = tg_adapter.nn.ModuleList([tg_adapter.nn.Linear(2, 4)])
 	copy_state_dict(torch_module, tg_module)
 	module_list_test = lambda x, _torch: x.state_dict()
-	test_hf_reimplementation([], {}, torch_module, module_list_test, tg_module, module_list_test)
+	_test_hf_reimplementation([], {}, torch_module, module_list_test, tg_module, module_list_test)
 
 def test_multihead_attention():
 	embed_dim = 16
@@ -48,10 +50,4 @@ def test_multihead_attention():
 	q = make_test_data(batch_size, embed_dim)
 	k = make_test_data(batch_size, embed_dim)
 	v = make_test_data(batch_size, embed_dim)
-	test_hf_reimplementation((q, k, v), {"need_weights": False}, torch_module, "__call__", tg_module, "__call__")
-
-def test_modules():
-	test_linear()
-	#test_avg_pool_2d()
-	test_module_list()
-	test_multihead_attention()
+	_test_hf_reimplementation((q, k, v), {"need_weights": False}, torch_module, "__call__", tg_module, "__call__")

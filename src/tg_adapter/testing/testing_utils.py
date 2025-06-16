@@ -67,7 +67,7 @@ def get_submodules(torch_module, tg_module):
 def _make_input_tensor(arg):
 	return np.random.randn(int(np.prod(arg.shape)) ).astype(arg.numpy().dtype).reshape(arg.shape)
 	
-def test_submodule(torch_module, tg_module):
+def _test_submodule(torch_module, tg_module):
 	# might as well
 	compare_state_dicts(torch_module, tg_module)
 	copy_state_dict(torch_module, tg_module)
@@ -77,9 +77,9 @@ def test_submodule(torch_module, tg_module):
 	kwargs = {}
 	for k, arg in tg_module._input_spec[1].items():
 		kwargs[k] = _process_submodule_test_arg(arg)
-	test_hf_reimplementation(args, kwargs, torch_module, "__call__", tg_module, "__call__")
+	_test_hf_reimplementation(args, kwargs, torch_module, "__call__", tg_module, "__call__")
 	
-def test_all_submodules(torch_module, tg_module):
+def _test_all_submodules(torch_module, tg_module):
 	torch_submodules, tg_submodules = get_submodules(torch_module, tg_module)
 	for k in torch_submodules.keys():
 		torch_sub = torch_submodules[k]
@@ -90,7 +90,7 @@ def test_all_submodules(torch_module, tg_module):
 		
 		# must have input spec in order to run any tests whatsoever
 		if not tg_sub._input_spec is None:
-			test_submodule(torch_sub, tg_sub)
+			_test_submodule(torch_sub, tg_sub)
 
 def compare_state_dicts(torch_module, tga_module, error_threshold = 1.0e-9):
 	print(type(torch_module), type(tga_module) )
@@ -115,7 +115,7 @@ def compare_state_dicts(torch_module, tga_module, error_threshold = 1.0e-9):
 			error = mse(torch_value, tga_value)
 			if error >= error_threshold or np.isnan(error):
 				print("state dict values don't match for", torch_key)
-				input()
+				#input()
 			assert error < error_threshold
 	except AssertionError:
 		# keys are not equal
@@ -172,8 +172,8 @@ def mse(predicted, actual):
 def make_test_data(*shape):
 	return np.random.randn(int(np.prod(shape)) ).reshape(shape).astype(np.float32)
 	
-def test_function(inp_args, inp_kwargs, torch_function, tinygrad_function, error_threshold = 1.0e-7):
-	test_hf_reimplementation( inp_args, inp_kwargs, torch_function, "__call__", tinygrad_function, "__call__", error_threshold = error_threshold)
+def _test_function(inp_args, inp_kwargs, torch_function, tinygrad_function, error_threshold = 1.0e-7):
+	_test_hf_reimplementation( inp_args, inp_kwargs, torch_function, "__call__", tinygrad_function, "__call__", error_threshold = error_threshold)
 	
 
 def _print_dict_types(d):
@@ -232,7 +232,8 @@ def _test_key_errors(hf_dict, tg_dict, error_threshold = 1.0e-9, print_values = 
 			print(hf_dict.shape, tg_dict.shape)
 			print(hf_dict)
 			print(tg_dict)
-			input()
+			#input()
+		assert error < error_threshold
 	elif type(hf_dict) in [int, float]:
 		_test_key_errors(np.array(hf_dict), np.array(tg_dict), error_threshold, display_images, error_function)
 	elif isinstance(hf_dict, str):
@@ -285,7 +286,7 @@ def _process_submodule_test_arg(arg):
 		# append as is
 		return arg
 
-def test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, device = "cuda:0", display_images = False):
+def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, device = "cuda:0", display_images = False):
 	if not (isinstance(args, tuple) or isinstance(args, list) ):
 		args = (args,)
 	if hasattr(my_module, "to"):

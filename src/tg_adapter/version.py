@@ -2,5 +2,5 @@
 
 PROGRAM_NAME = 'tg_adapter'
 
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 hip = None
