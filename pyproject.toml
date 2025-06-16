@@ -28,7 +28,8 @@ dependencies = [
 	"numpy",
 	"typing",
 	"argparse",
-	"safetensors"
+	"safetensors",
+	"pytest>=8.4.0"
 ]
 description = "Library for porting pytorch code to tinygrad"
 version = "0.0.6"
