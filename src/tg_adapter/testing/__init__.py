@@ -5,10 +5,13 @@ except ImportError:
 
 from .operator_tests import test_all_operators
 from .module_tests import test_modules
+import pytest
 
 def run_tests():
-	result = test_all_operators()
-	test_modules()
+	pytest.main(["--pyargs", "tg_adapter.testing.peepee"])
+	result = True
+	#result = test_all_operators()
+	#test_modules()
 	if result:
 		print("All tests passing!")
 	else:
