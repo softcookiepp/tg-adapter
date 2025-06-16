@@ -6,7 +6,7 @@ from .device import device as Device
 from .device import tg_device_supports_longlong
 import inspect
 import numpy as np
-from .types import get_type_from_tg, get_tgt, convert_np_type_correctly, _get_type, is_floating_point
+from .types import get_type_from_tg, get_tgt, convert_np_type_correctly, _get_type, is_floating_point, get_np_type_from_torch
 from .types import dtype as dtype_class
 from .backend_environment_config import *
 from .debugging import maybe_realize
@@ -50,6 +50,9 @@ class AdapterTensor:
 		
 		if isinstance(data, float) or isinstance(data, int) or isinstance(data, list):
 			data = np.array(data)
+			if not dtype is None:
+				npt = get_np_type_from_torch(dtype)
+				data = data.astype(npt)
 			
 		if isinstance(device, Device):
 			tg_device = device.tg
