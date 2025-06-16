@@ -183,7 +183,77 @@ def _print_dict_types(d):
 def str_to_numerical(s: str):
 	b = bytes(s, "utf-8")
 	return np.array(memoryview(b) ).astype(np.float32)
+
+def _test_key_errors(hf_dict, tg_dict, error_threshold = 1.0e-6, print_values = True, display_images = False, error_function = mse):
+	print("types:", type(hf_dict), type(tg_dict) )
+	if isinstance(hf_dict, dict):
+		tested_keys = hf_dict.keys()
+		if list(hf_dict.keys() ) != list(tg_dict.keys() ):
+			print("Warning! keys don't match! Will only test the ones that do")
+			print(hf_dict.keys() )
+			print(tg_dict.keys() )
+			if len(hf_dict.keys() ) > len(tg_dict.keys() ):
+				tested_keys = tg_dict.keys()
+		for k in tested_keys:
+			print("key:", k)
+			hf_item = hf_dict[k]
+			tg_item = tg_dict[k]
+			_test_key_errors(hf_item, tg_item, error_threshold, print_values, display_images, error_function)
+	elif isinstance(hf_dict, torch.Tensor):
+		_test_key_errors(hf_dict.detach().numpy(), tg_dict.numpy(), error_threshold, display_images, error_function)
+	elif isinstance(hf_dict, Image.Image):
+		hf_dict.save("test_hf.png")
+		tg_dict.save("test_tg.png")
+		hf_item, tg_item = np.array(hf_dict), np.array(tg_dict)
+		_test_key_errors(hf_item, tg_item, error_threshold, display_images, error_function)
+	elif isinstance(hf_dict, list):
+		if isinstance(tg_dict, np.ndarray):
+			hf_dict = np.array(hf_dict).astype(np.float32)
+			_test_key_errors(hf_dict, tg_dict, error_threshold, display_images, error_function)
+		else:
+			if len(hf_dict) != len(tg_dict):
+				print("Lengths differ!")
+				hf_dict = set(hf_dict)
+				tg_dict = set(tg_dict)
+				if len(tg_dict) < len(hf_dict):
+					print("Values missing from tg:", hf_dict - tg_dict)
+				raise ValueError
+			# list of other sort, non-numerical
+			for hf_item2, tg_item2 in zip(hf_dict, tg_dict):
+				_test_key_errors(hf_item2, tg_item2, error_threshold, display_images, error_function)
 	
+	elif isinstance(hf_dict, tuple):
+		# tuple of crap
+		for hf_item2, tg_item2 in zip(hf_dict, tg_dict):
+			_test_key_errors(hf_item2, tg_item2, error_threshold, display_images, error_function)
+	elif isinstance(hf_dict, object) and hasattr(hf_dict, "__dict__"):
+		_test_key_errors(hf_dict.__dict__, tg_dict.__dict__, error_threshold, display_images, error_function)
+	elif isinstance(hf_dict, np.ndarray):
+		error = mse(hf_dict, tg_dict)
+		print("value mse:", error, "\n")
+		if error > error_threshold or np.isnan(error):
+			print(hf_dict.shape, tg_dict.shape)
+			print(hf_dict)
+			print(tg_dict)
+			input()
+	elif type(hf_dict) in [int, float]:
+		_test_key_errors(np.array(hf_dict), np.array(tg_dict), error_threshold, display_images, error_function)
+	elif isinstance(hf_dict, str):
+		hf_dict = str_to_numerical(hf_dict)
+		tg_dict = str_to_numerical(tg_dict)
+		_test_key_errors(hf_dict, tg_dict, error_threshold, display_images, error_function)
+	elif isinstance(hf_dict, type(None) ):
+		pass
+	elif isinstance(hf_dict, bool):
+		_test_key_errors(int(hf_dict), int(tg_dict), error_threshold, display_images, error_function)
+	elif hasattr(hf_dict, "__iter__"):
+		assert len(hf_dict) == len(tg_dict), f"got differing lengths: {len(hf_dict)} and {len(tg_dict)}"
+		for hf_item, tg_item in zip(sorted(hf_dict), sorted(tg_dict) ):
+			_test_key_errors(hf_item, tg_item, error_threshold, display_images, error_function)
+	else:
+		raise ValueError
+
+"""
 def _test_key_errors(hf_dict, tg_dict, error_threshold = 1.0e-9, print_values = True, display_images = False, error_function = mse):
 	print("types:", type(hf_dict), type(tg_dict) )
 	if isinstance(hf_dict, dict):
@@ -246,7 +316,9 @@ def _test_key_errors(hf_dict, tg_dict, error_threshold = 1.0e-9, print_values = 
 		_test_key_errors(int(hf_dict), int(tg_dict), error_threshold, display_images, error_function)
 	else:
 		raise ValueError
-		
+
+"""
+	
 def _process_arg(arg, device):
 	if isinstance(arg, np.ndarray):
 		# convert to tensor
