@@ -358,10 +358,10 @@ def _process_submodule_test_arg(arg):
 		# append as is
 		return arg
 
-def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, device = "cuda:0", display_images = False):
+def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, move_after_creation = True, device = "cuda:0", display_images = False):
 	if not (isinstance(args, tuple) or isinstance(args, list) ):
 		args = (args,)
-	if hasattr(my_module, "to"):
+	if hasattr(my_module, "to") and move_after_creation:
 		my_module = my_module.to(device)
 	hf_args, my_args = [], []
 	for arg in args:
