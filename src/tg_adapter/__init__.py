@@ -29,6 +29,7 @@ LongTensor = AdapterTensor
 IntTensor = AdapterTensor
 BoolTensor = AdapterTensor
 Tensor = AdapterTensor
+HalfTensor = AdapterTensor
 
 
 #def device(dev):
