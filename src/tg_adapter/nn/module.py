@@ -4,7 +4,7 @@ from typing import Iterable
 import inspect
 from ..device import device
 from ..tensor import AdapterTensor as AT
-from ..tensor import convert_to_torch, _parse_to_arguments, recursive_realize
+from ..tensor import convert_to_torch, convert_to_tg, _parse_to_arguments, recursive_realize
 from ..debugging import KEEP_INPUT_TENSORS
 from ..tinybloat.common import recursive_get_attribute
 import itertools
@@ -266,6 +266,10 @@ class Module:
 		#_cb(self)
 		# expected and missing keys are not implemented yet
 		return [], []
+		
+	def tg_state_dict(self):
+		# Returns the state dict in tinygrad format
+		return convert_to_tg(self.state_dict() )
 		
 	
 	def state_dict(self, prefix = ""):
