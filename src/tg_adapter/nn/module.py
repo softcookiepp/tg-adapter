@@ -11,6 +11,7 @@ import itertools
 import os
 
 
+
 # adapter for https://pytorch.org/docs/stable/generated/torch.nn.Module.html
 class Module:
 	def __init__(self, *args, **kwargs):
@@ -307,7 +308,6 @@ class Module:
 		return f"{self.__class__}"
 	
 	def named_parameters(self, memo = None, prefix = "", remove_duplicate = True):
-		#raise NotImplementedError
 		for name, param in self.state_dict().items():
 			yield name, param
 	
@@ -319,58 +319,31 @@ class Module:
 	
 	def named_modules(self, memo=None, prefix="", remove_duplicate=True):
 		# So this is supposed to be recursive.
-		
-		
-		if True:
-			# We can probably extract a good deal of it from the state dict
-			# instead of doing the recursive crap
-			sd = self.state_dict()
-			named_modules = {}
-			for k, v in sd.items():
-				# iterate over each subkey and append it to the list of named modules
-				subkeys = k.split(".")
-				for ik in range(len(subkeys) ):
-					subkey = ".".join(subkeys[0:ik+1])
-					if not subkey in named_modules.keys():
-						attr_value = recursive_get_attribute(self, subkey)
-						#print(subkey, attr_value)
-						if isinstance(attr_value, Module) or isinstance(attr_value, list):
-							#input(f"adding {subkey}")
-							named_modules[subkey] = attr_value
-			#input(named_modules.keys() )
-			return itertools.chain([("", self)], named_modules.items() )
-						
-					
-		else:
-			pass
-			"""
-			#raise NotImplementedError
-			# prefix indicates this method is called recursively
-			def _get_named_modules_from_list(v: list, prefix):
-				for i, v2 in enumerate(v):
-					if isinstance(v2, Module):
-						for subk, subv in v2.named_modules(prefix = f"{prefix}.{i}."):
-							yield subk, subv
-					elif isinstance(v2, list):
-						for subk, subv in _get_named_modules_from_list(v2, f"{prefix}.{i}."):
-							yield subk, subv
-					
-			
-			for k, v in self.__dict__.items():
-				if isinstance(v, Module):
-					k = prefix + k
-					yield k, v
-					for subk, subv in v.named_modules(prefix = f"{k}."):
-						# use recursion c:
-						yield subk, subv
-				elif isinstance(v, list):
-					for subk, subv in _get_named_modules_from_list(v, f"{k}."):
-						yield subk, subv
-			"""
-	
+		# We can probably extract a good deal of it from the state dict
+		# instead of doing the recursive crap
+		sd = self.state_dict()
+		named_modules = {}
+		for k, v in sd.items():
+			# iterate over each subkey and append it to the list of named modules
+			subkeys = k.split(".")
+			for ik in range(len(subkeys) ):
+				subkey = ".".join(subkeys[0:ik+1])
+				if not subkey in named_modules.keys():
+					attr_value = recursive_get_attribute(self, subkey)
+					#print(subkey, attr_value)
+					if isinstance(attr_value, Module) or isinstance(attr_value, list):
+						#input(f"adding {subkey}")
+						named_modules[subkey] = attr_value
+		#input(named_modules.keys() )
+		return itertools.chain([("", self)], named_modules.items() )
+				
 	def modules(self, remove_duplicate = True):
 		for k, v in self.named_modules(remove_duplicate = remove_duplicate):
 			yield v
+	
+	@property
+	def tg(self):
+		return AutogenTinygradModule(self)
 	
 	def _is_submodule(self):
 		found_call = False
@@ -394,3 +367,29 @@ class Module:
 	def training(self):
 		# TODO: actually implement
 		return False
+
+
+# This is the class that will be returned when accessing the Module.tg
+# property.
+# It exists to make it possible to port torch code to vanilla tinygrad
+# step-by-step rather than all at once.
+class AutogenTinygradModule:
+	def __init__(self, tga_module: Module):
+		for k, mod in tga_module.named_modules():
+			assert hasattr(mod, "tg_forward"), "Module must have tga_forward method to be able to converted to a vanilla tinygrad model."
+			
+			# Now we just need a way of finding which modules are immediate...
+			# oh right
+			# count of 0 means not child of child, length means it is a child and not self
+			if k.count(".") == 0 and len(k) > 0:
+				# yes, this will be recursive c:
+				self.__dict__[k] = mod.tg
+		
+		for k, param in tga_module.named_parameters():
+			# ensure that param is immediate (not member of child module)
+			if k.count(".") == 1:
+				self.__dict__[k.split(".")[1]] = param.tg
+				
+		
+		raise NotImplementedError
+		
