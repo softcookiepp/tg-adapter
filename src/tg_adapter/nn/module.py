@@ -389,6 +389,9 @@ class AutogenTinygradModule:
 			# ensure that param is immediate (not member of child module)
 			if k.count(".") == 1:
 				self.__dict__[k.split(".")[1]] = param.tg
+		
+		# hopefully this is how it is done
+		self.tg_forward = tga_module.tg_forward
 				
 		# pretty sure thats it?
 		# raise NotImplementedError
