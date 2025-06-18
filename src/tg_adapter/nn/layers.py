@@ -28,6 +28,10 @@ class AvgPool2d(Module):
 		out = inp.avg_pool2d(self._kernel_size, self._stride,
 			1, self._padding, self._ceil_mode, self._count_include_pad)
 		return AT(out)
+		
+	def tg_forward(self, inp):
+		return inp.avg_pool2d(self._kernel_size, self._stride,
+			1, self._padding, self._ceil_mode, self._count_include_pad)
 
 class SequentialIterator:
 	def __init__(self, module):
@@ -70,6 +74,9 @@ class Dropout(Module):
 	
 	def forward(self, inp):
 		return AT(inp.tg.dropout(self._p) )
+		
+	def tg_forward(self, inp):
+		return inp.dropout(self._p)
 
 class AdaGroupNorm(Module):
 	def __init__(self, *args, **kwargs):
@@ -127,9 +134,13 @@ class ConvNd(Module):
 		return self._out_channels
 	
 	def forward(self, x):
+		raise RuntimeError("we aren't supposed to get here!")
 		x, weight, bias = convert_to_tg(x, self.weight, self.bias)
 		x = x.conv2d(weight, bias, self.groups, self.stride, self.dilation, self.padding)
 		return AT(x)
+	
+	def tg_forward(self, x):
+		return x.conv2d(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding)
 
 # ugh, I forgot that torch is going to expect this crap as a type :c
 

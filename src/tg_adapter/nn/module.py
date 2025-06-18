@@ -149,7 +149,7 @@ class Module:
 		if hasattr(self, "tg_forward"):
 			# use tinygrad-based forward method instead if it exists
 			args, kwargs = convert_to_tg(args, kwargs)
-			out = self.tg_forward(*args, **kwargs)
+			out = self.tg.tg_forward(*args, **kwargs)
 			return convert_to_torch(out)
 		else:
 			return self.forward(*args, **kwargs)
