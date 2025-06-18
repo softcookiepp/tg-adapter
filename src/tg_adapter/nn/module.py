@@ -390,6 +390,6 @@ class AutogenTinygradModule:
 			if k.count(".") == 1:
 				self.__dict__[k.split(".")[1]] = param.tg
 				
-		
-		raise NotImplementedError
+		# pretty sure thats it?
+		# raise NotImplementedError
 		
