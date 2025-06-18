@@ -144,6 +144,15 @@ class Module:
 		recursive_realize(out)
 		return out
 		
+	def _run_forward(self, *args, **kwargs):
+		if hasattr(self, "tg_forward"):
+			# use tinygrad-based forward method instead if it exists
+			args, kwargs = convert_to_tg(args, kwargs)
+			out = self.tg_forward(*args, **kwargs)
+			return convert_to_torch(out)
+		else:
+			return self.forward(*args, **kwargs)
+		
 	def __call__(self, *args, **kwargs):
 		# get parent function, check if it is not forward or __call__,
 		# then invoke realize() if that is the case
@@ -152,12 +161,12 @@ class Module:
 		args, kwargs = convert_to_torch(args, kwargs)
 		
 		if self._is_submodule():
-			out = self.forward(*args, **kwargs)
+			out = self._run_forward(*args, **kwargs)
 		else:
 			# use jit if root module
 			#out = self._jit_forward(*args, **kwargs)
 			# actually disabling for now, it does funny stuff :c
-			out = self.forward(*args, **kwargs)
+			out = self._run_forward(*args, **kwargs)
 			recursive_realize(out)
 		
 		# this is here for the submodule tester thingy
