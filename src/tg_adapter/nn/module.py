@@ -398,11 +398,16 @@ class AutogenTinygradModule:
 			if not k in self.__dict__.keys():
 				self.__dict__[k] = v
 		
-		# hopefully this is how it is done
 		self.tg_forward = tga_module.tg_forward
-				
-		# pretty sure thats it?
-		# raise NotImplementedError
 	
 	def __call__(self, *args, **kwargs):
 		return self.tg_forward(self, *args, **kwargs)
+
+
+# class for converting pure tinygrad modules to tg_adapter modules.
+# This will be useful at some point, I absolutely know it.
+class AutogenAdapterModule(Module):
+	def __init__(self, tinygrad_module, *args, **kwargs):
+		raise NotImplementedError
+	
+	
