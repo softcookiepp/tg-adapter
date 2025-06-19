@@ -319,22 +319,25 @@ def _test_key_errors(hf_dict, tg_dict, error_threshold = 1.0e-9, print_values = 
 
 """
 	
-def _process_arg(arg, device):
+def _process_arg(arg, device, use_tg_adapter):
 	if isinstance(arg, np.ndarray):
 		# convert to tensor
-		tgt = tg_adapter.tensor(arg).to(device)
-		tgt.tg.realize()
+		if use_tg_adapter:
+			tgt = tg_adapter.tensor(arg).to(device)
+			tgt.tg.realize()
+		else:
+			tgt = tinygrad.Tensor(arg).to(device).realize()
 		return torch.tensor(arg), tgt
 	elif isinstance(arg, list):
 		hf_list, tg_list = [], []
 		for arg2 in arg:
-			h, t = _process_arg(arg2, device)
+			h, t = _process_arg(arg2, device, use_tg_adapter)
 			hf_list.append(h)
 			tg_list.append(t)
 		return hf_list, tg_list
 	elif isinstance(arg, tuple):
 		alist = list(arg)
-		hf_list, tg_list = _process_arg(alist, device)
+		hf_list, tg_list = _process_arg(alist, device, use_tg_adapter)
 		return tuple(hf_list), tuple(tg_list)
 	else:
 		# append as is
@@ -358,27 +361,21 @@ def _process_submodule_test_arg(arg):
 		# append as is
 		return arg
 
-def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, move_after_creation = True, device = "cuda:0", display_images = False):
+def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, move_after_creation = True, device = "cuda:0", display_images = False, use_tg_adapter = True):
 	if not (isinstance(args, tuple) or isinstance(args, list) ):
 		args = (args,)
-	if hasattr(my_module, "to") and move_after_creation:
+	if hasattr(my_module, "to") and move_after_creation and use_tg_adapter:
 		my_module = my_module.to(device)
+	elif (not use_tg_adapter) and tg_adapter.tinybloat.is_tinygrad_module(my_module):
+		# just use default tinygrad device
+		# still need to write a function that lets you move a module to device
+		dev = tinygrad.Device.DEFAULT
+		tg_adapter.tinybloat.move_to_device(my_module, dev)
 	hf_args, my_args = [], []
 	for arg in args:
-		if False:
-			if isinstance(arg, np.ndarray):
-				# convert to tensor
-				torch_v, tg_v = _process_arg(arg, device)
-				hf_args.append(torch_v)
-				my_args.append(tg_v )
-			else:
-				# append as is
-				hf_args.append(arg )
-				my_args.append(arg )
-		else:
-			torch_v, tg_v = _process_arg(arg, device)
-			hf_args.append(torch_v)
-			my_args.append(tg_v )
+		torch_v, tg_v = _process_arg(arg, device, use_tg_adapter)
+		hf_args.append(torch_v)
+		my_args.append(tg_v )
 	
 	hf_args = tuple(hf_args)
 	my_args = tuple(my_args)
@@ -386,7 +383,7 @@ def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_
 	hf_kwargs = {}
 	my_kwargs = {}
 	for k, v in kwargs.items():
-		torch_v, tg_v = _process_arg(v, device)
+		torch_v, tg_v = _process_arg(v, device, use_tg_adapter)
 		hf_kwargs[k] = torch_v
 		my_kwargs[k] = tg_v
 	

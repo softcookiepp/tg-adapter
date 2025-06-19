@@ -408,6 +408,11 @@ class AutogenTinygradModule:
 # This will be useful at some point, I absolutely know it.
 class AutogenAdapterModule(Module):
 	def __init__(self, tinygrad_module, *args, **kwargs):
+		# im not going to wrap my head around this right now...
+		for k, v in tinygrad_module.__dict__.items():
+			raise NotImplementedError
+		
+	def forward(self, *args, **kwargs):
 		raise NotImplementedError
 	
 	

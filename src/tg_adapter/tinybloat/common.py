@@ -50,6 +50,25 @@ def recursive_get_attribute(obj, key):
 		remaining_keys = ".".join(key_terms[1:])
 		return recursive_get_attribute(val, remaining_keys)
 	return val
+
+def is_tinygrad_module(obj):
+	# here we check if the object has any tinygrad tensors
+	state_dict = tinygrad.nn.state.get_state_dict(obj)
+	return len(state_dict.keys() ) > 0
+	
+def module_on_device(obj, device: str):
+	# TODO: canonicalize device
+	state_dict = tinygrad.nn.state.get_state_dict(obj)
+	assert not len(state_dict.keys() ) == 0, "Not a tinygrad module"
+	for k, v in state_dict.items():
+		if not v.device == device:
+			return False
+	return True
+
+def move_to_device(obj, device: str):
+	for k, v in tinygrad.nn.state.get_state_dict(obj).items():
+		v.replace(v.to(device) )
+	return obj
 	
 def nonzero(inp, as_tuple = False):
 	# It is going to be very difficult to write this function
@@ -62,3 +81,5 @@ def nonzero(inp, as_tuple = False):
 	for idx_a in out:
 		out_to_cat.append(idx_a.reshape(-1, 1) )
 	return tinygrad.Tensor(np.concatenate(out_to_cat, axis = 1), device = inp.device)
+	
+	
