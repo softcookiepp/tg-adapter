@@ -380,7 +380,7 @@ class Module:
 class AutogenTinygradModule:
 	def __init__(self, tga_module: Module):
 		for k, mod in tga_module.named_modules():
-			assert hasattr(mod, "tg_forward"), "Module must have tga_forward method to be able to converted to a vanilla tinygrad model."
+			assert hasattr(mod, "tg_forward"), "Module must have tg_forward method to be able to converted to a vanilla tinygrad model."
 			
 			# Now we just need a way of finding which modules are immediate...
 			# oh right

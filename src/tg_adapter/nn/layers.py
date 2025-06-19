@@ -23,12 +23,13 @@ class AvgPool2d(Module):
 		self._ceil_mode = ceil_mode
 		self._count_include_pad = count_include_pad
 	
+	"""
 	def forward(self, inp):
 		inp = convert_to_tg(inp)
 		out = inp.avg_pool2d(self._kernel_size, self._stride,
 			1, self._padding, self._ceil_mode, self._count_include_pad)
 		return AT(out)
-		
+	"""
 	def tg_forward(_, self, inp):
 		return inp.avg_pool2d(self._kernel_size, self._stride,
 			1, self._padding, self._ceil_mode, self._count_include_pad)
@@ -71,10 +72,10 @@ class Dropout(Module):
 			raise NotImplementedError
 		
 		self._p = p
-	
+	"""
 	def forward(self, inp):
 		return AT(inp.tg.dropout(self._p) )
-		
+	"""
 	def tg_forward(_, self, inp):
 		return inp.dropout(self._p)
 
@@ -255,13 +256,28 @@ class Linear(Module):
 		#print(x.shape, out_shape)
 		#x = x.reshape(out_shape)
 		return convert_to_torch(x)
-		
+	
+	def tg_forward(_, self, x):
+		# disinherit stuff
+		x, weight, bias = x, self.weight, self.bias
+		in_features = weight.shape[1]
+		out_features = weight.shape[0]
+		out_shape = list(x.shape)
+		out_shape[-1] = out_features
+		out_shape = tuple(out_shape)
+		#x = x.reshape(-1, in_features)
+		x = x.linear(weight.transpose(), bias)
+		#print(x.shape, out_shape)
+		#x = x.reshape(out_shape)
+		return x
+	
 class Embedding(Module):
 	def __init__(self, vocab_size:int, embed_size:int):
 		self.vocab_sz, self.embed_sz = vocab_size, embed_size
 		self.weight = tc.empty( (vocab_size, embed_size) )
 		internal_init.xavier_uniform_(self.weight )
 	
+	"""
 	def forward(self, idx):
 		vocab_sz, embed_sz, weight, idx = convert_to_tg(self.vocab_sz, self.embed_sz, self.weight, idx)
 		
@@ -291,6 +307,36 @@ class Embedding(Module):
 		
 		out = out.to(original_device)
 		return AT(out)
+	"""
+	
+	def tg_forward(parent, self, idx):
+		vocab_sz, embed_sz, weight = self.vocab_sz, self.embed_sz, self.weight
+		
+		original_device = idx.device
+		working_device = idx.device
+		
+		if not tg_device_supports_longlong(weight.device):
+			# perform embedding on the CPU as a fallback
+			working_device = "CPU"
+		
+		if not hasattr(parent, 'arange'): parent.arange = tinygrad.Tensor.arange(vocab_sz,
+			requires_grad=False, device=working_device, dtype = highest_precision_int(working_device) ).unsqueeze(-1)
+		big_shp = idx.shape+(vocab_sz, embed_sz)
+		
+		
+		idx = idx.to(working_device)
+		weight = weight.to(working_device)
+		
+		arange, idx, vals = parent.arange.expand(big_shp), idx.reshape(idx.shape+(1, 1)).expand(big_shp), weight.expand(big_shp)
+		
+		# (-1, 77, 49408, -1)
+		inter = (arange == idx)
+		
+		# (-1, 77, 49408, -1)
+		inter2 = inter.mul(vals)
+		out = inter2.sum(-2)
+		
+		return out.to(original_device)
 		
 
 class GroupNorm(Module):
@@ -299,9 +345,7 @@ class GroupNorm(Module):
 		self.num_groups, self.num_channels, self.eps = num_groups, num_channels, eps
 		self.weight = tc.ones(num_channels) if affine else None
 		self.bias = tc.zeros(num_channels) if affine else None
-		#self.weight = AT(tinygrad.Tensor.ones(num_channels) ) if affine else None
-		#self.bias = AT( tinygrad.Tensor.zeros(num_channels) ) if affine else None
-	
+	"""
 	def forward(self, x):
 		# disinherit stuff
 		x, weight, bias = convert_to_tg(x, self.weight, self.bias)
@@ -312,7 +356,13 @@ class GroupNorm(Module):
 		if weight is None or bias is None: return _cb(x)
 		out = x * weight.reshape(1, -1, *[1] * (x.ndim-2)) + bias.reshape(1, -1, *[1] * (x.ndim-2))
 		return AT(out)
-
+	"""
+	def tg_forward(_, self, x):
+		# disinherit stuff
+		x = x.reshape(x.shape[0], self.num_groups, -1).layernorm(eps=self.eps).reshape(x.shape)
+		if self.weight is None or self.bias is None: return x
+		return x * self.weight.reshape(1, -1, *[1] * (x.ndim-2)) + self.bias.reshape(1, -1, *[1] * (x.ndim-2))
+		
 class MultiheadAttention(Module):
 	def __init__(self,
 				embed_dim,
@@ -381,8 +431,55 @@ class MultiheadAttention(Module):
 		self.add_zero_attn = add_zero_attn
 		self.max_self_attn_cache_len = 512 # lets just try this lol
 
+	def tg_forward(_, self, q, k, v, key_padding_mask = None,
+			need_weights = True, attn_mask = None,
+			average_attn_weights = False, is_causal = False):
+		if True in (not key_padding_mask is None, average_attn_weights, is_causal):
+			# not going to bother with these for now
+			raise NotImplementedError
+		if hasattr(self, "in_proj_weight"):
+			wq, wk, wv = self.in_proj_weight.chunk(3, dim = 0)
+		else:
+			wq, wk, wv = self.q_proj_weight, self.k_proj_weight, self.v_proj_weight
+			
+		# YAY!!!!!!
+		q = q @ wq.T
+		k = k @ wk.T
+		v = v @ wv.T
 		
-
+		if hasattr(self, "in_proj_bias"):
+			q = q + self.in_proj_bias[0:self.embed_dim]
+			k = k + self.in_proj_bias[self.embed_dim:self.embed_dim*2]
+			v = v + self.in_proj_bias[self.embed_dim*2:self.embed_dim*3]
+		
+		if not self.bias_k is None:
+			b += self.bias_k
+			v += self.bias_v
+		qc = q.chunk(self.num_heads, dim = 1)
+		kc = k.chunk(self.num_heads, dim = 1)
+		vc = v.chunk(self.num_heads, dim = 1)
+		
+		assert qc[0].shape[1] == vc[0].shape[1] == kc[0].shape[1] == self.head_dim
+		#input(self.out_proj.weight.shape)
+		
+		att = []
+		weights = []
+		for head in range(self.num_heads):
+			qi, ki, vi = qc[head], kc[head], vc[head]
+			hi = tinygrad.Tensor.scaled_dot_product_attention(qi, ki, vi, attn_mask = attn_mask)
+			if need_weights:
+				#weights.append()
+				pass
+			att.append(hi)
+		weight = tinygrad.Tensor.cat(*att, dim = 1)
+		out = self.out_proj(weight)
+		#input(out.shape)
+		if need_weights:
+			# For now, weight just miight be inaccurate :c
+			return out, weight[0:out.shape[0], 0:out.shape[0]]
+		return (out,)
+	
+	"""
 	def forward(self, query, key, value, key_padding_mask = None,
 			need_weights = True, attn_mask = None,
 			average_attn_weights = False, is_causal = False):
@@ -433,3 +530,4 @@ class MultiheadAttention(Module):
 			# For now, weight just miight be inaccurate :c
 			return out, weight[0:out.shape[0], 0:out.shape[0]]
 		return (out,)
+	"""
