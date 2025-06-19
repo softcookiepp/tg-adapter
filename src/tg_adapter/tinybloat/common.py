@@ -70,6 +70,11 @@ def move_to_device(obj, device: str):
 		v.replace(v.to(device) )
 	return obj
 	
+def cast_to_dtype(obj, dtype: tinygrad.dtype.DType):
+	for k, v in tinygrad.nn.state.get_state_dict(obj).items():
+		v.replace(v.cast(dtype) )
+	return obj
+	
 def nonzero(inp, as_tuple = False):
 	# It is going to be very difficult to write this function
 	# in a manner that is JIT-compatible :c

@@ -1,4 +1,5 @@
 import tinygrad
+from .common import move_to_device, cast_to_dtype
 
 class MultiheadAttention:
 	def __init__(self,
@@ -43,9 +44,11 @@ class MultiheadAttention:
 		if bias:
 			self.in_proj_bias = tinygrad.Tensor.zeros(3 * embed_dim, **factory_kwargs)
 		# this may or may not work...
-		self.out_proj = tinygrad.nn.Linear(
-			embed_dim, embed_dim, bias=bias, **factory_kwargs
-		)
+		self.out_proj = tinygrad.nn.Linear(embed_dim, embed_dim, bias=bias)
+		if not device is None:
+			move_to_device(self.out_proj, device)
+		if not dtype is None:
+			cast_to_dtype(self.out_proj, dtype)
 
 		if add_bias_kv:
 			self.bias_k = tinygrad.Tensor.zeros((1, 1, embed_dim), **factory_kwargs)

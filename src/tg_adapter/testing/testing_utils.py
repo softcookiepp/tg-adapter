@@ -141,7 +141,7 @@ def inspect_state_dict_devices(module):
 		print(k, v.device)
 	input("meep")
 
-def copy_state_dict(torch_module, tga_module):
+def copy_state_dict(torch_module, tga_module, use_tg_adapter = True):
 	# this should work
 	d = os.path.abspath(".")
 	if os.path.exists("/dev/shm"):
@@ -151,9 +151,11 @@ def copy_state_dict(torch_module, tga_module):
 	state_dict = safe_load(fn)
 	#print(tinygrad.device.Device.default)
 	#input(list(state_dict.items())[0][1].device)
-	tga_module.load_state_dict(state_dict)
-	#load_state_dict(tga_module, state_dict)
-	compare_state_dicts(torch_module, tga_module)
+	if use_tg_adapter:
+		tga_module.load_state_dict(state_dict)
+		compare_state_dicts(torch_module, tga_module)
+	else:
+		load_state_dict(tga_module, state_dict)
 	os.remove(fn)
 	
 def normalize(v):
@@ -369,8 +371,8 @@ def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_
 	elif (not use_tg_adapter) and tg_adapter.tinybloat.is_tinygrad_module(my_module):
 		# just use default tinygrad device
 		# still need to write a function that lets you move a module to device
-		dev = tinygrad.Device.DEFAULT
-		tg_adapter.tinybloat.move_to_device(my_module, dev)
+		device = tinygrad.Device.DEFAULT
+		tg_adapter.tinybloat.move_to_device(my_module, device)
 	hf_args, my_args = [], []
 	for arg in args:
 		torch_v, tg_v = _process_arg(arg, device, use_tg_adapter)
@@ -395,10 +397,12 @@ def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_
 		torch_out = hf_module.__getattribute__(hf_method)(*hf_args, **hf_kwargs)
 	else:
 		# function substitute
-		tiny_out = my_method(my_module, tg_adapter, *my_args, **my_kwargs)
+		if use_tg_adapter:
+			tiny_out = my_method(my_module, tg_adapter, *my_args, **my_kwargs)
+		else:
+			tiny_out = my_method(my_module, tinygrad, *my_args, **my_kwargs)
 		torch_out = hf_method(hf_module, torch, *hf_args, **hf_kwargs)
 	
-	#inspect_state_dict_devices(my_module)
 	print(f"MSE for {hf_module} and {my_module}:")
 	_test_key_errors(torch_out, tiny_out, display_images = display_images, error_threshold = error_threshold, error_function = mse)
 	

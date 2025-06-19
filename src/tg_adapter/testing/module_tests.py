@@ -51,3 +51,15 @@ def test_multihead_attention():
 	k = make_test_data(batch_size, embed_dim)
 	v = make_test_data(batch_size, embed_dim)
 	_test_hf_reimplementation((q, k, v), {"need_weights": False}, torch_module, "__call__", tg_module, "__call__")
+	
+def test_tb_multihead_attention():
+	embed_dim = 16
+	num_heads = 4
+	batch_size = 8
+	torch_module = torch.nn.MultiheadAttention(embed_dim, num_heads)#, bias = False)
+	tg_module = tg_adapter.tinybloat.nn.MultiheadAttention(embed_dim, num_heads)#, bias = False)
+	copy_state_dict(torch_module, tg_module, False)
+	q = make_test_data(batch_size, embed_dim)
+	k = make_test_data(batch_size, embed_dim)
+	v = make_test_data(batch_size, embed_dim)
+	_test_hf_reimplementation((q, k, v), {"need_weights": False}, torch_module, "__call__", tg_module, "__call__", use_tg_adapter = False)
