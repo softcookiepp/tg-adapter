@@ -5,12 +5,12 @@ import inspect
 from ..device import device
 from ..tensor import AdapterTensor as AT
 from ..tensor import convert_to_torch, convert_to_tg, _parse_to_arguments, recursive_realize
-from ..debugging import KEEP_INPUT_TENSORS, realize_module_status
+from ..debugging import KEEP_INPUT_TENSORS, realize_module_status, get_realize_depth
 from ..tinybloat.common import recursive_get_attribute
 import itertools
 import os
 
-
+REALIZE_DEPTH = get_realize_depth()
 
 # adapter for https://pytorch.org/docs/stable/generated/torch.nn.Module.html
 class Module:
@@ -149,7 +149,7 @@ class Module:
 		if hasattr(self, "tg_forward"):
 			# use tinygrad-based forward method instead if it exists
 			args, kwargs = convert_to_tg(args, kwargs)
-			out = self.tg.tg_forward(*args, **kwargs)
+			out = self.tg_forward(self.tg, *args, **kwargs)
 			return convert_to_torch(out)
 		else:
 			return self.forward(*args, **kwargs)
@@ -348,12 +348,16 @@ class Module:
 	def _is_submodule(self):
 		found_call = False
 		found_forward = False
+		forward_count = 0
+		call_count = 0
 		for item in inspect.stack()[2:]:
 			if item.function == "forward":
 				found_forward = True
+				forward_count += 1
 			elif item.function == "__call__" and os.path.basename(item.filename) == "module.py":
 				found_call = True
-		return found_call and found_forward
+				call_count += 1
+		return forward_count > REALIZE_DEPTH and call_count > REALIZE_DEPTH
 	
 	def register_buffer(self, name, tensor, persistent = True):
 		assert not name in self.__dict__.keys()
@@ -387,12 +391,18 @@ class AutogenTinygradModule:
 		
 		for k, param in tga_module.named_parameters():
 			# ensure that param is immediate (not member of child module)
-			if k.count(".") == 1:
-				self.__dict__[k.split(".")[1]] = param.tg
+			if k.count(".") == 0:
+				self.__dict__[k.split(".")[0]] = param.tg
+				
+		for k, v in tga_module.__dict__.items():
+			if not k in self.__dict__.keys():
+				self.__dict__[k] = v
 		
 		# hopefully this is how it is done
 		self.tg_forward = tga_module.tg_forward
 				
 		# pretty sure thats it?
 		# raise NotImplementedError
-		
+	
+	def __call__(self, *args, **kwargs):
+		return self.tg_forward(self, *args, **kwargs)

@@ -29,7 +29,7 @@ class AvgPool2d(Module):
 			1, self._padding, self._ceil_mode, self._count_include_pad)
 		return AT(out)
 		
-	def tg_forward(self, inp):
+	def tg_forward(_, self, inp):
 		return inp.avg_pool2d(self._kernel_size, self._stride,
 			1, self._padding, self._ceil_mode, self._count_include_pad)
 
@@ -75,7 +75,7 @@ class Dropout(Module):
 	def forward(self, inp):
 		return AT(inp.tg.dropout(self._p) )
 		
-	def tg_forward(self, inp):
+	def tg_forward(_, self, inp):
 		return inp.dropout(self._p)
 
 class AdaGroupNorm(Module):
@@ -133,13 +133,15 @@ class ConvNd(Module):
 	def out_channels(self):
 		return self._out_channels
 	
+	"""
 	def forward(self, x):
 		raise RuntimeError("we aren't supposed to get here!")
 		x, weight, bias = convert_to_tg(x, self.weight, self.bias)
 		x = x.conv2d(weight, bias, self.groups, self.stride, self.dilation, self.padding)
 		return AT(x)
+	"""
 	
-	def tg_forward(self, x):
+	def tg_forward(_, self, x):
 		return x.conv2d(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding)
 
 # ugh, I forgot that torch is going to expect this crap as a type :c
@@ -179,10 +181,8 @@ class ConvTransposeNd(ConvNd):
 		#self.weight = AT(tinygrad.Tensor.uniform(in_channels, out_channels//groups, *self.kernel_size, low=-scale, high=scale) )
 		self.output_padding = output_padding
 	
-	def forward(self, x):
-		x, weight, bias, = convert_to_tg(x, weight, bias)
-		x = x.conv_transpose2d(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding, self.output_padding)
-		return AT(x)
+	def tg_forward(_, self, x):
+		return x.conv_transpose2d(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding, self.output_padding)
 
 class ConvTranspose1d(ConvTransposeNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1,
@@ -215,12 +215,11 @@ class LayerNorm(Module):
 		self.weight = tc.ones(*self.normalized_shape) if elementwise_affine else None
 		self.bias = tc.zeros(*self.normalized_shape) if bias and elementwise_affine else None
 	
-	def forward(self, x):
-		x, weight, bias = convert_to_tg(x, self.weight, self.bias)
+	def tg_forward(_, self, x):
 		assert self.normalized_shape == x.shape[-len(self.normalized_shape):], f"last dimensions of {x.shape} must match {self.normalized_shape}"
 		x = x.layernorm(eps=self.eps, axis=self.axis)
-		if not self.elementwise_affine: return AT(x)
-		return AT(x * weight + bias)
+		if not self.elementwise_affine: return x
+		return x * self.weight + self.bias
 		
 class Linear(Module):
 	def __init__(self, in_features, out_features, bias=True, device=None, dtype=None):

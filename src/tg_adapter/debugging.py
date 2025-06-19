@@ -1,12 +1,15 @@
 import os
 REALIZE_ASAP = False
 REALIZE_MODULE_OUTPUT = False
+REALIZE_MODULE_DEPTH = 0
 KEEP_INPUT_TENSORS = False
 
 if "TGA_REALIZE_ASAP" in os.environ.keys():
 	REALIZE_ASAP = bool(int(os.environ["TGA_REALIZE_ASAP"]))
 if "TGA_REALIZE_MODULE_OUTPUT" in os.environ.keys():
 	REALIZE_MODULE_OUTPUT = bool(int(os.environ["TGA_REALIZE_MODULE_OUTPUT"] ) )
+elif "TGA_REALIZE_MODULE_DEPTH" in os.environ.keys():
+	REALIZE_MODULE_DEPTH = int(os.environ["TGA_REALIZE_MODULE_DEPTH"])
 
 def _realize(t):
 	if hasattr(t, "realize"):
@@ -24,6 +27,9 @@ def maybe_realize(t):
 
 def realize_module_status():
 	return REALIZE_MODULE_OUTPUT
+
+def get_realize_depth():
+	return REALIZE_MODULE_DEPTH
 
 class InputSpec:
 	def __init__(self, *args, **kwargs):
