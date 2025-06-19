@@ -408,9 +408,17 @@ class AutogenTinygradModule:
 # This will be useful at some point, I absolutely know it.
 class AutogenAdapterModule(Module):
 	def __init__(self, tinygrad_module, *args, **kwargs):
-		# im not going to wrap my head around this right now...
 		for k, v in tinygrad_module.__dict__.items():
-			raise NotImplementedError
+			if is_tinygrad_module(v):
+				self.__dict__[k] = AutogenAdapterModule(v)
+			elif isinstance(v, tinygrad.Tensor):
+				self.__dict__[k] = AT(v)
+			else:
+				# generic object/attribute
+				self.__dict__[k] = v
+		# that should do it pretty easily!
+		# now we just need the __call__ method to be wrapped...
+		self._original_call = tinygrad_module.__call__
 		
 	def forward(self, *args, **kwargs):
 		raise NotImplementedError
