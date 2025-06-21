@@ -6,7 +6,7 @@ from ..device import device
 from ..tensor import AdapterTensor as AT
 from ..tensor import convert_to_torch, convert_to_tg, _parse_to_arguments, recursive_realize
 from ..debugging import KEEP_INPUT_TENSORS, realize_module_status, get_realize_depth
-from ..tinybloat.common import recursive_get_attribute
+from tinybloat.common import recursive_get_attribute
 import itertools
 import os
 

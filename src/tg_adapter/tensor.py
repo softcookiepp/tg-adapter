@@ -12,8 +12,8 @@ from .backend_environment_config import *
 from .debugging import maybe_realize
 from .utils import is_jitted
 
-from .tinybloat import ComplexTensor, safety_functions
-from . import tinybloat
+from tinybloat import ComplexTensor, safety_functions
+import tinybloat
 
 
 def _parse_to_arguments(*args, **kwargs):

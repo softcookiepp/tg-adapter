@@ -5,7 +5,7 @@ from .lambdas import diag, check_2d, _outer
 from .tensor import convert_to_torch, convert_to_tg
 from .return_types import linalg_eig
 
-from . import tinybloat
+import tinybloat
 
 
 def norm(A, ord = None, dim = None, keepdim = False, out = None, dtype = None):
@@ -90,7 +90,7 @@ def qr(A, mode = "reduced"):
 		return convert_to_torch(householder_qr(A.tg, mode) )
 	
 def eig(A, max_iter = 100, tol = 1e-6, out = None):
-	eigenvalues, eigenvectors = tinybloat.linalg.eig(A, max_iter, tol)
+	eigenvalues, eigenvectors = tinybloat.linalg.eig(convert_to_tg(A), max_iter, tol)
 	return linalg_eig(*convert_to_torch(eigenvalues, eigenvectors) )
 
 

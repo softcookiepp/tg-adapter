@@ -2,6 +2,7 @@ import torch
 import tg_adapter
 from .testing_utils import *
 from .testing_utils import _test_function, _test_hf_reimplementation
+import tinybloat
 	
 	
 def _test_linear(use_bias):
@@ -57,7 +58,7 @@ def test_tb_multihead_attention():
 	num_heads = 4
 	batch_size = 8
 	torch_module = torch.nn.MultiheadAttention(embed_dim, num_heads)#, bias = False)
-	tg_module = tg_adapter.tinybloat.nn.MultiheadAttention(embed_dim, num_heads)#, bias = False)
+	tg_module = tinybloat.nn.MultiheadAttention(embed_dim, num_heads)#, bias = False)
 	copy_state_dict(torch_module, tg_module, False)
 	q = make_test_data(batch_size, embed_dim)
 	k = make_test_data(batch_size, embed_dim)

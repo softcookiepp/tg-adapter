@@ -4,6 +4,7 @@ from safetensors.torch import save_file
 import torch
 import tinygrad
 import numpy as np
+import tinybloat
 
 # TODO: handle recursive imports
 import tg_adapter
@@ -368,11 +369,11 @@ def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_
 		args = (args,)
 	if hasattr(my_module, "to") and move_after_creation and use_tg_adapter:
 		my_module = my_module.to(device)
-	elif (not use_tg_adapter) and tg_adapter.tinybloat.is_tinygrad_module(my_module):
+	elif (not use_tg_adapter) and tinybloat.is_tinygrad_module(my_module):
 		# just use default tinygrad device
 		# still need to write a function that lets you move a module to device
 		device = tinygrad.Device.DEFAULT
-		tg_adapter.tinybloat.move_to_device(my_module, device)
+		tinybloat.move_to_device(my_module, device)
 	hf_args, my_args = [], []
 	for arg in args:
 		torch_v, tg_v = _process_arg(arg, device, use_tg_adapter)

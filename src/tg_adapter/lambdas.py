@@ -2,7 +2,7 @@ from .tensor import AdapterTensor as T
 from .tensor import convert_to_tg, convert_to_torch
 from .tensor import assert_same_device
 import tinygrad
-from . import tinybloat
+import tinybloat
 from . import return_types
 
 exp = lambda x: T( x.tg.exp() )
