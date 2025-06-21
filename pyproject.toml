@@ -29,7 +29,8 @@ dependencies = [
 	"typing",
 	"argparse",
 	"safetensors",
-	"pytest>=8.4.0"
+	"pytest>=8.4.0",
+	"tinybloat@git+https://github.com/softcookiepp/tinybloat.git"
 ]
 description = "Library for porting pytorch code to tinygrad"
 version = "0.0.8"
