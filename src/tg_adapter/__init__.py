@@ -42,7 +42,9 @@ from .device import device, set_default_device, get_default_device
 
 def is_grad_enabled():
 	# pretty sure this will work
-	return not tinygrad.Tensor.no_grad
+	#return not tinygrad.Tensor.no_grad
+	# it doesn't anymore :c
+	return True
 
 def is_tensor(a):
 	return isinstance(a, AdapterTensor)
