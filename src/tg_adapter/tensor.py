@@ -314,7 +314,10 @@ class AdapterTensor:
 	
 	def int(self):
 		return AdapterTensor(self.tg.cast(tinygrad.dtypes.int) )
-	
+		
+	def long(self):
+		return AdapterTensor(self.tg.cast(tinygrad.dtypes.int64) )
+		
 	def type_as(self, other):
 		return self.to(other.dtype)
 	
