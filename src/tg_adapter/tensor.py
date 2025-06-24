@@ -308,7 +308,9 @@ class AdapterTensor:
 		return self._tg_override(other)
 		
 	def ne(self, other):
-		return AdapterTensor(self.tg != other.tg)
+		if hasattr(other, "tg"):
+			other = other.tg
+		return AdapterTensor(self.tg != other)
 	
 	def item(self):
 		if self.numel() > 1:
