@@ -310,7 +310,10 @@ class AdapterTensor:
 	def ne(self, other):
 		if hasattr(other, "tg"):
 			other = other.tg
-		return AdapterTensor(self.tg != other)
+		if tinybloat.compatibility.device_supports_longlong(other.device) and tinybloat.compatibility.device_supports_longlong(self.tg.device):
+			return AdapterTensor(self.tg != other)
+		else:
+			raise NotImplementedError
 	
 	def int(self):
 		return AdapterTensor(self.tg.cast(tinygrad.dtypes.int) )

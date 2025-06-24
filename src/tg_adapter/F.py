@@ -100,6 +100,7 @@ def softmax(inp, dim = -1):
 	return convert_to_torch(convert_to_tg(inp).softmax(dim) )
 
 def cumprod(inp, dim, dtype=None, out=None):
+	# TODO: replace with tinybloat version
 	# first, get the slices used in the __getitem__ call for each element
 	inp = convert_to_tg(inp)
 	slices = []
