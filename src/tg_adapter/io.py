@@ -20,5 +20,5 @@ def load(f, map_location=None, pickle_module=pickle, *, weights_only=True,
 	state_dict = tinygrad.nn.state.torch_load(f)
 	new_state_dict = {}
 	for k, v in state_dict.items():
-		new_state_dict[k] = AdapterTensor( k.to("CPU") )
+		new_state_dict[k] = AdapterTensor( v.to("CPU") )
 	return new_state_dict
