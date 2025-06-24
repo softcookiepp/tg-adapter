@@ -272,42 +272,21 @@ class Linear(Module):
 		return x
 	
 class Embedding(Module):
-	def __init__(self, vocab_size:int, embed_size:int):
+	def __init__(self,
+			vocab_size:int,
+			embed_size:int,
+			padding_idx = None,
+			max_norm = None,
+			norm_type = 2.0,
+			scale_grad_by_freq = False,
+			_weight = None,
+			_freeze = False,
+			device = None,
+			dtype = None
+			):
 		self.vocab_sz, self.embed_sz = vocab_size, embed_size
 		self.weight = tc.empty( (vocab_size, embed_size) )
 		internal_init.xavier_uniform_(self.weight )
-	
-	"""
-	def forward(self, idx):
-		vocab_sz, embed_sz, weight, idx = convert_to_tg(self.vocab_sz, self.embed_sz, self.weight, idx)
-		
-		original_device = idx.device
-		working_device = idx.device
-		
-		if not tg_device_supports_longlong(weight.device):
-			# perform embedding on the CPU as a fallback
-			working_device = "CPU"
-		
-		if not hasattr(self, 'arange'): self.arange = tinygrad.Tensor.arange(vocab_sz,
-			requires_grad=False, device=working_device, dtype = highest_precision_int(working_device) ).unsqueeze(-1)
-		big_shp = idx.shape+(vocab_sz, embed_sz)
-		
-		
-		idx = idx.to(working_device)
-		weight = weight.to(working_device)
-		
-		arange, idx, vals = self.arange.expand(big_shp), idx.reshape(idx.shape+(1, 1)).expand(big_shp), weight.expand(big_shp)
-		
-		# (-1, 77, 49408, -1)
-		inter = (arange == idx)
-		
-		# (-1, 77, 49408, -1)
-		inter2 = inter.mul(vals)
-		out = inter2.sum(-2)
-		
-		out = out.to(original_device)
-		return AT(out)
-	"""
 	
 	def tg_forward(parent, self, idx):
 		vocab_sz, embed_sz, weight = self.vocab_sz, self.embed_sz, self.weight
