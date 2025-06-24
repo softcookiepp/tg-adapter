@@ -96,3 +96,5 @@ def zeros_like(inp):
 	return T(inp.tg.zeros_like() )
 	
 
+def cumsum(inp, dim = None):
+	return T(inp.tg.cumsum(dim)
