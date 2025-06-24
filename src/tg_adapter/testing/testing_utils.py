@@ -6,6 +6,12 @@ import tinygrad
 import numpy as np
 import tinybloat
 
+import os
+
+TGA_TEST_DEVICE_IDX = 0
+if "TGA_TEST_DEVICE_IDX" in os.environ().keys():
+	input("EEEEEEEEEEE")
+
 # TODO: handle recursive imports
 import tg_adapter
 tga = tg_adapter
