@@ -96,6 +96,7 @@ def gelu(x, approximation = None):
 
 mish = lambda x: convert_to_torch(convert_to_tg(x).mish() )
 sigmoid = lambda x: convert_to_torch(convert_to_tg(x).sigmoid() )
+softmax = lambda x: convert_to_torch(convert_to_tg(x).softmax() )
 
 def cumprod(inp, dim, dtype=None, out=None):
 	# first, get the slices used in the __getitem__ call for each element
