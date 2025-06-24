@@ -9,7 +9,7 @@ import tinybloat
 import os
 
 TGA_TEST_DEVICE_IDX = 0
-if "TGA_TEST_DEVICE_IDX" in os.environ().keys():
+if "TGA_TEST_DEVICE_IDX" in os.environ.keys():
 	input("EEEEEEEEEEE")
 
 # TODO: handle recursive imports
