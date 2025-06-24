@@ -312,6 +312,9 @@ class AdapterTensor:
 			other = other.tg
 		return AdapterTensor(self.tg != other)
 	
+	def int(self):
+		return AdapterTensor(self.tg.cast(tinygrad.dtypes.int) )
+	
 	def item(self):
 		if self.numel() > 1:
 			raise RuntimeError("item() for multi-element tensor is ambiguous")
