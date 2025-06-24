@@ -306,6 +306,9 @@ class AdapterTensor:
 	
 	def __eq__(self, other):
 		return self._tg_override(other)
+		
+	def ne(self, other):
+		return AdapterTensor(self.tg != other.tg)
 	
 	def item(self):
 		if self.numel() > 1:
