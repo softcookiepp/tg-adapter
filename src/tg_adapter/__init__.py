@@ -58,6 +58,8 @@ concat = cat
 
 from .utils import no_grad
 
+from . import jit
+
 def __getattr__(attr):
 	val = _get_type(attr)
 	if not val is None:
