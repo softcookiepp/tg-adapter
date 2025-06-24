@@ -310,7 +310,7 @@ class AdapterTensor:
 	def ne(self, other):
 		if hasattr(other, "tg"):
 			other = other.tg
-		other_device = self.device
+		other_device = self.tg.device
 		if hasattr(other, "device"):
 			other_device = other.device
 		if tinybloat.compatibility.device_supports_longlong(other_device) and tinybloat.compatibility.device_supports_longlong(self.tg.device):
