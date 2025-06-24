@@ -308,15 +308,17 @@ class AdapterTensor:
 		return self._tg_override(other)
 		
 	def ne(self, other):
-		if hasattr(other, "tg"):
-			other = other.tg
+		original_device = self.tg.device
 		other_device = self.tg.device
-		if hasattr(other, "device"):
+		if isinstance(other, AdapterTensor):
+			other = other.tg
 			other_device = other.device
 		if tinybloat.compatibility.device_supports_longlong(other_device) and tinybloat.compatibility.device_supports_longlong(self.tg.device):
 			return AdapterTensor(self.tg != other)
 		else:
-			raise NotImplementedError
+			if isinstance(other, tinygrad.Tensor):
+				other = other.to("CPU")
+			return AdapterTensor( (self.tg.to("CPU") != other).to(original_device) )
 	
 	def int(self):
 		return AdapterTensor(self.tg.cast(tinygrad.dtypes.int) )
