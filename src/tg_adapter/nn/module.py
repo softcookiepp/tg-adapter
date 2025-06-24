@@ -203,6 +203,10 @@ class Module:
 	@property
 	def _parameters(self):
 		return self._get_p()
+		
+	def _named_members(self, get_members_fn):
+		# huggingface really likes to touch privates
+		return get_members_fn(self)
 	
 	@property
 	def _buffers(self):
