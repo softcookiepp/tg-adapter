@@ -10,7 +10,7 @@ import os
 
 TGA_TEST_DEVICE_IDX = 0
 if "TGA_TEST_DEVICE_IDX" in os.environ.keys():
-	input("EEEEEEEEEEE")
+	TGA_TEST_DEVICE_IDX = int(os.environ["TGA_TEST_DEVICE_IDX"])
 
 # TODO: handle recursive imports
 import tg_adapter
@@ -370,7 +370,9 @@ def _process_submodule_test_arg(arg):
 		# append as is
 		return arg
 
-def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, move_after_creation = True, device = "cuda:0", display_images = False, use_tg_adapter = True):
+def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_method, error_threshold = 1.0e-5, move_after_creation = True, device = None, display_images = False, use_tg_adapter = True):
+	if device is None:
+		device = f"cuda:{TGA_TEST_DEVICE_IDX}"
 	if not (isinstance(args, tuple) or isinstance(args, list) ):
 		args = (args,)
 	if hasattr(my_module, "to") and move_after_creation and use_tg_adapter:
