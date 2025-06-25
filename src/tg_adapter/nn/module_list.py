@@ -37,8 +37,9 @@ class ModuleList(Module):
 	def __init__(self, modules: Optional[Iterable[Module]] = None):
 		super().__init__()
 		# _modules is not assignable, so we actually have to append it internally...
-		for m in modules:
-			self.append(m)
+		if not modules is None:
+			for m in modules:
+				self.append(m)
 		
 
 	def _get_abs_string_index(self, idx):
