@@ -163,8 +163,11 @@ def get_type_from_tg(tg_type, backend, other_type = None, is_complex = False):
 	
 	# actually try default first!
 	for k, v in TG_BACKEND_TYPE_MAP["DEFAULT"].items():
-		print(tg_type, other_type, k, v)
+		#print(tg_type, other_type, k, v)
+		print(v, tg_type, v == tg_type)
 		if v == tg_type:
+			print(otk, k)
+			input("pls work")
 			if is_complex:
 				if "complex" in k:
 					type_key = k
