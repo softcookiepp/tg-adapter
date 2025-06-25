@@ -85,9 +85,9 @@ class AdapterTensor:
 	def _rebuild_dtype(self):
 		#from_tg = _get_type(self._tg.dtype)
 		if self._is_complex:
-			self._dtype = get_type_from_tg(self._tg.real.dtype, self._tg.device.split(":")[0], self._dtype, True)
+			self._dtype = get_type_from_tg(self._tg.real.dtype, self._tg.device.split(":")[0], None, True)
 		else:
-			self._dtype = get_type_from_tg(self._tg.dtype, self._tg.device.split(":")[0], self._dtype)
+			self._dtype = get_type_from_tg(self._tg.dtype, self._tg.device.split(":")[0], None)
 	
 	@property
 	def tg(self):
