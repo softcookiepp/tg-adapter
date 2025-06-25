@@ -16,13 +16,11 @@ elif "TGA_REALIZE_MODULE_DEPTH" in os.environ.keys():
 def _realize(t):
 	if hasattr(t, "realize"):
 		requires_longlong = tinybloat.compatibility.tensor_requires_longlong(t)
-		if requires_longlong:
-			print("requires longlong:",  requires_longlong)
+		print("requires longlong:",  requires_longlong)
 		return t.realize()
 	elif hasattr(t, "tg"):
 		requires_longlong = tinybloat.compatibility.tensor_requires_longlong(t.tg)
-		if requires_longlong:
-			print("requires longlong:",  requires_longlong)
+		print("requires longlong:",  requires_longlong)
 		t.tg.realize()
 		return t
 	raise ValueError
