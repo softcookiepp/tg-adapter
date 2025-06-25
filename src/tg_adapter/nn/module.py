@@ -118,6 +118,12 @@ class Module:
 		dtype, device = _parse_to_arguments(*args, **kwargs)
 		if dtype is None and device is None:
 			raise ValueError
+		
+		if not device is None:
+			# why not just pre-move everything?
+			# hopefully this works pls
+			tinybloat.cast_to_supported_and_move_(self, device.tg)	
+		
 		assert dtype == None or dtype.is_floating_point
 		for k, v in self.state_dict().items():
 			if isinstance(v, AT) and v.is_floating_point():
