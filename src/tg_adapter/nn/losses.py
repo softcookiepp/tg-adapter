@@ -15,5 +15,8 @@ class BCEWithLogitsLoss(Module):
 class MSELoss(Module):
 	def __init__(self, *args, **kwargs):
 		raise NotImplementedError
-	
+
+class L1Loss(Module):
+	def __init__(self, *args, **kwargs):
+		raise NotImplementedError
 
