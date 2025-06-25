@@ -4,6 +4,7 @@ from .tensor import convert_to_tg, convert_to_torch, assert_same_device
 from .debugging import maybe_realize
 from copy import deepcopy
 import math
+import tinybloat
 
 def conv2d(inp, weight, bias = None, stride = 1, padding = 0, dilation = 1, groups = 1):
 	inp, weight, bias = convert_to_tg(inp, weight, bias)
@@ -135,4 +136,4 @@ def cat(tensors, dim = 0):
 
 	
 def normalize(inp, p = 2.0, dim = 1, eps = 1.0e-12, out = None):
-	raise NotImplementedError
+	return convert_to_torch( tinybloat.F.normalize(inp.tg, p, dim, eps) )
