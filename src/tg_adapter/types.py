@@ -166,8 +166,6 @@ def get_type_from_tg(tg_type, backend, other_type = None, is_complex = False):
 		#print(tg_type, other_type, k, v)
 		print(v, tg_type, v == tg_type)
 		if v == tg_type:
-			print(otk, k)
-			print("poopsicle")
 			if is_complex:
 				if "complex" in k:
 					type_key = k

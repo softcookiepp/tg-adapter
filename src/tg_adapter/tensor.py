@@ -322,10 +322,10 @@ class AdapterTensor:
 			return AdapterTensor( (self.tg.to("CPU") != other).to(original_device) )
 	
 	def int(self):
-		return AdapterTensor(self.tg.cast(tinygrad.dtypes.int) )
+		return self.to(_get_type("int32") )
 		
 	def long(self):
-		return self.to(dtype_class.long)
+		return self.to(_get_type("int64"))
 		
 	def type_as(self, other):
 		return self.to(other.dtype)
