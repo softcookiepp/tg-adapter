@@ -137,6 +137,7 @@ class AdapterTensor:
 	
 	@property
 	def dtype(self):
+		self._rebuild_dtype()
 		return self._dtype
 	
 	@property
