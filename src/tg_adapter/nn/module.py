@@ -9,6 +9,7 @@ from ..debugging import KEEP_INPUT_TENSORS, realize_module_status, get_realize_d
 from tinybloat.common import recursive_get_attribute
 import itertools
 import os
+import tinybloat
 
 REALIZE_DEPTH = get_realize_depth()
 
