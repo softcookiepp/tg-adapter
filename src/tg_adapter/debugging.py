@@ -1,4 +1,6 @@
 import os
+import tinybloat
+
 REALIZE_ASAP = False
 REALIZE_MODULE_OUTPUT = False
 REALIZE_MODULE_DEPTH = 0
@@ -13,8 +15,10 @@ elif "TGA_REALIZE_MODULE_DEPTH" in os.environ.keys():
 
 def _realize(t):
 	if hasattr(t, "realize"):
+		print("requires longlong:", tinybloat.compatibility.tensor_requires_longlong(t) )
 		return t.realize()
 	elif hasattr(t, "tg"):
+		print("requires longlong:", tinybloat.compatibility.tensor_requires_longlong(t.tg) )
 		t.tg.realize()
 		return t
 	raise ValueError
