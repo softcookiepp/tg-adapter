@@ -520,6 +520,9 @@ class AdapterTensor:
 	def chunk(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
+	def squeeze(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
 	def clamp(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
