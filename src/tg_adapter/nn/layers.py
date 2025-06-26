@@ -183,6 +183,8 @@ class ConvTransposeNd(ConvNd):
 		self.output_padding = output_padding
 	
 	def tg_forward(_, self, x):
+		print(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding, self.output_padding)
+		input("see anything weird?")
 		return x.conv_transpose2d(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding, self.output_padding)
 
 class ConvTranspose1d(ConvTransposeNd):

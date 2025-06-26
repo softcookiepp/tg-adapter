@@ -94,6 +94,9 @@ def gelu(x, approximation = None):
 		return convert_to_torch(x.gelu() )
 	else:
 		raise ValueError
+		
+def leaky_relu(inp, negative_slope = 0.01, inplace = False):
+	return convert_to_torch(inp.tg.leaky_relu(negative_slope) )
 
 mish = lambda x: convert_to_torch(convert_to_tg(x).mish() )
 sigmoid = lambda x: convert_to_torch(convert_to_tg(x).sigmoid() )
