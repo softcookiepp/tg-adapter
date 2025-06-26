@@ -170,9 +170,7 @@ class Conv3d(ConvNd):
 
 
 class ConvTransposeNd(ConvNd):
-	def __init__(self, in_channels, out_channels, kernel_size, stride=1,
-			padding=0, output_padding=0, groups=1, bias=True, dilation=1,
-			padding_mode='zeros', device=None, dtype=None, dim = None):
+	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None, dim = None):
 		assert not dim is None
 		
 		super().__init__(in_channels, out_channels, kernel_size, stride,
