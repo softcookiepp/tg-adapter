@@ -175,8 +175,6 @@ class ConvTransposeNd(ConvNd):
 			padding_mode='zeros', device=None, dtype=None, dim = None):
 		assert not dim is None
 		
-		in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias,
-			padding_mode, device, dtype, dim
 		super().__init__(in_channels, out_channels, kernel_size, stride,
 			padding, dilation, groups, bias, padding_mode, device, dtype, dim)
 		#print(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode)
