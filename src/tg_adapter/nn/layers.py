@@ -176,6 +176,8 @@ class ConvTransposeNd(ConvNd):
 		assert not dim is None
 		super().__init__(in_channels, out_channels, kernel_size, stride,
 			padding, dilation, groups, bias, padding_mode, device, dtype, dim)
+		print(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode)
+		input("why")
 		scale = 1 / math.sqrt(in_channels * prod(self.kernel_size))
 		self.weight = tc.empty(  (in_channels, out_channels//groups, *self.kernel_size)  )
 		internal_init.uniform_(self.weight, a = -scale, b = scale)
