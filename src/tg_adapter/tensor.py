@@ -73,9 +73,8 @@ class AdapterTensor:
 			else:
 				self._tg = tinygrad.Tensor(real, device = tg_device)
 		else:
-			data = convert_np_type_correctly(np.array(data), tg_device )
+			data, _ = convert_np_type_correctly(np.array(data), tg_device )
 			self._tg = tinygrad.Tensor(data, device = tg_device, dtype = tgt)
-			#raise Exception(f"Tensor creationw with {type(data)} not yet implemented.")
 		self._dtype = dtype
 		assert not self._tg is None
 		self._rebuild_dtype()
