@@ -63,7 +63,12 @@ def linspace(start, end, steps, *, out=None, dtype=None,
 		layout="torch.strided", device=None, requires_grad=False):
 	device = parse_device(device).tg
 	dtype = get_tgt(dtype, device)
-	t = tinygrad.Tensor.linspace(start, end, steps, dtype = dtype, device = device)
+	kwargs = {}
+	if not device is None:
+		kwargs["device"] = device
+	if not dtype is None:
+		kwargs["dtype"] = dtype
+	t = tinygrad.Tensor.linspace(start, end, steps, **kwargs)
 	return AT(t)
 	
 def from_numpy(a: np.ndarray):
