@@ -220,7 +220,7 @@ class LayerNorm(Module):
 		if not self.weight is None:
 			x = x*self.weight
 		if not self.bias is None:
-			x = x + bias
+			x = x + self.bias
 		return x
 		
 class Linear(Module):
