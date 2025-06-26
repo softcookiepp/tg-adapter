@@ -136,7 +136,8 @@ def cat(tensors, dim = 0):
 	assert_same_device(tbase.device, trest)
 	return convert_to_torch(tbase.cat(*trest, dim = dim) )
 
-
+def tanh(inp, out = None):
+	return convert_to_torch(inp.tg.tanh() )
 	
 def normalize(inp, p = 2.0, dim = 1, eps = 1.0e-12, out = None):
 	return convert_to_torch( tinybloat.F.normalize(inp.tg, p, dim, eps) )

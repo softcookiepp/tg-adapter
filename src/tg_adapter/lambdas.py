@@ -101,3 +101,5 @@ def cumsum(inp, dim = None):
 	
 def matmul(a, b):
 	return a @ b
+	
+from .F import tanh
