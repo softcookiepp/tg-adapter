@@ -99,5 +99,8 @@ def matmul(a, b):
 	
 def rsqrt(inp, *args, out = None):
 	return inp.rsqrt()
+
+def norm(inp, p='fro', dim=None, keepdim=False, out=None, dtype=None):
+	return T(tinybloat.linalg.norm(inp, ord = None, dim = dim, keepdim = keepdim, out = out, dtype = dtype) )
 	
 from .F import tanh
