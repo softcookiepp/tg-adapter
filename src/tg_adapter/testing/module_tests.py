@@ -69,6 +69,7 @@ def test_tb_multihead_attention():
 def test_conv_transpose_2d():
 	torch_module = torch.nn.ConvTranspose2d(2, 4, 3)
 	tg_module = tg_adapter.nn.ConvTranspose2d(2, 4, 3)
+	copy_state_dict(torch_module, tg_module)
 	test_data = make_test_data(2, 2, 16, 16)
 	_test_hf_reimplementation([test_data], {}, torch_module, "__call__", tg_module, "__call__")
 	
