@@ -97,4 +97,7 @@ def cumsum(inp, dim = None):
 def matmul(a, b):
 	return a @ b
 	
+def rsqrt(inp, *args, out = None):
+	return inp.rsqrt()
+	
 from .F import tanh

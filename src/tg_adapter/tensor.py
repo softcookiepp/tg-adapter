@@ -186,6 +186,9 @@ class AdapterTensor:
 			out = out.to(dtype)
 		return out
 		
+	def rsqrt(self, *args, out = None):
+		return self._tg_override()
+		
 	@property
 	def tdtype(self):
 		return self.tgt
