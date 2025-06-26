@@ -132,9 +132,16 @@ def clamp(inp, min = None, max = None):
 	
 def cat(tensors, dim = 0):
 	tbase = tensors[0].tg
-	trest = convert_to_tg( tuple(tensors[1:]) )
+	original_device = tbase.device
+	trest = []
+	if not tinybloat.compatibility.device_supports_longlong(tbase.device):
+		tbase = tbase.to("CPU")
+		for other in convert_to_tg( tuple(tensors[1:]) ):
+			trest.append(other.to("CPU")
+	else:
+		trest = convert_to_tg( tuple(tensors[1:]) )
 	assert_same_device(tbase.device, trest)
-	return convert_to_torch(tbase.cat(*trest, dim = dim) )
+	return convert_to_torch(tbase.cat(*trest, dim = dim).to(original_device) )
 
 def tanh(inp, out = None):
 	return convert_to_torch(inp.tg.tanh() )
