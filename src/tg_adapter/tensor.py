@@ -178,6 +178,14 @@ class AdapterTensor:
 	def pow(self, other):
 		return self ** other
 		
+	def mean(self, dim = None, keepdim = False, dtype = None, out = None):
+		inp = self.tg
+		out = inp.mean(axis = dim, keepdim = keepdim)
+		out = convert_to_torch(out)
+		if not dtype is None:
+			out = out.to(dtype)
+		return out
+		
 	@property
 	def tdtype(self):
 		return self.tgt
