@@ -217,7 +217,11 @@ class LayerNorm(Module):
 		assert self.normalized_shape == x.shape[-len(self.normalized_shape):], f"last dimensions of {x.shape} must match {self.normalized_shape}"
 		x = x.layernorm(eps=self.eps, axis=self.axis)
 		if not self.elementwise_affine: return x
-		return x * self.weight + self.bias
+		if not self.weight is None:
+			x = x*self.weight
+		if not self.bias is None:
+			x = x + bias
+		return x
 		
 class Linear(Module):
 	def __init__(self, in_features, out_features, bias=True, device=None, dtype=None):
