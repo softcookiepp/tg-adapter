@@ -177,7 +177,7 @@ class ConvTransposeNd(ConvNd):
 		
 		super().__init__(in_channels, out_channels, kernel_size, stride,
 			padding, dilation, groups, bias, padding_mode, device, dtype, dim)
-		#print(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode)
+		#print(in_channels, out_channels, kernel_size, stride, padding, output_padding, dilation, groups, bias, padding_mode)
 		#input("why")
 		scale = 1 / math.sqrt(in_channels * prod(self.kernel_size))
 		self.weight = tc.empty(  (in_channels, out_channels//groups, *self.kernel_size)  )
@@ -193,12 +193,12 @@ class ConvTransposeNd(ConvNd):
 class ConvTranspose1d(ConvTransposeNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None):
 		super().__init__(in_channels, out_channels, kernel_size, stride,
-			padding, dilation, groups, bias, padding_mode, device, dtype, dim = 1)
+			padding, output_padding, dilation, groups, bias, padding_mode, device, dtype, dim = 1)
 	
 class ConvTranspose2d(ConvTransposeNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None):
 		super().__init__(in_channels, out_channels, kernel_size, stride,
-			padding, dilation, groups, bias, padding_mode, device, dtype, dim = 2)
+			padding, output_padding, dilation, groups, bias, padding_mode, device, dtype, dim = 2)
 
 class ConvTranspose3d(ConvTransposeNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None):
