@@ -175,6 +175,9 @@ class AdapterTensor:
 	def flip(self, dims):
 		return self._tg_override(dims)
 		
+	def pow(self, other):
+		return self ** other
+		
 	@property
 	def tdtype(self):
 		return self.tgt
