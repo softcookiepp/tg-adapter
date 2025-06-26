@@ -190,7 +190,7 @@ class AdapterTensor:
 		return self._tg_override()
 	
 	def sum(self, axis = None, keepdim = False):
-		return convert_to_torch( x.tg.sum(axis, keepdim = keepdim) )
+		return convert_to_torch( self.tg.sum(axis, keepdim = keepdim) )
 		
 	@property
 	def tdtype(self):
