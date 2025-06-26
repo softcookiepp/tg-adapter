@@ -162,6 +162,16 @@ class AdapterTensor:
 			device = tensor.device)
 		self.tg.replace(norm)
 	
+	def uniform_(self, a, b, generator = None):
+		tensor = self.tg
+		if not generator is None:
+			raise NotImplementedError
+		uni = tinygrad.Tensor.uniform(*tensor.shape, low = a, high = b,
+			dtype = tensor.dtype, requires_grad = tensor.requires_grad,
+			device = tensor.device)
+		self.tg.replace(tensor)
+		return self
+	
 	def flip(self, dims):
 		return self._tg_override(dims)
 		

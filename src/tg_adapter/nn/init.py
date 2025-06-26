@@ -4,13 +4,7 @@ from ..tensor import convert_to_tg, convert_to_torch
 from ..device import parse_device, get_default_device
 
 def uniform_(tensor, a = 0.0, b = 1.0, generator = None):
-	tensor = tensor.tg
-	if not generator is None:
-		raise NotImplementedError
-	uni = tinygrad.Tensor.uniform(*tensor.shape, low = a, high = b,
-		dtype = tensor.dtype, requires_grad = tensor.requires_grad,
-		device = tensor.device)
-	return AT(tensor.assign(uni) )
+	return tensor.uniform_(a, b, generator = generator)
 
 uniform = uniform_
 
