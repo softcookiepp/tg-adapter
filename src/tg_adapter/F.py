@@ -100,6 +100,10 @@ def leaky_relu(inp, negative_slope = 0.01, inplace = False):
 
 mish = lambda x: convert_to_torch(convert_to_tg(x).mish() )
 sigmoid = lambda x: convert_to_torch(convert_to_tg(x).sigmoid() )
+
+def silu(inp, inplace = False):
+	return convert_to_torch(inp.tg.silu() )
+
 def softmax(inp, dim = -1):
 	return convert_to_torch(convert_to_tg(inp).softmax(dim) )
 
