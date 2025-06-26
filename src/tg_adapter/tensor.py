@@ -188,6 +188,9 @@ class AdapterTensor:
 		
 	def rsqrt(self, *args, out = None):
 		return self._tg_override()
+	
+	def sum(self, axis = None):
+		return convert_to_torch( x.tg.sum(axis) )
 		
 	@property
 	def tdtype(self):
