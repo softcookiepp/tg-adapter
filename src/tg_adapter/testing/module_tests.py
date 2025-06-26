@@ -64,3 +64,11 @@ def test_tb_multihead_attention():
 	k = make_test_data(batch_size, embed_dim)
 	v = make_test_data(batch_size, embed_dim)
 	_test_hf_reimplementation((q, k, v), {"need_weights": False}, torch_module, "__call__", tg_module, "__call__", use_tg_adapter = False)
+
+
+def test_conv_transpose_2d():
+	torch_module = torch.nn.ConvTranspose2d(2, 4, 3)
+	tg_module = tg_adapter.nn.ConvTranspose2d(2, 4, 3)
+	test_data = make_test_data(2, 2, 16, 16)
+	_test_hf_reimplementation([test_data], {}, torch_module, "__call__", tg_module, "__call__")
+	
