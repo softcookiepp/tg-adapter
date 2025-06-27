@@ -13,6 +13,9 @@ if "TGA_REALIZE_MODULE_OUTPUT" in os.environ.keys():
 elif "TGA_REALIZE_MODULE_DEPTH" in os.environ.keys():
 	REALIZE_MODULE_DEPTH = int(os.environ["TGA_REALIZE_MODULE_DEPTH"])
 
+if "TGA_KEEP_INPUTS" in os.environ.keys():
+	KEEP_INPUT_TENSORS = bool(int(os.environment["TGA_KEEP_INPUTS"]) )
+
 def _realize(t):
 	if hasattr(t, "realize"):
 		return t.realize()
