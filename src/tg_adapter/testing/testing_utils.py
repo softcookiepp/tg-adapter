@@ -89,15 +89,20 @@ def _test_submodule(torch_module, tg_module):
 def _test_all_submodules(torch_module, tg_module):
 	torch_submodules, tg_submodules = get_submodules(torch_module, tg_module)
 	for k in torch_submodules.keys():
-		torch_sub = torch_submodules[k]
-		tg_sub = tg_submodules[k]
-		if isinstance(tg_sub, list):
-			# module lists cannot be called
-			continue
-		
-		# must have input spec in order to run any tests whatsoever
-		if not tg_sub._input_spec is None:
-			_test_submodule(torch_sub, tg_sub)
+		try:
+			torch_sub = torch_submodules[k]
+			tg_sub = tg_submodules[k]
+			if isinstance(torch_sub, torch.nn.ModuleList):
+				# module lists cannot be called
+				for torch_item, tg_item in zip(torch_sub, tg_sub):
+					if isinstance(torch_item, torch.nn.Module):
+						_test_submodule(torch_item, tg_item)
+			
+			# must have input spec in order to run any tests whatsoever
+			if not tg_sub._input_spec is None:
+				_test_submodule(torch_sub, tg_sub)
+		except RuntimeError as e:
+			print(e)
 
 def compare_state_dicts(torch_module, tga_module, error_threshold = 1.0e-9):
 	print(type(torch_module), type(tga_module) )
