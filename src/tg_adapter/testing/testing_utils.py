@@ -95,7 +95,7 @@ def _test_all_submodules(torch_module, tg_module):
 			if isinstance(torch_sub, torch.nn.ModuleList):
 				# module lists cannot be called
 				for torch_item, tg_item in zip(torch_sub, tg_sub):
-					if isinstance(torch_item, torch.nn.Module):
+					if isinstance(torch_item, torch.nn.Module) and (not tg_item._input_spec is None):
 						_test_submodule(torch_item, tg_item)
 			
 			# must have input spec in order to run any tests whatsoever
