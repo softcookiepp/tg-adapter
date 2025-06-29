@@ -106,3 +106,9 @@ def norm(inp, p='fro', dim=None, keepdim=False, out=None, dtype=None):
 	return T(tinybloat.linalg.norm(inp, ord = p, dim = dim, keepdim = keepdim, out = out, dtype = dtype) )
 	
 from .F import tanh
+
+def multinomial(inp, num_samples, replacement=False, *args, generator=None, out=None):
+	return T(inp.tg.multinomial(num_samples = num_samples, replacement = replacement) )
+
+def where(condition, inp, other, *args, out=None):
+	return T(condition.tg.where(inp.tg, other.tg) )	

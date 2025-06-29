@@ -189,7 +189,13 @@ class AdapterTensor:
 	def rsqrt(self, *args, out = None):
 		return self._tg_override()
 	
-	def sum(self, axis = None, keepdim = False):
+	def softmax(self, dim = None):
+		return convert_to_torch(self.tg.softmax(dim) )
+	
+	def sum(self, dim = None, axis = None, keepdim = False):
+		if axis is None:
+			# WHY IS TORCH LIKE THIS REEEEEEEEEEEEEEEEEEE
+			axis = dim
 		return convert_to_torch( self.tg.sum(axis, keepdim = keepdim) )
 		
 	@property
@@ -332,7 +338,11 @@ class AdapterTensor:
 		return self.item() > 0
 	
 	def __eq__(self, other):
-		return self._tg_override(other)
+		dev = self.device
+		if isinstance(other, AdapterTensor):
+			dev = _decide_device(self, other)
+			other = other.to(dev)
+		return self.to(dev)._tg_override(other)
 		
 	def ne(self, other):
 		original_device = self.tg.device
@@ -417,7 +427,9 @@ class AdapterTensor:
 		return self._tg_override(axis = dim, keepdim = keepdim)
 	
 	def min(self, dim = None, keepdim = False):
-		return self._tg_override(axis = dim, keepdim = keepdim)
+		if isinstance(dim, AdapterTensor):
+			dim = dim.item().numpy()
+		return convert_to_torch(tinybloat.safety_functions.min(self.tg, dim, dim, keepdim) )
 
 	def argmax(self, *args, **kwargs):
 		#print(args, kwargs)
@@ -524,6 +536,9 @@ class AdapterTensor:
 		
 	def float(self):
 		return self.to( _get_type("float32") )
+	
+	def floor(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
 		
 	def flatten(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)

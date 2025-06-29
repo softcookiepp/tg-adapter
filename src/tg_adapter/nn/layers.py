@@ -172,7 +172,6 @@ class Conv3d(ConvNd):
 class ConvTransposeNd(ConvNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None, dim = None):
 		assert not dim is None
-		
 		super().__init__(in_channels, out_channels, kernel_size, stride,
 			padding, dilation, groups, bias, padding_mode, device, dtype, dim)
 		#print(in_channels, out_channels, kernel_size, stride, padding, output_padding, dilation, groups, bias, padding_mode)
@@ -190,18 +189,57 @@ class ConvTransposeNd(ConvNd):
 
 class ConvTranspose1d(ConvTransposeNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None):
-		super().__init__(in_channels, out_channels, kernel_size, stride,
-			padding, output_padding, dilation, groups, bias, padding_mode, device, dtype, dim = 1)
+		super().__init__(
+			in_channels,
+			out_channels,
+			kernel_size,
+			stride = stride,
+			padding = padding,
+			output_padding = output_padding,
+			groups = groups,
+			bias = bias,
+			dilation = dilation,
+			padding_mode = padding_mode,
+			device = device,
+			dtype = dtype,
+			dim = 2
+		)
 	
 class ConvTranspose2d(ConvTransposeNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None):
-		super().__init__(in_channels, out_channels, kernel_size, stride,
-			padding, output_padding, dilation, groups, bias, padding_mode, device, dtype, dim = 2)
+		super().__init__(
+			in_channels,
+			out_channels,
+			kernel_size,
+			stride = stride,
+			padding = padding,
+			output_padding = output_padding,
+			groups = groups,
+			bias = bias,
+			dilation = dilation,
+			padding_mode = padding_mode,
+			device = device,
+			dtype = dtype,
+			dim = 2
+		)
 
 class ConvTranspose3d(ConvTransposeNd):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, groups=1, bias=True, dilation=1, padding_mode='zeros', device=None, dtype=None):
-		super().__init__(in_channels, out_channels, kernel_size, stride,
-			padding, output_padding, dilation, groups, bias, padding_mode, device, dtype, dim = 3)
+		super().__init__(
+			in_channels,
+			out_channels,
+			kernel_size,
+			stride = stride,
+			padding = padding,
+			output_padding = output_padding,
+			groups = groups,
+			bias = bias,
+			dilation = dilation,
+			padding_mode = padding_mode,
+			device = device,
+			dtype = dtype,
+			dim = 3
+		)
 			
 class LayerNorm(Module):
 	def __init__(self, normalized_shape, eps=1e-05, elementwise_affine=True,
@@ -440,7 +478,6 @@ class MultiheadAttention(Module):
 		vc = v.chunk(self.num_heads, dim = 1)
 		
 		assert qc[0].shape[1] == vc[0].shape[1] == kc[0].shape[1] == self.head_dim
-		#input(self.out_proj.weight.shape)
 		
 		att = []
 		weights = []
@@ -453,7 +490,6 @@ class MultiheadAttention(Module):
 			att.append(hi)
 		weight = tinygrad.Tensor.cat(*att, dim = 1)
 		out = self.out_proj(weight)
-		#input(out.shape)
 		if need_weights:
 			# For now, weight just miight be inaccurate :c
 			return out, weight[0:out.shape[0], 0:out.shape[0]]

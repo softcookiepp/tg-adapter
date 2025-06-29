@@ -279,3 +279,10 @@ def test_nonzero():
 	a = np.arange(16).reshape(4, 4).astype(np.float32) - 4
 	f = lambda x: x.nonzero()
 	_test_function([a], {}, f, f)
+	
+def test_multinomial():
+	for a in (np.arange(16).astype(np.float32), np.arange(32).astype(np.float32).reshape(8, 4) ):
+		for replacement, num_samples in zip([True, False], [10, 1]):
+			torch_out = torch.multinomial(torch.tensor(a), num_samples, replacement = replacement)
+			tg_out = tg_adapter.multinomial(tg_adapter.tensor(a), num_samples, replacement = replacement)
+			assert mse(np.array(torch_out.shape).astype(np.float32), np.array(tg_out.shape).astype(np.float32) ) < 1.0e-4

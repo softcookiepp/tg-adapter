@@ -5,6 +5,7 @@ import torch
 import tinygrad
 import numpy as np
 import tinybloat
+from tinybloat.common import recursive_get_attribute
 
 import os
 
@@ -114,8 +115,7 @@ def compare_state_dicts(torch_module, tga_module, error_threshold = 1.0e-9):
 	#print(torch_sd.keys() )
 	#print(tga_sd.keys() )
 	try:
-		if len(tga_sd.keys() ) != len(torch_sd.keys() ):
-			raise ValueError
+		assert len(tga_sd.keys() ) == len(torch_sd.keys() )
 		for torch_key, tga_key in zip(sorted(torch_sd.keys() ), sorted(tga_sd.keys() ) ):
 			#print(torch_key, tga_key)
 			if torch_key != tga_key.replace("._tg", ""):
@@ -129,7 +129,7 @@ def compare_state_dicts(torch_module, tga_module, error_threshold = 1.0e-9):
 				print("state dict values don't match for", torch_key)
 				#input()
 			assert error < error_threshold
-	except AssertionError:
+	except (AssertionError, ValueError) as e:
 		# keys are not equal
 		tga_sd_norm = []
 		for k in tga_sd.keys():
@@ -144,6 +144,9 @@ def compare_state_dicts(torch_module, tga_module, error_threshold = 1.0e-9):
 		print(missing_keys_tg)
 		print(f"\n{len(missing_keys_torch)} keys missing from torch module:")
 		print(missing_keys_torch)
+		for mk in missing_keys_torch:
+			attr = recursive_get_attribute(tga_module, mk)
+			print(attr)
 		input()
 		raise ValueError
 
