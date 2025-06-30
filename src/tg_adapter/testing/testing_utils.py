@@ -90,6 +90,7 @@ def _test_submodule(torch_module, tg_module):
 def _test_all_submodules(torch_module, tg_module):
 	torch_submodules, tg_submodules = get_submodules(torch_module, tg_module)
 	for k in torch_submodules.keys():
+		print(f"attempting to test submodule: {k}")
 		try:
 			torch_sub = torch_submodules[k]
 			tg_sub = tg_submodules[k]
