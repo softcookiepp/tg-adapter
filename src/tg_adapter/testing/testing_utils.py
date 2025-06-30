@@ -411,15 +411,17 @@ def _test_hf_reimplementation(args, kwargs, hf_module, hf_method, my_module, my_
 	
 	# compute tiny out first so we don't have to wait for torch
 	if isinstance(hf_method, str):
-		tiny_out = my_module.__getattribute__(my_method)(*my_args, **my_kwargs)
 		torch_out = hf_module.__getattribute__(hf_method)(*hf_args, **hf_kwargs)
+		tiny_out = my_module.__getattribute__(my_method)(*my_args, **my_kwargs)
+		#torch_out = hf_module.__getattribute__(hf_method)(*hf_args, **hf_kwargs)
 	else:
+		torch_out = hf_method(hf_module, torch, *hf_args, **hf_kwargs)
 		# function substitute
 		if use_tg_adapter:
 			tiny_out = my_method(my_module, tg_adapter, *my_args, **my_kwargs)
 		else:
 			tiny_out = my_method(my_module, tinygrad, *my_args, **my_kwargs)
-		torch_out = hf_method(hf_module, torch, *hf_args, **hf_kwargs)
+		
 	
 	print(f"MSE for {hf_module} and {my_module}:")
 	_test_key_errors(torch_out, tiny_out, display_images = display_images, error_threshold = error_threshold, error_function = mse)
