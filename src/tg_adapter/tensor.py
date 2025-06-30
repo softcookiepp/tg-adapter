@@ -431,6 +431,10 @@ class AdapterTensor:
 			dim = dim.to("cpu").item()
 			if hasattr(dim, "numpy"):
 				dim = dim.numpy()
+			if isinstance(dim, float):
+				print("this should not be a float")
+				input(dim)
+				dim = int(dim)
 		return convert_to_torch(tinybloat.safety_functions.min(self.tg, dim, dim, keepdim) )
 
 	def argmax(self, *args, **kwargs):
