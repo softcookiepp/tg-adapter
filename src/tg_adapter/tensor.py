@@ -428,7 +428,9 @@ class AdapterTensor:
 	
 	def min(self, dim = None, keepdim = False):
 		if isinstance(dim, AdapterTensor):
-			dim = dim.to("cpu").item().numpy()
+			dim = dim.to("cpu").item()
+			if hasattr(dim, "numpy"):
+				dim = dim.numpy()
 		return convert_to_torch(tinybloat.safety_functions.min(self.tg, dim, dim, keepdim) )
 
 	def argmax(self, *args, **kwargs):
