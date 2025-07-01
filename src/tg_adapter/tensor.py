@@ -445,6 +445,8 @@ class AdapterTensor:
 		return convert_to_torch(safety_functions.argmax(self.tg, *args, **kwargs) )
 	
 	def view(self, *shape):
+		if isinstance(shape[0], dtype_class):
+			return convert_to_torch(self.tg.bitcast(shape[0].tg) )
 		return self._tg_override(*shape)
 	
 	def transpose(self, *args, **kwargs):
