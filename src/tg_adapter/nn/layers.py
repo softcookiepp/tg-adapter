@@ -549,10 +549,4 @@ class MultiheadAttention(Module):
 		return (out,)
 	"""
 
-class GELU(Module):
-	def __init__(self, approximate = None):
-		# almost completely stateless
-		self._approximate = approximate
-	
-	def tg_forward(_, self, inp):
-		return tinybloat.F.gelu(inp, self._approximate)
+

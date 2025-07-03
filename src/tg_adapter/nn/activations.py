@@ -1,5 +1,6 @@
 from .module import Module
 from ..tensor import AdapterTensor as AT
+import tinybloat
 
 class ActivationLambda(Module):
 	def __init__(self, act_fn, inplace = False):
@@ -16,8 +17,18 @@ def SiLU(inplace = False):
 def Mish(inplace = False):
 	return ActivationLambda(lambda x: x.mish(), inplace)
 
+"""
 def GELU(inplace = False):
 	return ActivationLambda(lambda x: x.gelu(), inplace)
+"""
+	
+class GELU(Module):
+	def __init__(self, approximate = None):
+		# almost completely stateless
+		self._approximate = approximate
+	
+	def tg_forward(_, self, inp):
+		return tinybloat.F.gelu(inp, self._approximate)
 
 def ReLU(inplace = False):
 	return ActivationLambda(lambda x: x.relu(), inplace)
