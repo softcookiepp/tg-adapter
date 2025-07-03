@@ -48,6 +48,10 @@ class AdapterTensor:
 			# default to CPU, just like torch does
 			device = "cpu"
 		
+		# convert np.memmap to memoryview
+		if isinstance(data, np.memmap):
+			data = memoryview(data)
+		
 		if isinstance(data, float) or isinstance(data, int) or isinstance(data, list):
 			data = np.array(data)
 			if not dtype is None:
