@@ -124,6 +124,8 @@ class AdapterTensor:
 		
 	def _make_subclass(self, cls, data, requires_grad = False):
 		# parameter and tensor are literally just the same
+		print(cls, data)
+		input("look here")
 		return data
 	
 	@property
