@@ -82,7 +82,7 @@ class AdapterTensor:
 		self._dtype = dtype
 		assert not self._tg is None
 		self._rebuild_dtype()
-		assert is_dtype_supported(self._tg.dtype, self._tg.device)
+		assert is_dtype_supported(self._tg.dtype, self._tg.device), f"Device {self._tg.device} does not support {self._tg.dtype}"
 		maybe_realize(self._tg)
 	
 	def _rebuild_dtype(self):
