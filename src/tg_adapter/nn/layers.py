@@ -10,6 +10,7 @@ from ..types import highest_precision_int
 from ..device import tg_device_supports_longlong
 from .parameter import Parameter
 from .. import tensor_constructors as tc
+import tinybloat
 
 class AvgPool2d(Module):
 	def __init__(self, kernel_size, stride=None, padding=0,
@@ -547,3 +548,11 @@ class MultiheadAttention(Module):
 			return out, weight[0:out.shape[0], 0:out.shape[0]]
 		return (out,)
 	"""
+
+class GELU(Module):
+	def __init__(self, approximate = None):
+		# almost completely stateless
+		self._approximate = approximate
+	
+	def tg_forward(_, self, inp):
+		return tinybloat.F.gelu(inp, self._approximate)
