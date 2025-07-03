@@ -122,10 +122,8 @@ class AdapterTensor:
 			inp = AdapterTensor(inp, device = self.device)
 		return maybe_realize(inp)
 		
-	def _make_subclass(self, cls, data, requires_grad = False):
+	def _make_subclass(self, data, requires_grad):
 		# parameter and tensor are literally just the same
-		print(cls, data)
-		input("look here")
 		return data
 	
 	@property
