@@ -243,7 +243,12 @@ class Module:
 			if new_key in state_dict.keys():
 				tg_tensor = state_dict[new_key]
 				if isinstance(state_dict[new_key], AT):
-					v.tg.replace(state_dict[new_key].tg.to(v.tg.device) ).realize()
+					if v.tg.shape == state_dict[new_key].tg.shape:
+						v.tg.replace(state_dict[new_key].tg.to(v.tg.device) ).realize()
+					else:
+						# just do something risky lmao
+						v._tg = state_dict[new_key].tg.to(v.tg.device)
+						v.tg.realize()
 				else:
 					v.tg.replace(state_dict[new_key].to(v.tg.device) ).realize()
 				#print(v.dtype, v.tg.dtype)
