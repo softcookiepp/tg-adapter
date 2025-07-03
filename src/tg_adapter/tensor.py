@@ -582,6 +582,9 @@ class AdapterTensor:
 	
 	def clamp(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
+		
+	def split(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
 	
 	def interpolate(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
