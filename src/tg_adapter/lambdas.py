@@ -112,3 +112,6 @@ def multinomial(inp, num_samples, replacement=False, *args, generator=None, out=
 
 def where(condition, inp, other, *args, out=None):
 	return T(condition.tg.where(inp.tg, other.tg) )	
+
+def split(inp, split_size_or_sections, dim = 0):
+	return inp.split(split_size_or_section, dim = dim)
