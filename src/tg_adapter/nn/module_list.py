@@ -69,6 +69,9 @@ class ModuleList(Module):
 			return self.__class__(new_list)
 		else:
 			# just convert idx to string
+			if idx < 0:
+				# forgot about this
+				idx = len(self) + idx
 			return self._modules[str(idx)]
 
 	def __setitem__(self, idx: int, module: Module) -> None:
