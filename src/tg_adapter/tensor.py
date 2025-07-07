@@ -182,6 +182,9 @@ class AdapterTensor:
 	
 	def flip(self, dims):
 		return self._tg_override(dims)
+	
+	def full_like(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
 		
 	def pow(self, other):
 		return self ** other

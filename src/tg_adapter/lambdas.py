@@ -121,3 +121,6 @@ def abs(inp, *args, **kwargs):
 
 def log(inp, *args, **kwargs):
 	return inp.log(*args, **kwargs)
+
+def full_like(inp, *args, **kwargs):
+	return inp.full_like(*args **kwargs)
