@@ -455,6 +455,9 @@ class AdapterTensor:
 	def abs(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
+	def log(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
 	def view(self, *shape):
 		if isinstance(shape[0], dtype_class):
 			return convert_to_torch(self.tg.bitcast(shape[0].tg) )
