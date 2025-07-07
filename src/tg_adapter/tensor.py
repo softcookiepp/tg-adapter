@@ -452,6 +452,9 @@ class AdapterTensor:
 		#return convert_to_torch(self._tg.contiguous().argmax(*args, **kwargs) )
 		return convert_to_torch(safety_functions.argmax(self.tg, *args, **kwargs) )
 	
+	def abs(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
 	def view(self, *shape):
 		if isinstance(shape[0], dtype_class):
 			return convert_to_torch(self.tg.bitcast(shape[0].tg) )

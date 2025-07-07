@@ -115,3 +115,6 @@ def where(condition, inp, other, *args, out=None):
 
 def split(inp, split_size_or_sections, dim = 0):
 	return inp.split(split_size_or_sections, dim = dim)
+	
+def abs(inp, *args, **kwargs):
+	return inp.abs(*args, **kwargs)
