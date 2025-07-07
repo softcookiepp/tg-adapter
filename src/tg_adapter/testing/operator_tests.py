@@ -13,8 +13,8 @@ def test_cat():
 	a = make_test_data(40, 2, 5)
 	b = make_test_data(40, 2, 5)
 	for i in range(3):
-		_test_function( ([a, b], i), {}, torch.cat, tg_adapter.cat)
-	_test_function( ([a, b], -1), {}, torch.cat, tg_adapter.cat)
+		_test_function( ([a, b],), {"dim": i}, torch.cat, tg_adapter.cat)
+	_test_function( ([a, b],), {"dim": -1}, torch.cat, tg_adapter.cat)
 
 def test_interpolate():
 	shape = (2, 3, 6, 6)
