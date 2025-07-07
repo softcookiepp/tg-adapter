@@ -439,7 +439,7 @@ class AdapterTensor:
 	
 	def min(self, dim = None, keepdim = False):
 		if isinstance(dim, AdapterTensor):
-			if dim.ne() > 1:
+			if dim.numel() > 1:
 				# might as well
 				return convert_to_torch(self.tg.min(dim.numpy().astype(int), keepdim = keepdim) )
 			dim = dim.to("cpu").item()
