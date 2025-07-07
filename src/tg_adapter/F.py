@@ -142,3 +142,7 @@ def tanh(inp, out = None):
 	
 def normalize(inp, p = 2.0, dim = 1, eps = 1.0e-12, out = None):
 	return convert_to_torch( tinybloat.F.normalize(inp.tg, p, dim, eps) )
+
+def dropout(inp, p = 0.5, training = True, inplace = False):
+	# training will do nothing
+	return convert_to_torch(inp.tg.dropout(p) )
