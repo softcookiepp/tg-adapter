@@ -267,6 +267,7 @@ class AdapterTensor:
 		elif (not dtype is None) and device is None:
 			new_tensor = maybe_realize(self.tg.cast(dtype.tgt(self.device.tg) ) )
 		elif not (dtype is None or device is None):
+			print(new_tensor.tg.device)
 			return convert_to_torch(self.tg.to(device.tg).cast(dtype.tgt(device.tg)) )
 		assert not new_tensor is None
 		print(new_tensor.tg.device)
@@ -298,6 +299,7 @@ class AdapterTensor:
 			new_t = self._recast_to_supported_type(device)
 			self._tg.replace(new_t)
 			self._tg.to_(device.tg)
+		print(self.tg.device)
 		maybe_realize(self.tg)
 		
 		# forgot, have to set the data type to the correct one afterwards...
