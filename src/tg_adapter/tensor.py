@@ -249,7 +249,8 @@ class AdapterTensor:
 				if is_dtype_supported(new_supported_type, device.tg) \
 						and is_dtype_supported(old_supported_type, device.tg):
 					# move first, then cast
-					new_tensor = new_tensor.to(device.tg).cast(old_supported_type)
+					new_tensor = tinybloat.move_to_device(new_tensor, device.tg).cast(old_supported_dtype)
+					#new_tensor = new_tensor.to(device.tg).cast(old_supported_type)
 				# new device should support new type, dtype.tgt takes care of that
 				# if new device doesn't support old type
 				elif (not is_dtype_supported(old_supported_type, device.tg) ) and is_dtype_supported(new_supported_type, self.device.tg):
@@ -258,19 +259,6 @@ class AdapterTensor:
 				else:
 					# can't cast to type that neither supports!
 					raise ValueError
-				
-					
-			else:
-				# first ensure that the dtype is compatible with the device
-				if dtype is None:
-					dtype = self.dtype
-				supported_type_old_device = self.dtype.tgt(self.device.tg)
-				supported_type_new_device = dtype.tgt(device.tg)
-				# ok, so the problem is that it works one way, but not the other :c
-				
-				new_tensor = new_tensor.cast(supported_type_old_device)
-				# then move it to the new device
-				new_tensor = new_tensor.to(device.tg).cast(supported_type_new_device)
 		return convert_to_torch(new_tensor)
 		
 		if dtype is None and (not device is None):
