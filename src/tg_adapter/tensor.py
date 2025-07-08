@@ -35,6 +35,7 @@ def _parse_to_arguments(*args, **kwargs):
 		if isinstance(device, str):
 			device = Device(device)
 	assert device is None or isinstance(device, Device)
+	print(dtype, device)
 	return dtype, device
 
 class AdapterTensor:
