@@ -249,7 +249,7 @@ class AdapterTensor:
 				if is_dtype_supported(new_supported_type, device.tg) \
 						and is_dtype_supported(old_supported_type, device.tg):
 					# move first, then cast
-					new_tensor = tinybloat.move_to_device(new_tensor, device.tg).cast(old_supported_dtype)
+					new_tensor = tinybloat.move_to_device(new_tensor, device.tg).cast(old_supported_type)
 					#new_tensor = new_tensor.to(device.tg).cast(old_supported_type)
 				# new device should support new type, dtype.tgt takes care of that
 				# if new device doesn't support old type
