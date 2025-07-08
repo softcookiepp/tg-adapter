@@ -269,6 +269,7 @@ class AdapterTensor:
 		elif not (dtype is None or device is None):
 			return convert_to_torch(self.tg.to(device.tg).cast(dtype.tgt(device.tg)) )
 		assert not new_tensor is None
+		print(new_tensor.tg.device)
 		return convert_to_torch(new_tensor)
 	
 	def _tg_cast_(self, dtype):
