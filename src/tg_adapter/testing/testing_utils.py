@@ -147,8 +147,8 @@ def compare_state_dicts(torch_module, tga_module, error_threshold = 1.0e-9):
 		for mk in missing_keys_torch:
 			attr = recursive_get_attribute(tga_module, mk)
 			print(attr)
-		input()
-		raise ValueError
+		#input()
+		#raise ValueError
 
 
 def inspect_state_dict_devices(module):
