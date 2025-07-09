@@ -249,8 +249,8 @@ class AdapterTensor:
 				if is_dtype_supported(new_supported_type, device.tg) \
 						and is_dtype_supported(old_supported_type, device.tg):
 					# move first, then cast
-					new_tensor = tinybloat.move_to_device(new_tensor, device.tg).cast(old_supported_type)
-					#new_tensor = new_tensor.to(device.tg).cast(old_supported_type)
+					#new_tensor = tinybloat.move_to_device(new_tensor, device.tg).cast(old_supported_type)
+					new_tensor = new_tensor.to(device.tg).cast(old_supported_type)
 				# new device should support new type, dtype.tgt takes care of that
 				# if new device doesn't support old type
 				elif (not is_dtype_supported(old_supported_type, device.tg) ) and is_dtype_supported(new_supported_type, self.device.tg):
@@ -506,15 +506,22 @@ class AdapterTensor:
 				# inp is a primitive type
 				return inp
 	
-	def __getitem__(self, *args, **kwargs):
+	def __getitem__(self, *args):
 		
 		self_device = self.device
-		d = None
+		d = self_device
 		if not tg_device_supports_longlong(self._tg.device):
 			# Temporarily move tensors to CPU for indexing if absolutely required
 			d = "cpu"
-		args, kwargs = self._move_to_same_device(args, kwargs, dev = d)
-		out = self._tg_override(*args, **kwargs)
+		self = self.to(d)
+		margs = []
+		# if this doesn't work i will be surprised
+		for arg in args:
+			if hasattr(arg, "tg"):
+				margs.append(arg.to(d) )
+			else:
+				margs.append(arg)
+		out = self._tg_override(*margs)
 		out = self._move_to_same_device( out, dev = self_device)
 		return out
 
@@ -615,7 +622,7 @@ def assert_same_device(dev, *inp):
 	if isinstance(inp, AdapterTensor):
 		assert dev == inp.tg.device
 	if isinstance(inp, tinygrad.Tensor):
-		assert dev == inp.device
+		assert dev == inp.device, f"{dev} is not {inp.device}"
 	elif isinstance(inp, list) or isinstance(inp, tuple):
 		for item in inp:
 			assert_same_device(dev, item)
