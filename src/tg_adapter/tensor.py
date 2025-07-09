@@ -543,6 +543,9 @@ class AdapterTensor:
 		
 	def __pow__(self, other):
 		return self._tg_override(other)
+		
+	def __rpow__(self, other):
+		return self._tg_override(other)
 	
 	def __matmul__(self, other):
 		if self._is_complex or (isinstance(other, AdapterTensor) and other._is_complex):
