@@ -325,6 +325,7 @@ class Embedding(Module):
 		self.vocab_sz, self.embed_sz = vocab_size, embed_size
 		self.weight = tc.empty( (vocab_size, embed_size) )
 		internal_init.xavier_uniform_(self.weight )
+		self.padding_idx = None
 	
 	def tg_forward(parent, self, idx):
 		vocab_sz, embed_sz, weight = self.vocab_sz, self.embed_sz, self.weight
