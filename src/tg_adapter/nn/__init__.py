@@ -4,6 +4,7 @@ from . import init
 from .losses import *
 from .module_list import ModuleList, ModuleDict, ParameterDict
 from .parameter import Parameter
+from . import attention
 
 # lets see if this runs lmao
 #from tinygrad.nn import *

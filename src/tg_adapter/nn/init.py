@@ -80,3 +80,6 @@ def zeros_(tensor):
 
 def _calculate_correct_fan(*args, **kwargs):
 	raise NotImplementedError
+
+def _calculate_fan_in_and_fan_out(*args, **kwargs):
+	raise NotImplementedError

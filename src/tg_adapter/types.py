@@ -199,7 +199,7 @@ class dtype:
 		self._is_fp = self._key in FLOAT_KEYS
 	
 	def __repr__(self):
-		return self.key
+		return "torch." + self.key
 	
 	@property
 	def is_complex(self):

@@ -6,6 +6,7 @@ from .lambdas import *
 from . import lambdas
 min = lambdas._min
 max = lambdas._max
+from . import fx
 
 from .types import _get_type, dtype, get_default_dtype, set_default_dtype, finfo, is_floating_point
 from .tensor_constructors import *
