@@ -176,7 +176,6 @@ class ConvTransposeNd(ConvNd):
 		super().__init__(in_channels, out_channels, kernel_size, stride,
 			padding, dilation, groups, bias, padding_mode, device, dtype, dim)
 		#print(in_channels, out_channels, kernel_size, stride, padding, output_padding, dilation, groups, bias, padding_mode)
-		#input("why")
 		scale = 1 / math.sqrt(in_channels * prod(self.kernel_size))
 		self.weight = tc.empty(  (in_channels, out_channels//groups, *self.kernel_size)  )
 		internal_init.uniform_(self.weight, a = -scale, b = scale)
@@ -185,7 +184,6 @@ class ConvTransposeNd(ConvNd):
 	
 	def tg_forward(_, self, x):
 		#print(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding, self.output_padding)
-		#input("see anything weird?")
 		return x.conv_transpose2d(self.weight, self.bias, self.groups, self.stride, self.dilation, self.padding, self.output_padding)
 
 class ConvTranspose1d(ConvTransposeNd):
@@ -495,58 +493,5 @@ class MultiheadAttention(Module):
 			# For now, weight just miight be inaccurate :c
 			return out, weight[0:out.shape[0], 0:out.shape[0]]
 		return (out,)
-	
-	"""
-	def forward(self, query, key, value, key_padding_mask = None,
-			need_weights = True, attn_mask = None,
-			average_attn_weights = False, is_causal = False):
-		if True in (not key_padding_mask is None, average_attn_weights, is_causal):
-			# not going to bother with these for now
-			raise NotImplementedError
-		q, k, v = convert_to_tg(query, key , value)
-		if hasattr(self, "in_proj_weight"):
-			wq, wk, wv = convert_to_tg(self.in_proj_weight).chunk(3, dim = 0)
-		else:
-			wq, wk, wv = convert_to_tg(self.q_proj_weight, self.k_proj_weight, self.v_proj_weight)
-			
-		# YAY!!!!!!
-		q = q @ wq.T
-		k = k @ wk.T
-		v = v @ wv.T
-		
-		if hasattr(self, "in_proj_bias"):
-			inb = convert_to_tg(self.in_proj_bias)
-			q = q + inb[0:self.embed_dim]
-			k = k + inb[self.embed_dim:self.embed_dim*2]
-			v = v + inb[self.embed_dim*2:self.embed_dim*3]
-		
-		if not self.bias_k is None:
-			bk, bv = convert_to_tg(bias_k, bias_v)
-			b += bk
-			v += bv
-		qc = q.chunk(self.num_heads, dim = 1)
-		kc = k.chunk(self.num_heads, dim = 1)
-		vc = v.chunk(self.num_heads, dim = 1)
-		
-		assert qc[0].shape[1] == vc[0].shape[1] == kc[0].shape[1] == self.head_dim
-		#input(self.out_proj.weight.shape)
-		
-		att = []
-		weights = []
-		for head in range(self.num_heads):
-			qi, ki, vi = qc[head], kc[head], vc[head]
-			hi = tinygrad.Tensor.scaled_dot_product_attention(qi, ki, vi, attn_mask = attn_mask)
-			if need_weights:
-				#weights.append()
-				pass
-			att.append(hi)
-		weight = convert_to_torch( tinygrad.Tensor.cat(*att, dim = 1) )
-		out = self.out_proj(weight)
-		#input(out.shape)
-		if need_weights:
-			# For now, weight just miight be inaccurate :c
-			return out, weight[0:out.shape[0], 0:out.shape[0]]
-		return (out,)
-	"""
 
 

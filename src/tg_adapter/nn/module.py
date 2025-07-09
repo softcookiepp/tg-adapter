@@ -56,14 +56,14 @@ class Module:
 		for k, v in self.named_parameters():
 			if k == name:
 				return v
-		input(f"Could not find parameter {name}")
+		raise AttributeError(f"Could not find parameter {name}")
 		
 	
 	def get_buffer(self, name: str):
 		for k, v in self.named_parameters():
 			if k == name:
 				return v
-		input(f"Could not find buffer {name}")
+		raise AttributeError(f"Could not find buffer {name}")
 	
 	def requires_grad_(self, *args, **kwargs):
 		# tinygrad doesn't keep track of this lol
@@ -251,8 +251,6 @@ class Module:
 						v.tg.realize()
 				else:
 					v.tg.replace(state_dict[new_key].to(v.tg.device) ).realize()
-				#print(v.dtype, v.tg.dtype)
-				#input("looksie")
 			else:
 				# TODO: warn user or something, i forget
 				pass
@@ -284,9 +282,7 @@ class Module:
 		# use conventional method, but replace all dict keys with x._tg lol
 		new_state_dict = {}
 		for k, v in state_dict.items():
-			#print(k, v)
 			k = k + "._tg"
-			#input(k)
 			new_state_dict[k] = v
 		tinygrad.nn.state.load_state_dict(self, new_state_dict, strict = strict, verbose = True)
 		#_cb(self)
@@ -348,9 +344,7 @@ class Module:
 					attr_value = recursive_get_attribute(self, subkey)
 					#print(subkey, attr_value)
 					if isinstance(attr_value, Module) or isinstance(attr_value, list):
-						#input(f"adding {subkey}")
 						named_modules[subkey] = attr_value
-		#input(named_modules.keys() )
 		return itertools.chain([("", self)], named_modules.items() )
 				
 	def modules(self, remove_duplicate = True):
