@@ -119,6 +119,9 @@ def split(inp, split_size_or_sections, dim = 0):
 def abs(inp, *args, **kwargs):
 	return inp.abs(*args, **kwargs)
 
+def all(inp, *args, **kwargs):
+	return inp.all(*args, **kwargs)
+
 def log(inp, *args, **kwargs):
 	return inp.log(*args, **kwargs)
 
