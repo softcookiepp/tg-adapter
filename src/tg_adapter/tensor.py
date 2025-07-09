@@ -416,11 +416,11 @@ class AdapterTensor:
 		return convert_to_torch(newself.__getattribute__(function)(*args, **kwargs) )
 	
 	def masked_fill(self, *args, **kwargs):
-		if False:
-			args, kwargs = convert_to_tg(args, kwargs)
-			return convert_to_torch(convert_to_tg(self).masked_fill(*args, **kwargs) )
-		else:
-			return self._tg_override(*args, **kwargs)
+		return self._tg_override(*args, **kwargs)
+	
+	def masked_fill_(self, *args, **kwargs):
+		self.tg.replace(self.tg.masked_fill(*args, **kwargs) )
+		return self
 	
 	def max(self, dim = None, keepdim = False):
 		return self._tg_override(axis = dim, keepdim = keepdim)
