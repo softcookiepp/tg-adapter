@@ -124,3 +124,7 @@ def log(inp, *args, **kwargs):
 
 def full_like(inp, *args, **kwargs):
 	return inp.full_like(*args, **kwargs)
+	
+def isin(elements, test_elements, *args, assume_unique=False, invert=False):
+	elements, test_elements = convert_to_tg(elements, test_elements)
+	return convert_to_torch(tinybloat.isin(elements, test_elements, *args, assume_unique=assume_unique, invert=invert) )
