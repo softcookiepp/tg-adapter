@@ -472,6 +472,9 @@ class AdapterTensor:
 		# is this even a torch function? I don't know :c
 		return AdapterTensor(self.tg.cast(dtype.tgt(self.tg.device) ) )
 	
+	def clone(self, *args, **kwargs):
+		return convert_to_torch( self.tg.clone() )
+	
 	def expand(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 		
