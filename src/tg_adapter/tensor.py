@@ -419,7 +419,8 @@ class AdapterTensor:
 		return self._tg_override(*args, **kwargs)
 	
 	def masked_fill_(self, *args, **kwargs):
-		self.tg.replace(self.tg.masked_fill(*args, **kwargs) )
+		out = self.masked_fill(*args, **kwargs)
+		self.tg.replace(out.tg)
 		return self
 	
 	def where(self, *args, **kwargs):
