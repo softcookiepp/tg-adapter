@@ -338,6 +338,24 @@ class AdapterTensor:
 		else:
 			output = tg_self.__getattribute__(tg_attr)(*tg_args, **tg_kwargs)
 		return convert_to_torch(output)
+	
+	def __and__(self, other):
+		return self._tg_override(other)
+	
+	def __or__(self, other):
+		return self._tg_override(other)
+	
+	def __xor__(self, other):
+		return self._tg_override(other)
+	
+	def __invert__(self, other):
+		return self._tg_override(other)
+	
+	def __lshift__(self, other):
+		return self._tg_override(other)
+	
+	def __rshift__(self, other):
+		return self._tg_override(other)
 		
 	def __array__(self):
 		return self.numpy()
