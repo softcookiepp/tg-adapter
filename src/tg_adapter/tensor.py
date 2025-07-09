@@ -422,6 +422,13 @@ class AdapterTensor:
 	def numpy(self):
 		return self.tg.numpy()
 	
+	def new_ones(self, size, *args, dtype = None, device = None, requires_grad = False):
+		if dtype is None:
+			dtype = self.dtype
+		if device is None:
+			device = self.device
+		return convert_to_torch(tinygrad.Tensor.ones(size, dtype = dtype.tg, device = device.tg) )
+	
 	def _reimplement_exact(self, function, *args, **kwargs):
 		newself, args, kwargs = convert_to_tg(self, args, kwargs)
 		assert_same_device(newself.device, args, kwargs)
