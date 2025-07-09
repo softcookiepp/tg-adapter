@@ -15,9 +15,9 @@ def pow(x, y):
 	return T( x.pow(y) )
 
 sum = lambda x, axis: T( convert_to_tg(x).sum(axis) )
-sin = lambda x: T( x.tg.sin() )
-cos = lambda x: T( convert_to_tg(x).cos() )
-tan = lambda x: T( convert_to_tg(x).tan() )
+sin = lambda x: x.sin()
+cos = lambda x: x.cos()
+tan = lambda x: x.tan()
 
 def mean(inp, dim = None, keepdim = False, dtype = None, out = None):
 	return inp.mean(dim, keepdim, dtype, out)

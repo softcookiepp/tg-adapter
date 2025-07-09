@@ -185,6 +185,15 @@ class AdapterTensor:
 	
 	def full_like(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
+	
+	def sin(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
+	def cos(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
+	def tan(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
 		
 	def pow(self, other):
 		return self ** other
