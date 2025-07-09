@@ -92,7 +92,7 @@ def zeros_like(inp):
 	
 
 def cumsum(inp, dim = None):
-	return T(inp.tg.cumsum(dim))
+	return inp.cumsum(dim)
 	
 def matmul(a, b):
 	return a @ b

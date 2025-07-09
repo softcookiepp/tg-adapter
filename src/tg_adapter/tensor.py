@@ -474,6 +474,9 @@ class AdapterTensor:
 	
 	def expand(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
+		
+	def cumsum(self, dim = None):
+		return convert_to_torch(self.tg.cumsum(dim))
 	
 	def _move_to_same_device(self, *inp, dev = None):
 		if len(inp) == 1:
