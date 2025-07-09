@@ -422,6 +422,9 @@ class AdapterTensor:
 		self.tg.replace(self.tg.masked_fill(*args, **kwargs) )
 		return self
 	
+	def where(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
 	def max(self, dim = None, keepdim = False):
 		return self._tg_override(axis = dim, keepdim = keepdim)
 	
