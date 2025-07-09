@@ -124,6 +124,12 @@ def log(inp, *args, **kwargs):
 
 def full_like(inp, *args, **kwargs):
 	return inp.full_like(*args, **kwargs)
+
+def ones_like(inp, dtype = None):
+	ones = inp.full_like(1.0)
+	if dtype is None:
+		return ones
+	return ones.to(dtype)
 	
 def isin(elements, test_elements, *args, assume_unique=False, invert=False):
 	elements, test_elements = convert_to_tg(elements, test_elements)
