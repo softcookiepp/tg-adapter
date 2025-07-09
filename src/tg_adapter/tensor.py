@@ -195,7 +195,7 @@ class AdapterTensor:
 	def tan(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 		
-	def neg(self):
+	def __neg__(self):
 		return self._tg_override()
 		
 	def pow(self, other):
