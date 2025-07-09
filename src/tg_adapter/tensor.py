@@ -451,6 +451,9 @@ class AdapterTensor:
 	def abs(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
+	def any(self, *args, **kwargs):
+		return self._tg_override(*args, **kwargs)
+	
 	def log(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
