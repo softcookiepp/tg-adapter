@@ -135,7 +135,8 @@ def clamp(inp, min = None, max = None):
 	return convert_to_torch(inp.clamp(min, max) )
 	
 def cat(tensors, dim = 0):
-	return convert_to_torch(tinybloat.cat(convert_to_tg(tensors), dim = convert_to_tg(dim) ) )
+	return convert_to_torch(tinygrad.Tensor.cat(*convert_to_tg(tensors), dim = dim ) )
+	#return convert_to_torch(tinybloat.cat(convert_to_tg(tensors), dim = convert_to_tg(dim) ) )
 
 def tanh(inp, out = None):
 	return convert_to_torch(inp.tg.tanh() )
