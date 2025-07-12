@@ -348,8 +348,8 @@ class AdapterTensor:
 	def __xor__(self, other):
 		return self._tg_override(other)
 	
-	def __invert__(self, other):
-		return self._tg_override(other)
+	def __invert__(self):
+		return self._tg_override()
 	
 	def __lshift__(self, other):
 		return self._tg_override(other)
