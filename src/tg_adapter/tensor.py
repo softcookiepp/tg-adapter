@@ -12,7 +12,7 @@ from .backend_environment_config import *
 from .debugging import maybe_realize
 from .utils import is_jitted
 
-from tinybloat import ComplexTensor, safety_functions
+from tinybloat import ComplexTensor, QTensor, safety_functions
 import tinybloat
 
 
