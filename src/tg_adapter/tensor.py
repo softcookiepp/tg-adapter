@@ -72,7 +72,6 @@ class AdapterTensor:
 		else:
 			data, _ = convert_np_type_correctly(np.array(data), tg_device )
 			self._tg = tinygrad.Tensor(data, device = tg_device, dtype = tgt)
-		print("PAENUS")
 		self._is_complex = isinstance(self._tg, ComplexTensor)
 		self._dtype = dtype
 		assert not self._tg is None
