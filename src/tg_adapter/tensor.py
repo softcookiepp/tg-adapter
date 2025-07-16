@@ -68,7 +68,6 @@ class AdapterTensor:
 			self._tg = data
 		elif isinstance(data, np.ndarray):
 			self._tg = tinybloat.tensor(data, device = tg_device, requires_grad = requires_grad)
-			
 		else:
 			data, _ = convert_np_type_correctly(np.array(data), tg_device )
 			self._tg = tinygrad.Tensor(data, device = tg_device, dtype = tgt)
@@ -80,7 +79,6 @@ class AdapterTensor:
 		maybe_realize(self._tg)
 	
 	def _rebuild_dtype(self):
-		#from_tg = _get_type(self._tg.dtype)
 		if self._is_complex:
 			self._dtype = get_type_from_tg(self._tg.real.dtype, self._tg.device.split(":")[0], None, True)
 		else:
