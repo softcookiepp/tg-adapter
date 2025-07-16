@@ -42,7 +42,6 @@ class AdapterTensor:
 			requires_grad = False, pin_memory = False):
 		# pin memory is unused, but kept for compatibility
 		# convert device, duh
-		self._is_complex = False
 		tg_device = None
 		if device is None:
 			# default to CPU, just like torch does
@@ -51,6 +50,7 @@ class AdapterTensor:
 		# convert np.memmap to memoryview
 		if isinstance(data, np.memmap):
 			data = memoryview(data)
+			
 		
 		if isinstance(data, float) or isinstance(data, int) or isinstance(data, list):
 			data = np.array(data)
@@ -64,21 +64,16 @@ class AdapterTensor:
 			device = Device(device)
 			tg_device = device.tg
 		tgt = get_tgt(dtype, tg_device)
-		if isinstance(data, tinygrad.Tensor):
+		if isinstance(data, tinygrad.Tensor) or isinstance(data, ComplexTensor):
 			self._tg = data
-		elif isinstance(data, ComplexTensor):
-			self._tg = data
-			self._is_complex = True
 		elif isinstance(data, np.ndarray):
-			real, imag = convert_np_type_correctly(data, tg_device)
-			if not imag is None:
-				self._tg = ComplexTensor(real, imag, device = tg_device)
-				self._is_complex = True
-			else:
-				self._tg = tinygrad.Tensor(real, device = tg_device)
+			self._tg = tinybloat.tensor(data, device = tg_device, requires_grad = requires_grad)
+			
 		else:
 			data, _ = convert_np_type_correctly(np.array(data), tg_device )
 			self._tg = tinygrad.Tensor(data, device = tg_device, dtype = tgt)
+			
+		self._is_complex = isinstance(self._tg, ComplexTensor)
 		self._dtype = dtype
 		assert not self._tg is None
 		self._rebuild_dtype()
