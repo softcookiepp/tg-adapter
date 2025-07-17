@@ -14,7 +14,7 @@ from .utils import is_jitted
 
 from tinybloat import ComplexTensor, QTensor, safety_functions
 import tinybloat
-
+import gguf
 
 def _parse_to_arguments(*args, **kwargs):
 	assert len(args) > 0 or len(kwargs) > 0
@@ -46,17 +46,6 @@ class AdapterTensor:
 		if device is None:
 			# default to CPU, just like torch does
 			device = "cpu"
-		
-		# convert np.memmap to memoryview
-		if isinstance(data, np.memmap):
-			data = memoryview(data)
-			
-		
-		if isinstance(data, float) or isinstance(data, int) or isinstance(data, list):
-			data = np.array(data)
-			if not dtype is None:
-				npt = get_np_type_from_torch(dtype)
-				data = data.astype(npt)
 			
 		if isinstance(device, Device):
 			tg_device = device.tg
@@ -64,13 +53,24 @@ class AdapterTensor:
 			device = Device(device)
 			tg_device = device.tg
 		tgt = get_tgt(dtype, tg_device)
+		
+		# convert np.memmap to memoryview
+		if isinstance(data, np.memmap):
+			data = memoryview(data)
+			
+		if isinstance(data, float) or isinstance(data, int) or isinstance(data, list):
+			data = np.array(data)
+			if not dtype is None:
+				npt = get_np_type_from_torch(dtype)
+				data = data.astype(npt)
+				
 		if isinstance(data, tinygrad.Tensor) or isinstance(data, ComplexTensor):
 			self._tg = data
-		elif isinstance(data, np.ndarray):
+		elif isinstance(data, np.ndarray) or isinstance(data, gguf.gguf_reader.ReaderTensor):
 			self._tg = tinybloat.tensor(data, device = tg_device, requires_grad = requires_grad)
 		else:
 			data, _ = convert_np_type_correctly(np.array(data), tg_device )
-			self._tg = tinygrad.Tensor(data, device = tg_device, dtype = tgt)
+			self._tg = tinygrad.Tensor(data, device = tg_device, requires_grad = requires_grad)
 		self._is_complex = isinstance(self._tg, ComplexTensor)
 		self._dtype = dtype
 		assert not self._tg is None
@@ -503,6 +503,9 @@ class AdapterTensor:
 	
 	def transpose(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
+		
+	def swapaxes(self, *args, **kwargs):
+		return self.transpose(*args, **kwargs)
 	
 	def reshape(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
