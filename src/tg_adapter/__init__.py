@@ -21,7 +21,7 @@ from . import linalg
 from .io import *
 
 import tinygrad
-from .tensor import AdapterTensor
+from .tensor import AdapterTensor, convert_to_torch, convert_to_tg
 
 from .return_types import *
 
