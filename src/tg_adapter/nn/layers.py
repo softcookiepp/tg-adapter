@@ -11,6 +11,7 @@ from ..device import tg_device_supports_longlong
 from .parameter import Parameter
 from .. import tensor_constructors as tc
 import tinybloat
+from typing import Iterable
 
 class AvgPool2d(Module):
 	def __init__(self, kernel_size, stride=None, padding=0,
@@ -99,6 +100,20 @@ class Upsample(Module):
 	
 	def forward(self, *args, **kwargs):
 		raise NotImplementedError
+		
+def _make_tuple(padding, dim):
+	pv = None
+	if not isinstance(padding, Iterable):
+		padding = [padding]
+	else:
+		padding = list(padding)
+	if len(padding) < dim:
+		pv = padding[0]
+		for i in range(dim - len(padding) ):
+			padding.append(pv)
+	elif len(padding) > dim:
+		raise ValueError
+	return tuple(padding)
 
 class ConvNd(Module):
 	def __init__(self, in_channels, out_channels, kernel_size, stride=1,
@@ -110,7 +125,7 @@ class ConvNd(Module):
 		if isinstance(padding, str):
 			assert padding in ["valid", "same"]
 		self.kernel_size = make_tuple(kernel_size, dim)
-		self.stride, self.dilation, self.groups, self.padding = stride, dilation, groups, padding
+		self.stride, self.dilation, self.groups, self.padding =  _make_tuple(stride, dim),  _make_tuple(dilation, dim), groups,  _make_tuple(padding, dim)
 		scale = 1 / math.sqrt(in_channels * prod(self.kernel_size))
 		
 		self._in_channels = in_channels
