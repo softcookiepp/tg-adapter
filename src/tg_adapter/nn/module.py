@@ -1,5 +1,6 @@
 import tinygrad
 from tinygrad.nn.state import safe_save, safe_load, get_state_dict, load_state_dict, torch_load
+from tinygrad import dtypes
 from typing import Iterable
 import inspect
 from ..device import device
