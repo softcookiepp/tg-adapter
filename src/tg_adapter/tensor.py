@@ -100,6 +100,7 @@ class AdapterTensor:
 		return len(self.shape)
 		
 	def is_contiguous(self):
+		return True
 		return unwrap(self._tg.lazydata.st).contiguous
 	
 	def size(self, idx = None):
