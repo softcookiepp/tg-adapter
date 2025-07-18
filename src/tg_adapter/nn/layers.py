@@ -101,7 +101,7 @@ class Upsample(Module):
 	def forward(self, *args, **kwargs):
 		raise NotImplementedError
 		
-def _make_tuple(padding, dim, fill == None):
+def _make_tuple(padding, dim, fill = None):
 	if not isinstance(padding, Iterable):
 		padding = [padding]
 	else:
