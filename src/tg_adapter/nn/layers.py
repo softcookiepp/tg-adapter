@@ -403,6 +403,7 @@ class ZeroPadNd(Module):
 		self.padding = padding
 		if isinstance(padding, int):
 			self.padding = _make_tuple(padding, dim * 2, fill = 0)
+		print(self.padding)
 	def tg_forward(_, self, inp):
 		return inp.pad(self.padding, mode = "constant", value = 0.0)
 
