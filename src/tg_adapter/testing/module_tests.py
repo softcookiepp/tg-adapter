@@ -73,3 +73,9 @@ def test_conv_transpose_2d():
 	test_data = make_test_data(2, 2, 16, 16)
 	_test_hf_reimplementation([test_data], {}, torch_module, "__call__", tg_module, "__call__")
 	
+def test_zero_pad_2d():
+	for pad in [2, (2, 4)]:
+		torch_module = torch.nn.ZeroPad2d(pad)
+		tg_module = tg_adapter.nn.ZeroPad2d(pad)
+		a = make_test_data(2, 3, 16, 16)
+		_test_hf_reimplementation([a], {}, torch_module, "__call__", tg_module, "__call__")

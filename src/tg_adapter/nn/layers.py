@@ -395,6 +395,15 @@ class GroupNorm(Module):
 		x = x.reshape(x.shape[0], self.num_groups, -1).layernorm(eps=self.eps).reshape(x.shape)
 		if self.weight is None or self.bias is None: return x
 		return x * self.weight.reshape(1, -1, *[1] * (x.ndim-2)) + self.bias.reshape(1, -1, *[1] * (x.ndim-2))
+
+class ZeroPadNd(Module):
+	def __init__(self, padding, dim = None):
+		assert not dim is None
+		raise NotImplementedError
+
+class ZeroPad2d(ZeroPadNd):
+	def __init__(self, padding):
+		super().__init__(padding, 2)
 		
 class MultiheadAttention(Module):
 	def __init__(self,
