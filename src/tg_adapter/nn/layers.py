@@ -400,7 +400,7 @@ class GroupNorm(Module):
 class ZeroPadNd(Module):
 	def __init__(self, padding, dim = None):
 		assert not dim is None
-		self.padding = _make_tuple(padding, dim * 2, fill = 0)
+		self.padding = padding
 	def tg_forward(_, self, inp):
 		return inp.pad(self.padding, mode = "constant", value = 0.0)
 
