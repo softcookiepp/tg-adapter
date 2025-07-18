@@ -62,6 +62,10 @@ class Sequential(Module):
 		
 	def __iter__(self):
 		return SequentialIterator(self)
+	
+	def __getitem__(self, idx: int):
+		if idx >= self._n_modules: raise IndexError
+		return getattr(self, str(idx) )
 		
 	
 class Dropout(Module):
