@@ -101,14 +101,15 @@ class Upsample(Module):
 	def forward(self, *args, **kwargs):
 		raise NotImplementedError
 		
-def _make_tuple(padding, dim):
-	pv = None
+def _make_tuple(padding, dim, fill == None):
 	if not isinstance(padding, Iterable):
 		padding = [padding]
 	else:
 		padding = list(padding)
 	if len(padding) < dim:
-		pv = padding[0]
+		pv = fill
+		if fill is None:
+			pv = padding[0]
 		for i in range(dim - len(padding) ):
 			padding.append(pv)
 	elif len(padding) > dim:
@@ -399,7 +400,7 @@ class GroupNorm(Module):
 class ZeroPadNd(Module):
 	def __init__(self, padding, dim = None):
 		assert not dim is None
-		self.padding = _make_tuple(padding, dim * 2)
+		self.padding = _make_tuple(padding, dim * 2, fill = 0)
 	def tg_forward(_, self, inp):
 		return inp.pad(self.padding, mode = "constant", value = 0.0)
 
