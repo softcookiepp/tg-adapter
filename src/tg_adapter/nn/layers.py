@@ -42,8 +42,8 @@ class SequentialIterator:
 		self._module = module
 	
 	def __next__(self):
-		if self._elem < len(self._module.args):
-			elem = self._module.args[elem]
+		if self._elem < self._module._n_modules:
+			elem = getattr(self._module, str(self._elem) )
 			self._elem += 1
 			return elem
 		else:
@@ -51,16 +51,13 @@ class SequentialIterator:
 
 class Sequential(Module):
 	def __init__(self, *args):
-		super().__init__()
-		self._args = args
-	
-	@property
-	def args(self):
-		return self._args
+		for i, arg in enumerate(args):
+			self.__dict__[str(i)] = arg
+		self._n_modules = i + 1
 		
-	def forward(self, x):
-		for arg in self._args:
-			x = arg(x)
+	def forward(self, ):
+		for i in range(self._n_modules):
+			x = getattr(self, str(i) )(x)
 		return x
 		
 	def __iter__(self):
