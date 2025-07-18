@@ -75,7 +75,6 @@ def test_conv_transpose_2d():
 	
 def test_zero_pad_2d():
 	for pad in [2, (2, 4, 6, 8)]:
-		print(pad)
 		torch_module = torch.nn.ZeroPad2d(pad)
 		tg_module = tg_adapter.nn.ZeroPad2d(pad)
 		a = make_test_data(2, 3, 16, 16)
