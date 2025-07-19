@@ -137,3 +137,7 @@ def ones_like(inp, dtype = None):
 def isin(elements, test_elements, *args, assume_unique=False, invert=False):
 	elements, test_elements = convert_to_tg(elements, test_elements)
 	return convert_to_torch(tinybloat.isin(elements, test_elements, *args, assume_unique=assume_unique, invert=invert) )
+
+def polar(inp, angle, *args, out = None):
+	inp, angle = convert_to_tg(inp, angle)
+	return convert_to_torch(tinybloat.polar(inp, angle) )

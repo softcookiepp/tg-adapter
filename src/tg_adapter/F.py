@@ -135,6 +135,27 @@ def clamp(inp, min = None, max = None):
 	return convert_to_torch(inp.clamp(min, max) )
 	
 def cat(tensors, dim = 0):
+	any_complex = False
+	for t in tensors:
+		if isinstance(t.tg, tinybloat.ComplexTensor):
+			any_complex = True
+			break
+	if any_complex:
+		# split real and imaginary components, concatenate each, return new complex tensor
+		tensors = convert_to_tg(tensors)
+		real = []
+		imag = []
+		for t in tensors:
+			if hasattr(t, "imag"):
+				real.append(t.real)
+				imag.append(t.imag)
+			else:
+				# not complex
+				real.append(t)
+				imag.append(t.zeros_like() )
+		real = tinygrad.Tensor.cat(*real, dim = dim)
+		imag = tinygrad.Tensor.cat(*imag, dim = dim)
+		return convert_to_torch(tinybloat.ComplexTensor(real, imag) )
 	return convert_to_torch(tinygrad.Tensor.cat(*convert_to_tg(tensors), dim = dim ) )
 	#return convert_to_torch(tinybloat.cat(convert_to_tg(tensors), dim = convert_to_tg(dim) ) )
 
