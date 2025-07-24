@@ -205,6 +205,12 @@ class AdapterTensor:
 	def rsqrt(self, *args, out = None):
 		return self._tg_override()
 	
+	def sqrt(self, *args, out = None):
+		return self._tg_override()
+	
+	def gt(self, other, *args, **kwargs):
+		return self > other
+	
 	def softmax(self, dim = None):
 		return convert_to_torch(self.tg.softmax(dim) )
 	
