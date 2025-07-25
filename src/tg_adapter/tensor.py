@@ -705,7 +705,8 @@ def convert_to_torch(*inp):
 	if isinstance(inp, tinygrad.Tensor) or isinstance(inp, ComplexTensor):
 		return AdapterTensor(inp)
 	elif isinstance(inp, slice):
-		raise NotImplementedError
+		s = convert_to_torch(inp.start, inp.stop, inp.step)
+		return slice(s[0], s[1], s[2])
 	elif isinstance(inp, list) or isinstance(inp, tuple):
 		new = []
 		for item in inp:
@@ -736,7 +737,8 @@ def convert_to_tg(*inp):
 		# do nothing
 		return maybe_realize(inp)
 	elif isinstance(inp, slice):
-		raise NotImplementedError
+		s = convert_to_tg(inp.start, inp.stop, inp.step)
+		return slice(s[0], s[1], s[2])
 	elif isinstance(inp, list) or isinstance(inp, tuple):
 		new = []
 		for item in inp:
