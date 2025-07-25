@@ -37,7 +37,6 @@ def arange(start, end = None, step=1, out=None, dtype=None, layout="torch.stride
 	if end is None:
 		end = start
 		start = 0
-	
 	return AT(tinygrad.Tensor.arange(start, end, step, dtype = dtype, device = device) )
 
 def empty(size = None, out=None, dtype=None, layout="torch.strided", device=None,

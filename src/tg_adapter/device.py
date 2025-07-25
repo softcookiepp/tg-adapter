@@ -84,7 +84,7 @@ def tg_device_supports_longlong(dev: str) -> bool:
 	a = tinygrad.Tensor.randn(big_shp)
 	try:
 		a.realize()
-	except tinygrad.device.CompileError:
+	except (tinygrad.device.CompileError, KeyError) as e:
 		del a
 		return False
 	del a
