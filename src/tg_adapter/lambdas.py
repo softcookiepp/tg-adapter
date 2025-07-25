@@ -141,3 +141,6 @@ def isin(elements, test_elements, *args, assume_unique=False, invert=False):
 def polar(inp, angle, *args, out = None):
 	inp, angle = convert_to_tg(inp, angle)
 	return convert_to_torch(tinybloat.polar(inp, angle) )
+
+def sqrt(inp, *args, **kwargs):
+	return inp.sqrt()
