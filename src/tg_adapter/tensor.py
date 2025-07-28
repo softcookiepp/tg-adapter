@@ -465,7 +465,9 @@ class AdapterTensor:
 	def where(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
-	def new_zeros(self, dtype = None, device = None, requires_grad = False, **kwargs):
+	def new_zeros(self, size, dtype = None, device = None, requires_grad = False, **kwargs):
+		if isinstance(size, int):
+			size = (size,)
 		if device is None:
 			device = self._tg.device
 		else:
@@ -474,7 +476,7 @@ class AdapterTensor:
 			dtype = self._tg.dtype
 		else:
 			dtype = dtype.tgt(self)
-		return convert_to_torch( self._tg.zeros_like(dtype = dtype, device = device, requires_grad = requires_grad) )
+		return convert_to_torch( tinygrad.Tensor.zeros(*size, dtype = dtype, device = device, requires_grad = requires_grad) )
 		
 	
 	def max(self, dim = None, keepdim = False):
