@@ -465,6 +465,18 @@ class AdapterTensor:
 	def where(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
+	def new_zeros(self, dtype = None, device = None, requires_grad = False, **kwargs):
+		if device is None:
+			device = self._tg.device
+		else:
+			device = device.tg
+		if dtype is None:
+			dtype = self._tg.dtype
+		else:
+			dtype = dtype.tgt(self)
+		return convert_to_torch( self._tg.zeros_like(dtype = dtype, device = device, requires_grad = requires_grad) )
+		
+	
 	def max(self, dim = None, keepdim = False):
 		return self._tg_override(axis = dim, keepdim = keepdim)
 	
@@ -577,6 +589,18 @@ class AdapterTensor:
 		for arg in args:
 			if hasattr(arg, "tg"):
 				margs.append(arg.to(d) )
+			elif isinstance(arg, slice):
+				start, stop, step = arg.start, arg.stop, arg.step
+				if hasattr(start, "tg"):
+					assert start.tg.numel() == 1
+					start = start.item()
+				if hasattr(stop, "tg"):
+					assert stop.tg.numel() == 1
+					stop = stop.item()
+				if hasattr(step, "tg"):
+					assert step.tg.numel() == 1
+					step = step.item()
+				margs.append(slice(start, stop, step) )
 			else:
 				margs.append(arg)
 		out = self._tg_override(*margs)
