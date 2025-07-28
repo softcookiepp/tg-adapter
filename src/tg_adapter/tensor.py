@@ -465,9 +465,11 @@ class AdapterTensor:
 	def where(self, *args, **kwargs):
 		return self._tg_override(*args, **kwargs)
 	
-	def new_zeros(self, size, dtype = None, device = None, requires_grad = False, **kwargs):
+	def new_zeros(self, *size, dtype = None, device = None, requires_grad = False, **kwargs):
 		if isinstance(size, int):
 			size = (size,)
+		elif not isinstance(size[0], int):
+			size = size[0]
 		if device is None:
 			device = self._tg.device
 		else:
