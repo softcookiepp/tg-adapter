@@ -481,7 +481,8 @@ class AdapterTensor:
 		return convert_to_torch( tinygrad.Tensor.zeros(*size, dtype = dtype, device = device, requires_grad = requires_grad) )
 	
 	def split_with_sizes(self, *args, **kwargs):
-		raise NotImplementedError
+		# i really hope this works lol
+		return self.split(*args, **kwargs)
 	
 	def max(self, dim = None, keepdim = False):
 		return self._tg_override(axis = dim, keepdim = keepdim)
