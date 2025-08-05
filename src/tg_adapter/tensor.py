@@ -69,6 +69,7 @@ class AdapterTensor:
 		elif isinstance(data, np.ndarray) or isinstance(data, gguf.gguf_reader.ReaderTensor):
 			self._tg = tinybloat.tensor(data, device = tg_device, requires_grad = requires_grad)
 		else:
+			input(type(data) )
 			data, _ = convert_np_type_correctly(np.array(data), tg_device )
 			self._tg = tinygrad.Tensor(data, device = tg_device, requires_grad = requires_grad)
 		self._is_complex = isinstance(self._tg, ComplexTensor)
