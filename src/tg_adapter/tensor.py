@@ -390,7 +390,8 @@ class AdapterTensor:
 		if isinstance(other, AdapterTensor):
 			other = other.tg
 			other_device = other.device
-		if tinybloat.compatibility.device_supports_longlong(other_device) and tinybloat.compatibility.device_supports_longlong(self.tg.device):
+		#if tinybloat.compatibility.device_supports_longlong(other_device) and tinybloat.compatibility.device_supports_longlong(self.tg.device):
+		if True:
 			return AdapterTensor(self.tg != other)
 		else:
 			if isinstance(other, tinygrad.Tensor):
@@ -501,17 +502,6 @@ class AdapterTensor:
 	
 	def min(self, dim = None, keepdim = False):
 		if isinstance(dim, AdapterTensor):
-			if False:
-				if dim.numel() > 1:
-					# might as well
-					return convert_to_torch(self.tg.min(dim.numpy().astype(int), keepdim = keepdim) )
-				dim = dim.to("cpu").item()
-				if hasattr(dim, "numpy"):
-					dim = dim.numpy()
-				if isinstance(dim, float):
-					print("this should not be a float")
-					input(dim)
-					dim = int(dim)
 			return convert_to_torch(tinygrad.Tensor.minimum(self.tg, dim.tg) )
 		return convert_to_torch(tinybloat.safety_functions.min(self.tg, dim, dim, keepdim) )
 
@@ -596,13 +586,8 @@ class AdapterTensor:
 				return inp
 	
 	def __getitem__(self, *args):
-		
 		self_device = self.device
 		d = self_device
-		if not tg_device_supports_longlong(self._tg.device):
-			# Temporarily move tensors to CPU for indexing if absolutely required
-			d = "cpu"
-		self = self.to(d)
 		margs = []
 		# if this doesn't work i will be surprised
 		for arg in args:

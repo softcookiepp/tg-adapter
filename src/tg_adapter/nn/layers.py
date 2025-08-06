@@ -350,9 +350,12 @@ class Embedding(Module):
 		original_device = idx.device
 		working_device = idx.device
 		
+		"""
+		# disable to see if we absolutely need it for DAWN
 		if not tg_device_supports_longlong(weight.device):
 			# perform embedding on the CPU as a fallback
 			working_device = "CPU"
+		"""
 		
 		if not hasattr(parent, 'arange'): parent.arange = tinygrad.Tensor.arange(vocab_sz,
 			requires_grad=False, device=working_device, dtype = highest_precision_int(working_device) ).unsqueeze(-1)
