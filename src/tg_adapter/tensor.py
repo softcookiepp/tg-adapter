@@ -76,13 +76,13 @@ class AdapterTensor:
 				npt = get_np_type_from_torch(dtype)
 				data = data.astype(npt)
 				
-		if isinstance(data, tinygrad.Tensor) or isinstance(data, ComplexTensor):
+		if isinstance(data, ComplexTensor):
 			self._tg = data
-		elif isinstance(data, np.ndarray) or isinstance(data, gguf.gguf_reader.ReaderTensor):
+		elif isinstance(data, tinygrad.Tensor) or isinstance(data, np.ndarray) or isinstance(data, gguf.gguf_reader.ReaderTensor):
 			self._tg = tinybloat.tensor(data, device = tg_device, requires_grad = requires_grad)
 		else:
 			data, _ = convert_np_type_correctly(np.array(data), tg_device )
-			self._tg = tinygrad.Tensor(data, device = tg_device, requires_grad = requires_grad)
+			self._tg = tinybloat.tensor(tinygrad.Tensor(data, device = tg_device, requires_grad = requires_grad), device = tg_device, requires_grad = requires_grad )
 		self._is_complex = isinstance(self._tg, ComplexTensor)
 		self._dtype = dtype
 		assert not self._tg is None
