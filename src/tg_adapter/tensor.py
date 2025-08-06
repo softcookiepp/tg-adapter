@@ -43,7 +43,9 @@ class AdapterTensor:
 		# before anything: if is AdapterTensor, just reconstruct it
 		if "AdapterTensor" in str(type(data) ):
 			# don't know of a better way to check
-			self._tg = data._tg
+			if not device is None:
+				data = data.to(device)
+			self._tg = data.tg.realize()
 			self._is_complex = data._is_complex
 			self._rebuild_dtype()
 			
