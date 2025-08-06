@@ -233,7 +233,7 @@ class Module:
 		for k, v in self.__dict__.items():
 			full_key = prefix + k
 			if full_key in state_dict.keys():
-				v.tg.replace(state_dict[full_key].to(v.tg.device) ).realize()
+				v.tg.replace(state_dict[full_key].to(v.tg.device) )#.realize()
 				print("initialized", full_key)
 	
 	def _load_elem_state_dict_recursive(self, k, v, state_dict, prefix):
@@ -245,13 +245,13 @@ class Module:
 				tg_tensor = state_dict[new_key]
 				if isinstance(state_dict[new_key], AT):
 					if v.tg.shape == state_dict[new_key].tg.shape:
-						v.tg.replace(state_dict[new_key].tg.to(v.tg.device) ).realize()
+						v.tg.replace(state_dict[new_key].tg.to(v.tg.device) )#.realize()
 					else:
 						# just do something risky lmao
 						v._tg = state_dict[new_key].tg.to(v.tg.device)
-						v.tg.realize()
+						#v.tg.realize()
 				else:
-					v.tg.replace(state_dict[new_key].to(v.tg.device) ).realize()
+					v.tg.replace(state_dict[new_key].to(v.tg.device) )#.realize()
 			else:
 				# TODO: warn user or something, i forget
 				pass
