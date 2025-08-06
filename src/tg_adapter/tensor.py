@@ -40,6 +40,16 @@ def _parse_to_arguments(*args, **kwargs):
 class AdapterTensor:
 	def __init__(self, data, dtype = None, device = None,
 			requires_grad = False, pin_memory = False):
+		# before anything: if is AdapterTensor, just reconstruct it
+		if "AdapterTensor" in str(type(data) ):
+			# don't know of a better way to check
+			self._tg = data._tg
+			self._is_complex = data._is_complex
+			self._rebuild_dtype()
+			
+			return
+			
+		
 		# pin memory is unused, but kept for compatibility
 		# convert device, duh
 		tg_device = None
@@ -69,7 +79,6 @@ class AdapterTensor:
 		elif isinstance(data, np.ndarray) or isinstance(data, gguf.gguf_reader.ReaderTensor):
 			self._tg = tinybloat.tensor(data, device = tg_device, requires_grad = requires_grad)
 		else:
-			input(type(data) )
 			data, _ = convert_np_type_correctly(np.array(data), tg_device )
 			self._tg = tinygrad.Tensor(data, device = tg_device, requires_grad = requires_grad)
 		self._is_complex = isinstance(self._tg, ComplexTensor)
