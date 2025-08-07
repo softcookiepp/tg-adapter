@@ -275,7 +275,7 @@ def _process_arg(arg, device, use_tg_adapter):
 			tgt = tg_adapter.tensor(arg).to(device)
 			tgt.tg.realize()
 		else:
-			tgt = tinygrad.Tensor(arg).to(device).realize()
+			tgt = tinybloat.tensor(arg, device = device).realize()
 		return torch.tensor(arg), tgt
 	elif isinstance(arg, list):
 		hf_list, tg_list = [], []
