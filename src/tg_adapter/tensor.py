@@ -253,45 +253,41 @@ class AdapterTensor:
 		if device is None:
 			device = self.device
 		old_type = self._tg.dtype
-		# gonna rewrite a little here c:
-		if not dtype is None:
-			old_dtype = dtype.tgt(device.tg)
-			new_tensor = self._tg.cast(old_dtype)
-		if not device is None:
-			if True:
-				# So it needs to be able to determine which type to convert to first before casting.
-				# How do we do that??
-				if dtype is None:
-					dtype = self.dtype
-				old_supported_type = self.dtype.tgt(self.device.tg)
-				new_supported_type = dtype.tgt(device.tg)
-				# the question that must be answered is, does the old device support the new type?
-				# or does it not?
-				
-				# if new device supports new type and new device supports old type
-				if is_dtype_supported(new_supported_type, device.tg) \
-						and is_dtype_supported(old_supported_type, device.tg):
-					# move first, then cast
-					#new_tensor = tinybloat.move_to_device(new_tensor, device.tg).cast(old_supported_type)
-					new_tensor = new_tensor.to(device.tg).cast(old_supported_type)
-				# new device should support new type, dtype.tgt takes care of that
-				# if new device doesn't support old type
-				elif (not is_dtype_supported(old_supported_type, device.tg) ) and is_dtype_supported(new_supported_type, self.device.tg):
-					# cast first, then move
-					new_tensor = new_tensor.cast(new_supported_type).to(device.tg)
-				else:
-					# can't cast to type that neither supports!
-					raise ValueError
-		return convert_to_torch(new_tensor)
 		
-		if dtype is None and (not device is None):
-			new_tensor = maybe_realize(self.tg.to(device.tg) )
-		elif (not dtype is None) and device is None:
-			new_tensor = maybe_realize(self.tg.cast(dtype.tgt(self.device.tg) ) )
-		elif not (dtype is None or device is None):
-			return convert_to_torch(self.tg.to(device.tg).cast(dtype.tgt(device.tg)) )
-		assert not new_tensor is None
-		return convert_to_torch(new_tensor)
+		if dtype is None:
+			assert not device is None
+			return convert_to_torch(tinybloat.to(self.tg, device.tg) )
+		else:
+			# gonna rewrite a little here c:
+			if not dtype is None:
+				old_dtype = dtype.tgt(device.tg)
+				new_tensor = self._tg.cast(old_dtype)
+			if not device is None:
+				if True:
+					# So it needs to be able to determine which type to convert to first before casting.
+					# How do we do that??
+					if dtype is None:
+						dtype = self.dtype
+					old_supported_type = self.dtype.tgt(self.device.tg)
+					new_supported_type = dtype.tgt(device.tg)
+					# the question that must be answered is, does the old device support the new type?
+					# or does it not?
+					
+					# if new device supports new type and new device supports old type
+					if is_dtype_supported(new_supported_type, device.tg) \
+							and is_dtype_supported(old_supported_type, device.tg):
+						# move first, then cast
+						#new_tensor = tinybloat.move_to_device(new_tensor, device.tg).cast(old_supported_type)
+						new_tensor = new_tensor.to(device.tg).cast(old_supported_type)
+					# new device should support new type, dtype.tgt takes care of that
+					# if new device doesn't support old type
+					elif (not is_dtype_supported(old_supported_type, device.tg) ) and is_dtype_supported(new_supported_type, self.device.tg):
+						# cast first, then move
+						new_tensor = new_tensor.cast(new_supported_type).to(device.tg)
+					else:
+						# can't cast to type that neither supports!
+						raise ValueError
+			return convert_to_torch(new_tensor)
 	
 	def _tg_cast_(self, dtype):
 		new_tensor = self.tg.cast(dtype.tgt(self.device.tg) )
