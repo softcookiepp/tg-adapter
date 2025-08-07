@@ -359,6 +359,7 @@ class Embedding(Module):
 		
 		if not hasattr(parent, 'arange'): parent.arange = tinygrad.Tensor.arange(vocab_sz,
 			requires_grad=False, device=working_device, dtype = highest_precision_int(working_device) ).unsqueeze(-1)
+		input( (weight.dtype, weight.device, parent.arange.dtype, parent.device, idx.dtype, idx.device) )
 		big_shp = idx.shape+(vocab_sz, embed_sz)
 		
 		
