@@ -6,7 +6,7 @@ from ..tensor import AdapterTensor as AT
 from ..tensor import convert_to_torch, convert_to_tg, assert_same_device
 from .. import tensor_constructors as tc
 from . import init as internal_init
-from ..types import highest_precision_int
+from tinybloat.compatibility import highest_precision_int
 from ..device import tg_device_supports_longlong
 from .parameter import Parameter
 from .. import tensor_constructors as tc
