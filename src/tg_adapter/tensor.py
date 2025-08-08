@@ -257,7 +257,6 @@ class AdapterTensor:
 		if dtype is None:
 			assert not device is None
 			new_t = tinybloat.to(self.tg, device.tg)
-			#input(new_t.device)
 			return convert_to_torch(new_t)
 		else:
 			# gonna rewrite a little here c:
@@ -504,9 +503,6 @@ class AdapterTensor:
 		return convert_to_torch(tinybloat.safety_functions.min(self.tg, dim, dim, keepdim) )
 
 	def argmax(self, *args, **kwargs):
-		#print(args, kwargs)
-		#input(self.shape)
-		#input(self.tg.chunk(11, dim = 1)[0].argmax(**kwargs).realize() )
 		#return convert_to_torch(self._tg.contiguous().argmax(*args, **kwargs) )
 		return convert_to_torch(safety_functions.argmax(self.tg, *args, **kwargs) )
 	
