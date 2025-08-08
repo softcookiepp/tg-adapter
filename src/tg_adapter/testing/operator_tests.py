@@ -286,3 +286,7 @@ def test_multinomial():
 			torch_out = torch.multinomial(torch.tensor(a), num_samples, replacement = replacement)
 			tg_out = tg_adapter.multinomial(tg_adapter.tensor(a), num_samples, replacement = replacement)
 			assert mse(np.array(torch_out.shape).astype(np.float32), np.array(tg_out.shape).astype(np.float32) ) < 1.0e-4
+
+def test_device_parsing():
+	pass
+	
