@@ -29,6 +29,9 @@ def torch_dev_to_tiny(torch_dev, idx = None):
 		# device object
 		idx = torch_dev.idx
 		torch_dev = torch_dev.name
+	elif ":" in torch_dev:
+		torch_dev, idx = tuple(torch_dev.split(":") )
+		idx = int(idx)
 	if idx is None:
 		return _BACKEND_TABLE[torch_dev]
 	else:
