@@ -257,7 +257,7 @@ class AdapterTensor:
 		if dtype is None:
 			assert not device is None
 			new_t = tinybloat.to(self.tg, device.tg)
-			input(new_t.device)
+			#input(new_t.device)
 			return convert_to_torch(new_t)
 		else:
 			# gonna rewrite a little here c:
