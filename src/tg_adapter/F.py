@@ -54,6 +54,7 @@ def group_norm(x, num_groups, weight = None, bias = None, eps = 1.0e-5):
 	
 def scaled_dot_product_attention(query, key, value, attn_mask=None,
 		dropout_p=0.0, is_causal=False, scale=None, enable_gqa=False):
+	"""
 	query, key, value, attn_mask = convert_to_tg( (query, key, value, attn_mask) )
 	assert_same_device(query.device, key, value, attn_mask)
 	if enable_gqa:
@@ -68,6 +69,10 @@ def scaled_dot_product_attention(query, key, value, attn_mask=None,
 		query = query * scale_factor
 	return convert_to_torch( query.scaled_dot_product_attention(key, value, attn_mask,
 		dropout_p, is_causal) )
+	"""
+	query, key, value, attn_mask = convert_to_tg(query, key, value, attn_mask)
+	out = tinybloat.F.scaled_dot_product_attention(query, key, value, attn_mask, dropout_p, is_causal, scale, enable_gqa)
+	return convert_to_torch(out)
 
 def pad(inp, pad, mode='constant', value=None):
 	if value is None:

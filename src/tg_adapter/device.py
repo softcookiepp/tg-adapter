@@ -39,7 +39,6 @@ class device:
 	def tg(self):
 		# Tinygrad device corresponding to this one
 		devstr = torch_dev_to_tiny(self._name, self._idx)
-		print(self, devstr)
 		return devstr
 		
 	def __repr__(self):
